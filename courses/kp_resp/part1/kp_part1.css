@@ -1,0 +1,49 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    /* this removed the border around the body from the elements */
+    margin: 0;
+}
+
+/*
+Responsive Design
+
+#### avoid setting fixed widths/heights
+a div will take all the horizontal space so no need to give width
+and use media queries
+
+by default everything is responsive
+using css makes it not responsive
+
+>block elements are by default have a width of 100% of the parent, 
+in this care the body
+
+giving fixed width/height to a child can cause overflow
+
+the area is already adapting to the screen size without giving fixed's
+
+
+> instead of height use padding to give background
+> use padding with EM, relative to the default font size 1em = 16px
+
+*/
+
+
+.parent {
+    background-color: #23424A;
+    color: white;
+    padding: 5em;
+
+    margin: 0 auto;
+
+    /* 80% of the body*/
+    /*width: 80%;*/
+
+}
+
+.child {
+    background-color: #38CFD9;
+    height: 100px;
+}
