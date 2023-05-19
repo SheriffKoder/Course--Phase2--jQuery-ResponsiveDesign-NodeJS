@@ -209,3 +209,159 @@ interactive mode # node
 //before you can run npm start to run the server
 
 
+
+////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////
+//javascript refresher
+
+//weakly typed language
+    //no explicit type assignment
+    //data types can be switched dynamically
+
+//object oriented language
+    //data can be organized in logical objects
+    //primitive and reference types
+
+//versatile language, 
+    //runs in a browser and on a pc/server
+    //broad variety of tasks
+
+
+//////////////////////////////////////
+/*
+const name = "Max"; //make clear intention to not change name
+let age = 29;   //let is newer syntax than var
+let hasHobbies = true;
+
+//const helps to avoid changing a const by giving an error
+
+
+//pure function that does not depend on outer sources
+const summarizeUser = (userName, userAge, userHasHobbies) => {
+    return (
+        "name is " + userName + 
+        " age is " + userAge +
+        " and the user has hobbies " + userHasHobbies
+    );
+}
+
+console.log(summarizeUser(name, age, hasHobbies));
+
+
+//////////////////////////////////////
+//Arrow functions
+const add = (a,b) => a + b;
+console.log("add is " + add(1,2));
+
+
+const addOne = a => a + 1;
+console.log("addOne is " + addOne(1));
+
+const addRandom = () => 4 + 1;
+console.log("addRandom is " + addRandom(1));
+
+
+*/
+
+//////////////////////////////////////
+//Objects
+
+const person = {
+    //key, key pair is also called a property or a field of the object
+    name: "Max",
+    age: 29,
+    //arrow function will make this context global
+
+    greet1: function () {
+        console.log("Hi i am," + this.name);
+
+    },
+    //use normal function or 
+    greet2() {
+        console.log("Hi i am," + this.name);
+    }
+
+};
+
+console.log(person); //outputs the whole object
+person.greet1();
+person.greet2();
+
+
+
+//////////////////////////////////////
+//arrays
+//can store in arrays also (arrays and objects)
+
+const hobbies = ["Sports", "Cooking"];
+
+for (let hobby of hobbies) {
+    console.log(hobby);
+}
+
+//map takes a function that runs over every item in an array
+//edit it accordingly and returns a new (edited) array
+console.log(hobbies.map(hobby =>  "hobby: " + hobby));
+
+
+//object and arrays are reference types
+//they are references, so const is a reference
+//so can edit a const array/object because what will be edited
+//is its content not the reference
+
+
+//////////////////////////////////////
+////rest and spread operators
+
+//immutability
+//replace with copies plus the changes
+//new array with the old items plus new items
+
+
+//techniques of copying an array
+const copiedArray1 = hobbies.slice();
+console.log(copiedArray1);
+
+//copy the array into a (first item) of another array - nested array
+const copiedArray2 = [hobbies]; //can put an object
+console.log(copiedArray2);
+
+
+
+////spread syntax, works for arrays and objects
+//pulling elements OUT of an array
+//pull out all elements or properties of an array
+//and put it whatever is around that spread operator
+//in this case the []
+const copiedArray3 = [...hobbies];
+console.log(copiedArray3);
+
+
+const copiedObject3 = {...person}; 
+//to copy an object has to be wrapped in {}
+console.log(copiedObject3);
+
+
+
+
+////rest operator, the opposite to spread
+//merging multiple arguments INto an array
+
+//return an array that returns these arguments
+const toArray1 = (arg1, arg2, arg3) => {
+    return [arg1, arg2, arg3];
+};
+console.log(toArray1(1,2,3));
+
+
+//more flexible way to add any number of arguments
+//to the new array
+const toArray2 = (...args) => {
+    return args;
+};
+console.log(toArray2(1,2,3,4));
+
+
+
+
+//////////////////////////////////////
