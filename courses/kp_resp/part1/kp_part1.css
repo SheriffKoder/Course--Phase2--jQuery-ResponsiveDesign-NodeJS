@@ -10,7 +10,7 @@ body {
 /*
 Responsive Design
 
-#### avoid setting fixed widths/heights
+////// avoid setting fixed widths/heights
 a div will take all the horizontal space so no need to give width
 and use media queries
 
@@ -22,11 +22,77 @@ in this care the body
 
 giving fixed width/height to a child can cause overflow
 
-the area is already adapting to the screen size without giving fixed's
+the area h&w is already adapting with the content to the screen size without giving fixed's
+
+> use % instead of fixed widths
+> instead of height "use padding" to give background space
+> use padding with "EM measure", relative to the default font size 1em = 16px
+use padding to give button a size
 
 
-> instead of height use padding to give background
-> use padding with EM, relative to the default font size 1em = 16px
+
+//////(Day2) EM and REM
+EM;
+relates to the parent, cascades to the nearest defined font to a parent
+does compound so be aware, 
+but can be used in making a cascading relation between parents/children
+
+when used for padding, margins, widths, heights
+it does not look for the parent, they look for the font size of that element
+
+
+REM; (root em)
+looks at the html css tag or root, wether declared or not
+font size by default is 16px, 
+some people use font-size: 62.5% to make the root 10px and use from that
+
+can be used for padding, margins, widths, heights
+
+
+
+//////(Day3) 
+max-width
+
+
+//////(Day4) 
+viewport units
+not accessibility friendly if used with font-size
+used for hero parts
+
+height: 100vh
+on mobile devices causes issues with content overflowing
+so use media queries to fix that
+media queries of min size etc.
+
+vmax, viewport maximum, which ever view port is bigger from width and height
+vmin
+
+can be used for padding, margins, widths, heights
+
+
+
+
+
+
+challenge1;
+//set width percentage from parent
+    width: 80%;
+//avoid overflow
+    remove height
+
+
+challenge2;
+//allow parent to stretch end to end
+//center the inner content and set max width
+    remove widths
+    margin: 0 auto;
+    max-width: 50%;
+
+
+* make a container like day 4 at end of course to sum up all the information
+as a reference
+
+
 
 */
 
@@ -47,3 +113,10 @@ the area is already adapting to the screen size without giving fixed's
     background-color: #38CFD9;
     height: 100px;
 }
+
+
+
+/*
+text to mid point
+text not overflow the bottom
+*/
