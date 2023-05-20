@@ -17,8 +17,8 @@ and use media queries
 by default everything is responsive
 using css makes it not responsive
 
->block elements are by default have a width of 100% of the parent, 
-in this care the body
+>block elements by default have a width of 100% of the parent, 
+in this case the body
 
 giving fixed width/height to a child can cause overflow
 
@@ -43,7 +43,7 @@ it does not look for the parent, they look for the font size of that element
 
 REM; (root em)
 looks at the html css tag or root, wether declared or not
-font size by default is 16px, 
+font size by default is 16px, if not declared
 some people use font-size: 62.5% to make the root 10px and use from that
 
 can be used for padding, margins, widths, heights
@@ -56,6 +56,7 @@ max-width
 
 //////(Day4) 
 viewport units
+vh, vw, vmax, vmin
 not accessibility friendly if used with font-size
 used for hero parts
 
@@ -68,6 +69,29 @@ vmax, viewport maximum, which ever view port is bigger from width and height
 vmin
 
 can be used for padding, margins, widths, heights
+
+
+//////(Day5) 
+challenge03
+
+//////(Day6)
+em vs rem cont.
+
+.container {
+    padding: 10% 0; /*
+}
+.inner-content {
+    width: 80%; /*
+    margin: 0 auto; /*instead of container l/r padding
+}
+.inner-content-text-div {
+    max-width: 900px;   /*div float at left with max width for the text
+}
+
+
+
+
+
 
 
 
@@ -87,6 +111,15 @@ challenge2;
     remove widths
     margin: 0 auto;
     max-width: 50%;
+
+
+challenge3;
+//.inner-content h1 { margin: 0;
+font-size: 1rem;
+line-height: calc(1.5*1em);
+button >  padding: 1em 3em; border-radius: 2em; border: 0px;
+
+
 
 
 * make a container like day 4 at end of course to sum up all the information
@@ -115,8 +148,3 @@ as a reference
 }
 
 
-
-/*
-text to mid point
-text not overflow the bottom
-*/
