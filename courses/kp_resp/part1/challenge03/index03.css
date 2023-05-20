@@ -1,0 +1,77 @@
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+}
+
+
+:root {
+}
+
+.container {
+    background-color: #23424A;
+    padding: 10% 0; /**/
+}
+
+
+.inner-content {
+    color: white;
+    width: 80%; /**/
+    margin: 0 auto; /*instead of container l/r padding*/
+}
+
+.inner-content-text-div {
+    max-width: 900px;   /*div float at left with max width for the text */
+}
+
+.inner-content h1 {
+    margin: 0;
+
+    font-family: system-ui;
+    font-style: normal;
+    font-weight: 900;
+
+    font-size: 2.5rem;
+    line-height: calc(1.164*1em);
+    margin-bottom: 1em;
+
+}
+
+
+.inner-content p {
+    font-family: system-ui;
+    font-style: normal;
+    font-weight: 400;
+
+    font-size: 1rem;
+    line-height: calc(1.5*1em);
+
+    margin-bottom: 2em;
+}
+
+
+.inner-content button {
+    background-color: #38CFD9;
+    color: #23424A;
+
+    font-size: 1rem;
+    font-weight: 900;
+    text-transform: uppercase;
+
+    padding: 1em 3em;
+
+    border-radius: 2em;
+    border: 0px;
+
+    display: inline-block;
+
+}
+
+
+.inner-content button:hover,
+.inner-content button:focus {
+    opacity: 0.75;
+}
