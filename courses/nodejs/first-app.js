@@ -23,7 +23,7 @@ so chrome compiles js to machine code to be handled efficiently
 written in c++
 
 node js adds 
-to access local files to the v8 engine
+access local files to the v8 engine
 
 node js allows to use js outside of the browser
 and access the local files and other functionalities
@@ -54,31 +54,33 @@ interactive mode # node
 //NodeJS Basics
 
 ////using node in terminal
-//console.log("Hello from Node.js");
-//then # node file-name.js
-//will execute the command
+console.log("Hello from Node.js");
+
+// # node file-name.js
+//will execute the code
 
 
 //////file system functionality
 //writing some output to a file instead of the function
-//import it into that file to let node know that we will use this functionality
+//import it into that file to let node know 
+//that we will use this functionality
 //syntax for that is the require function
 //require the fs module,
 //store the file system functionality in a constant
 
 
-//const fs = require('fs');
+const fs = require('fs');
 
 ////creating a file on the hard drive
 //then use writeFileSync module to write a file to the hard drive
-//the argument is path/filename
+//the first argument is path/filename
 //second argument is the content given for that file, 
 //here its a string
 
 //fs.writeFileSync('hello.txt', 'Hello from Node.js');
 
 
-//until now we di use nodejs without using the browser
+//until now we did use nodejs without using the browser
 //can use any js code
 
 
@@ -97,12 +99,12 @@ interactive mode # node
 
 //can use it for more than just server-side code
 //uses like utility scripts, build tools, access file system
-//do stuff on your computer that is never exposed to the public
+//"do stuff on your computer that is never exposed to the public
 
 //////Node.js role in Web-development;
 //nodejs allows to run a server
 //to write the code that takes 
-//incoming requests and route them (writing the server)
+//incoming requests and route them (actually writing the server)
 //listening and what you want to do with your code
 
 //business logic
@@ -265,7 +267,7 @@ console.log("addRandom is " + addRandom(1));
 
 //////////////////////////////////////
 //Objects
-
+/*
 const person = {
     //key, key pair is also called a property or a field of the object
     name: "Max",
@@ -305,7 +307,7 @@ console.log(hobbies.map(hobby =>  "hobby: " + hobby));
 
 
 //object and arrays are reference types
-//they are references, so const is a reference
+//they are references, so const contains a reference
 //so can edit a const array/object because what will be edited
 //is its content not the reference
 
@@ -361,7 +363,170 @@ const toArray2 = (...args) => {
 };
 console.log(toArray2(1,2,3,4));
 
+*/
+
+
+/////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////
+//Day2
+/////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////
+
+////JS Refresher
+//Destructuring
+/*
+const person = {
+    name: "Max",
+    age: 20
+}
+
+const printName = ({ name }) => {
+    console.log(name);
+}
+printName(person);
+
+//always pulled out by name
+const { name, age } = person;
+console.log(name, age);
+
+
+//two individual values
+//in arrays you can choose any element
+//always pulled out by position
+const hobbies = ["Sports", "Cooking"];
+const [hobby1, hobby2] = hobbies;
+
+console.log(hobby1, hobby2);
+
+*/
+////////////////////////////////
+//Asynchronous code
+/*
+//code that does not finish immediately
+//this a callback function, a function will be called back
+//so synchronous code will be executed
+//and the timeout later once the timer is done
+
+//const fetchData = callBack => {
+const fetchData = () => {
+
+    const promise = new Promise((resolve, reject) => {  //Promise constructor function that is built into js
+    //the new keyword, new object based on  a constructor
+    //resolve and reject are two functions
+    
+    setTimeout(() => {
+//       callBack("Done");   //passed fn code uses "Done" parameter
+        resolve("Done");
+    }, 1500)
+
+
+    });
+
+    return promise;
+    //after defining the promise we have to return it
+    //it is a sync code, will be returned after the promise
+    //created before the timeout is complete
+
+};
+
+setTimeout(() => {
+    console.log("timer is done");
+
+    //fetchData(text => { //this is callBack, with argument
+    //    console.log(text);
+    //});
+
+    //then, callable on a promise
+    //and we have returned a promise
+    //allows to define the callback function
+    //that will execute once the promise is resolved
+    //advantage: 
+    fetchData().then(text => { //this is callBack, that will execute once the promise is resolved
+            console.log(text);
+            return fetchData();     //#446
+        }).then(text2 => {
+            console.log(text2);
+        });
+
+        //i would not write nested callbacks again
+        //inside of the promise
+        //return a new promise and add the next then block after it
+        //chain of then blocks
+        //return another promise
+        //even if it will not give us a promise
+        //inside of that then block
+        //returning it will convert it to a promise
+        //that instantly resolves
+        //now we add another then block that refers to the
+        //returned promise #446
+
+
+}, 2000);
+
+console.log("timer is not done"); //runs first
+console.log("timer is not done");
+
+//you will have a problem when you have
+//dependent async operations
+
+
+//promises
+//third party packages will use them for us
+//but understanding them is good, crucial concept
+//makes async code more manageable
+//await will be introduced later
+
+*/
+
+/////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////
+//NodeJS Basics
+
+//How Does the web work ? 
+//what role nodejs plays into that
+//creating a node.js server
+//running nodejs code when requests reach that server
+//send back responses
+//using node core modules
+
+//Async code and the event loop concept
+//to stay reactive and ensure our script never slows down and always runs just fine
 
 
 
-//////////////////////////////////////
+////////////////////////////////
+//user/client (browser)
+//enters url
+//Domain lookup on DNS name to ip address of the server requested
+//the browser then sends a request to the given ip address of the server
+
+//handle that incoming request using nodejs
+//and do tasks like validation, 
+//communicating with a database that runs on a separate database server
+//reached from your backend
+
+//send back a response to the client
+//html code, other data
+
+
+//requests and responses have headers
+//that describe what is inside them for example
+
+//nodejs is the code that makes the server
+//request and response transmission is done
+//through a protocol (standarized way of communicating/rules)
+//http/https
+
+//hyper text transfer protocol
+//a protocol of transferring data which is understood by browser and server
+//defines how a valid request looks like
+//how the data should be transferred from browser to server
+//and the other way around
+
+//hyper text transfer protocol secure
+//ssl encryption is turned on
+//where all the data that is transmitted
+//is encrypted
+
+
+////////////////////////////////
