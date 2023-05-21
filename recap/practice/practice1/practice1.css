@@ -1,0 +1,98 @@
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: system-ui;
+    background-color: rgb(253, 253, 253);
+}
+
+
+
+
+
+header {
+    text-align: center;
+    word-spacing: -0.7em;
+    font-style: italic;
+}
+
+table {
+    height: 80vh;
+    width: 90vw;
+    margin: 0 auto;
+
+    border-collapse: collapse;
+
+}
+
+
+
+
+table tr {
+    display: flex;
+
+}
+
+table td {
+    width: 100%;
+}
+
+td + td {
+    margin-left: 1em;
+}
+
+
+.first-row {
+    height: 10%;
+}
+.second-row {
+    height: 90%;
+}
+
+
+
+.first-row td {
+    background-color: #2d545e;
+    color: white;
+
+    border-top-left-radius: 0.5em;
+    border-top-right-radius: 0.5em;
+    border-bottom-left-radius: 0.3em;
+    border-bottom-right-radius: 0.3em;
+
+    text-transform: uppercase;
+    font-weight: 500;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+
+
+
+
+}
+
+
+.second-row td {
+    border: 1px dashed rgb(62, 62, 62);
+    border-top-left-radius: 0.3em;
+    border-top-right-radius: 0.3em;
+    border-bottom-left-radius: 0.5em;
+    border-bottom-right-radius: 0.5em;
+    background-color: white;
+    margin-top: 1em;
+    padding: 1em;
+}
+
+
+nav button {
+    display: block;
+    width: 100%;
+    margin: 1em 0;
+    font-weight: 500;
+    letter-spacing: 0.025em;
+
+}
