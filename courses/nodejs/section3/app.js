@@ -412,8 +412,124 @@ server.listen(3000);
 //before they are released once its done
 
 
-////////////////////////////////////////////////////
-
 //the order of execution of the code
 //not necessarily in the order of writing
 
+
+////////////////////////////////////////////////////
+////////////////////////////////////////////////////
+
+//just for understanding
+//how nodejs works with long taking tasks 
+//like large files
+
+//nodejs uses only one js thread
+//a single process on the os
+//how then it handles multiple requests ?
+
+//the event loop automatically starts with nodejs
+//when our program starts
+//this is responsible for handling event callbacks
+//responding to requests, aware of these callbacks
+//the arrow functions inside the events remember
+
+//the event loop will only handle callbacks
+//that contains fast finishing code
+
+//long time taking operations are managed by worker pool
+//which is also managed by nodejs automatically
+//all the heavy lifting
+//runs on different threads
+//really detached from our code, request, event loop
+//connection to the event loop is once the worker is done
+//then it will trigger the callback for the readfile operation
+//this will then end up in the event loop
+//there nodejs will execute the appropriate callback
+
+
+//event loop
+//keeps the nodejs process running,
+//handles all the callbacks with some order
+
+//1) in the beginning of any operation
+//checks if there are any timer with callbacks it should execute
+
+//2) next step checks for other callbacks
+//for example, write/read file callbacks
+// I/O from disk, network, (code blocking operations)
+
+//if there are many outstanding callbacks,
+//it will continue its loop operation
+//and postpone these callback operations to the next iteration
+
+//3) next step, poll phase
+//looks for new i/o events and execute their code immediately if possible
+//if not possible it will defer the execution as a pending callback
+//also will check if there are any timer callbacks
+//due to be executed, if then will jump to that timer phase
+//and execute them right away
+
+//4) next, setImmediate callbacks
+//in check phase
+//a bit like setTimeout or setInterval
+//will execute immediately but always only after 
+//any open callbacks have been executed
+
+//5) close callbacks
+//execute all 'close' event callbacks
+
+//6) might exit the whole js program
+//but only if there are no event handlers registered
+//nodejs keeps tack of its open event listeners
+//by a counter reference "refs" that increments 
+//by one for every new event listener that is registered
+//or future work it has to do
+//and reduce by 1 for every event listener it does not need anymore/finished
+
+//createServer, listen events are never really finished by default
+//thus we always have at least one reference
+//thus we never exit of a normal node webserver program
+
+//we can call the exit function as coded above
+//or execute a file that did not listen to/on a web server
+
+
+//as a security
+//each function is only exposed to itself and not accessible
+//by the other functions
+//so by default we have this separation by how js works
+
+
+
+//make a new file to include the routing logic
+//logic checking the url etc.
+//to export the functionality and import to an app file
+
+
+//////Wrap up
+
+//how the web works
+// client > request > server > response > client (browser) / display
+
+//program lifecycle and event loop
+//node.js runs non-blocking js code and uses
+//an event driven code event loop for running your logic
+//a node program exits as soon as there is no more work to do
+//the createServer() event never finishes by default
+
+//asynchronous code as shown in all the callbacks
+//js code is non-blocking
+//use callbacks and events => order changes
+
+//requests and responses
+//parse request data in chunks (streams and buffers)
+//avoid double responses
+
+//node.js and core modules
+//built in functionalities
+//imported using the require syntax
+//have to be imported in each file used
+
+//node module system
+//import via require, for custom files/modules/third-party modules
+//exports
