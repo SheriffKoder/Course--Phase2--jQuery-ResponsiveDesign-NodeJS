@@ -1,4 +1,4 @@
-* {
+*, *::before, *::after {
     box-sizing: border-box;
 }
 
@@ -51,7 +51,7 @@ can be used for padding, margins, widths, heights
 
 
 //////(Day3) 
-max-width
+max-width not to exceed a wanted size
 
 
 //////(Day4) 
@@ -77,22 +77,18 @@ challenge03
 //////(Day6)
 em vs rem cont.
 
-.container {
-    padding: 10% 0; /*
-}
-.inner-content {
-    width: 80%; /*
-    margin: 0 auto; /*instead of container l/r padding
-}
-.inner-content-text-div {
-    max-width: 900px;   /*div float at left with max width for the text
-}
+//////(Day7)
+challenge03 solution, BEM and box-sizing videos
 
+BEM;
+block element modifier, css naming convention
+shared styles = card
+individual style = card--light
+inner content h1, img, p : card__title, card__image, card__body
 
-
-
-
-
+box-sizing;
+allows when giving padding/margin the keep the total size the same
+before and after to make sure it is applied to everything
 
 
 
@@ -113,11 +109,22 @@ challenge2;
     max-width: 50%;
 
 
-challenge3;
+challenge3; done from scratch html
 //.inner-content h1 { margin: 0;
 font-size: 1rem;
 line-height: calc(1.5*1em);
 button >  padding: 1em 3em; border-radius: 2em; border: 0px;
+.container {
+    padding: 10% 0; /*
+}
+.inner-content {
+    width: 80%; /*
+    margin: 0 auto; /*instead of container l/r padding
+}
+.inner-content-text-div {
+    max-width: 900px;   /*div float at left with max width for the text
+                        /* used another container here to cause float let with max width
+}
 
 
 
