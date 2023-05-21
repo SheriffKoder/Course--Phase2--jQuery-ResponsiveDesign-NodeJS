@@ -1,0 +1,163 @@
+/*
+
+//////(Day8)
+Flexbox in responsive design:
+
+check caniuse.com to check on the css support
+
+flex items, they take the least possible size 
+according to the content 
+width:100% fixes that by dividing areas all evenly
+
+
+> flex row
+> adding space using;
+    .row gap
+    . col + col
+    . col margin
+> setting width to 100% so divide area evenly between columns
+
+
+//challenge01_part2
+a good idea is to avoid using descendant selectors
+give class names either container__header or accent-text
+
+reduce html by moving the flex_row class to the inner content div
+separate the responsibility across two classes
+
+center text using text-align
+
+
+
+**recap, put points and cont.
+
+
+
+
+
+
+
+
+
+*/
+
+
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+}
+
+
+:root {
+}
+
+.container {
+    padding: 10vmin 0; /**/
+}
+
+.inner-content {
+    width: 80%; /**/
+    margin: 0 auto; /*instead of container l/r padding*/
+    max-width: 900px;   /*div float at left with max width for the text */
+}
+
+
+/*/////////////////////////////////////////////////////////////////////////*/
+
+.row { /* flex container */
+    display: flex;
+    flex-direction: row;    /*default*/
+
+    /*adding space(1)*/
+    /*gap: 0.5em;*/
+
+}
+
+.col {
+            /*some styling*/
+            background-color: #136C72;
+            color: white;
+            border-radius: 0.5em;
+            box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.15);
+
+    /* divide spaces evenly */
+    width: 100%;
+
+    /*adding space(2)*/
+    /*margin: 0.25em; /*affects outside spacing */
+
+}
+
+/*adding space(3)*/
+/* each col has a col after before it*/
+.col + .col {
+    margin-left: 0.25em;
+}
+
+
+
+
+
+/*/////////////////////////////////////////////////////////////////////////*/
+.hero {
+    background-color: #23424A;
+    color: white;
+}
+
+
+.hero__header {
+    margin: 0;
+
+    font-family: system-ui;
+    font-style: normal;
+    font-weight: 900;
+
+    font-size: 2.5rem;
+    line-height: calc(1.164*1em);
+    margin-bottom: 1em;
+
+}
+
+
+.hero__text {
+    font-family: system-ui;
+    font-style: normal;
+    font-weight: 400;
+
+    font-size: 1rem;
+    line-height: calc(1.5*1em);
+
+    margin-bottom: 2em;
+}
+
+
+.hero__button {
+    background-color: #38CFD9;
+    color: #23424A;
+
+    font-size: 1rem;
+    font-weight: 900;
+    text-transform: uppercase;
+
+    padding: 1em 3em;
+
+    border-radius: 2em;
+    border: 0px;
+
+    display: inline-block;
+
+
+}
+
+
+.hero__button:hover,
+.hero__button:focus {
+    opacity: 0.9;
+}
+
+
+
