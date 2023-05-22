@@ -77,7 +77,7 @@ const fs = require('fs');
 //second argument is the content given for that file, 
 //here its a string
 
-//fs.writeFileSync('hello.txt', 'Hello from Node.js');
+fs.writeFileSync('hello.txt', 'Hello from Node.js');
 
 
 //until now we did use nodejs without using the browser
@@ -490,7 +490,8 @@ console.log("timer is not done");
 //using node core modules
 
 //Async code and the event loop concept
-//to stay reactive and ensure our script never slows down and always runs just fine
+//to stay reactive and ensure our script never slows down 
+//and always runs just fine
 
 
 
