@@ -43,6 +43,8 @@ so we can do using nodejs the following with js code
 /////////////////////////////////////////////////////////////////////////////////////////////
 //////how nodejs works
 we write the server in js code and run the server
+    (1) start script
+    (2) enter an event loop as long as there are event listeners registered like createServer
 listen for incoming requests
 
 route/handle requests and do tasks with it
@@ -51,6 +53,7 @@ reached from your backend
 
 return data/response to the user based on the request using node-core-modules
 response can be html/json/xml/files/dynamic-content-html
+    (3) process.exit(); // optional if want to exit after handling request
 
 
 requests and responses have descriptive headers
@@ -59,6 +62,11 @@ that defines how a valid request looks like and how data should be transferred b
 protocols understood by the browser/server, 
 //hyper text transfer protocol
 //hyper text transfer protocol secure (ssl encryption turned on, encrypt transmitted data)
+
+the event loop 
+- manages the code
+- helps when there are many incoming requests, fast, multi-threading (multi-task)
+- keeps the server always ready
 
 
 
@@ -138,7 +146,7 @@ core-modules: http, https, fs, path, os
 //if the fileName is the same a core module the core module will be used
 //local files start with "./"
 const http = require("http");
-
+const fs = require("fs");
 
 
 //createServer takes a function that will run on each incoming request to the server
@@ -148,6 +156,17 @@ const http = require("http");
 //req: request object created by nodejs, data of incoming request 
 //request happened by user visiting the host address
 //req.url, req.method, req.headers are the items of interest in the request
+//req.headers : host/accept file type, http version
+//req.url on localhost3000 is "/"
+//req.method GET on incoming request
+
+//can access the request's details from chrome developer tools
+//>network > refresh page > local host > content-type html etc.
+
+//GET: when you click a link or enter a url
+//POST: has to be created by you by such a form, also other js ways available
+
+
 
 //
 
@@ -158,6 +177,30 @@ let htmlCode = `<html>
                     <body>
                         <h1>Hello myPage</h1>
                         <p>this is a NodeJS page</p>
+
+                        <form action="/message" method="POST">
+                            <label for="html"> Enter Message </label>
+                            <input id="html" type="text" name="messageName">
+                            <button type="submit"> Send </button>
+                        </form>
+
+                    </body>
+                </html>`;
+
+//form action, url where the generated request should be sent to
+//form method, use to POST a request to server
+//input name-attr, to make it accessible via that name-attr
+//button type submit, will send a new request, automatically targeting the host it is running og
+
+//form will send a POST request to /message
+//form will detect any inputs with name-attr, to put that name-attr in the request
+
+let htmlCode2 = `<html>
+                    <head>
+                        <title>Message Page</title>
+                    </head>
+                    <body>
+                        <h1>Message Page</h1>
                     </body>
                 </html>`;
 
@@ -165,22 +208,114 @@ let htmlCode = `<html>
 
 const server = http.createServer((req, res) => {
 
-    console.log(req.url, req.method, req.headers);
+    //////Handling the Request and its header
+    //console.log("Url : " + req.url);
+    //console.log("method: " + req.method);
+    //console.log(req.headers);
+    //console.log("user's operating system is : " + req.headers["user-agent"]);
 
-    //res.setHeader("header", "header-key-value");
-    //Content-Type; default header
-    //text/html; set header key to html - will write in html format
-    res.setHeader("Content-Type", "text/html");
-    //write data in the response can write between '' or a variable
-    res.write(htmlCode);
-    //after end, cannot write any more below it
-    res.end();
+
+    //////setting a Response based on the Request-Url
+    //giving the "/" page some content
+    const url = req.url;
+    const method = req.method;
+    if( url === "/") {
+        //res.setHeader("header", "header-key-value");
+        //Content-Type; default header
+        //text/html; set header key to html - will write in html format
+        res.setHeader("Content-Type", "text/html");
+        //write data in the response can write between '' or a variable
+        res.write(htmlCode);
+        //after end, cannot write any more below it
+        //adding return to it, will cause to exit from createServer's function
+        //and not execute the code below if
+        return res.end();
+    }
+
+    
+    //as we will be redirected to "/message" from the form we want something to happen there
+    //take all received data-chunks from the request(button click)
+    //on receive end, output the combined data
+    if( url === "/message" && method === "POST") {
+
+        //the below functions will be registered internally
+        //in njs event emitter registry
+        //and not run right away
+        //then goes to line 358
+
+        ////receive input(chunk) and output to a txt file
+        //the (on-method) allows to listen to events like (data-event, end-event)
+        //takes two arguments
+            //(1) (data-event) will be fired whenever a new chunk is ready to be read
+                //with the help of the buffer
+            //(2) a function should be executed on event fire
+                //will store in requestBody, an empty array, 
+                //const can be pushed as push changes the object behind the object not the object itself
+                //data passes chunk-data in non-string form
+
+        const requestDataBody = [];
+
+        req.on("data", (chunk) => {
+            requestDataBody.push(chunk);
+        });
+
+
+        
+        //end event, once finished parsing the incoming request data
+        //store the data, output the data
+
+        //end request is an Async function will not execute immediately
+        //it gets registered and code below it continues
+        //so any code code depended on the parsedBody should be moved inside, like writeFile
+        //NodeJS will add an "internal event listener" for the end-event
+        //which will be trigged when nodejs finishes parsing the request and call its function
+        //and this function will not then block other code from executing
+
+        //Buffer; a global object in NodeJS, a bus containing our data and waits to be used
+            //concatenate to the Buffer the requestDataBody - and convert to string
+            //to string because we will enter text, other file types, other ways
+            //take the part of the message after = sign, returns an array of the two splits, take the 2nd[1]
+            //the buffer will keep concatenating incoming data and we will take the received part?
+
+        return req.on("end", () => {
+            const parsedBody = Buffer.concat(requestDataBody).toString();
+            console.log(parsedBody);    //parsedBody is now messageName=hi
+            const message = parsedBody.split("=")[1];
+            console.log(message);
+
+            //writeFileSync will block code execution on heavier writes, bec its a sync code
+                //and other requests will not be handled until this file operation is done
+            //writeFile is higher performance because it never stops/blocks the code or server
+            //writeFile takes a 3rd argument, function to be executed on completion once its done,
+                // receives an error, null if no error, or can handle that error, or success response
+            //so this function executes once writing data is done working with the file
+            //switch to 302, set location
+
+            fs.writeFile("message.txt", message, (err) => {
+                res.statusCode = 302;
+                res.setHeader("Location", "/");
+                return res.end();
+            });
+        })
+
+
+//set header content-type, location
+//"on" data, end
+//nodejs adds async to an internal event listener 
+//and run their callback functions without blocking other code from executing
+
+        //res.setHeader("Content-Type", "text/html");
+        //res.write(htmlCode2);
+        //res.end();
+
+    }
 
 
 
     //can write this is want the server to quit after a request received
     //but we need the server running and listen for incoming requests
     //process.exit();
+
 
 });
 
