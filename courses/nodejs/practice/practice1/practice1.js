@@ -44,8 +44,15 @@ so we can do using nodejs the following with js code
 //////how nodejs works
 we write the server in js code and run the server
     (1) start script
-    (2) enter an event loop as long as there are event listeners registered like createServer
+    (2) enter an event loop as long as there are event listeners registered internally like createServer
 listen for incoming requests
+
+//nodejs keeps tack of its open event listeners
+//by a counter reference "refs" that increments 
+//by one for every new event listener that is registered
+//or future work it has to do
+//and reduce by 1 for every event listener it does not need anymore/finished
+
 
 route/handle requests and do tasks with it
 communicating with a database that runs on a separate database server
@@ -67,6 +74,12 @@ the event loop
 - manages the code
 - helps when there are many incoming requests, fast, multi-threading (multi-task)
 - keeps the server always ready
+
+
+//setHeader: content-type, location
+//req.on: data, end
+//nodejs adds async to an internal event listener 
+//and run their callback functions without blocking other code from executing
 
 
 
@@ -169,6 +182,7 @@ const fs = require("fs");
 
 
 //
+/*
 
 let htmlCode = `<html>
                     <head>
@@ -238,10 +252,19 @@ const server = http.createServer((req, res) => {
     //on receive end, output the combined data
     if( url === "/message" && method === "POST") {
 
-        //the below functions will be registered internally
+        //the below event functions will be registered internally
         //in njs event emitter registry
         //and not run right away
-        //then goes to line 358
+        //then goes to code after the if?
+
+        //Streams & Buffers
+        //incoming data is sent as a stream of data, read by node in chunks/multiple parts
+        //till fully parsed, so can work with the received chunks until all received
+        //helps when writing data to the hard drive as data coming in
+
+        //a buffer is used to work with chunks, hold multiple chunks and work with them, 
+        //before they are released once its done
+
 
         ////receive input(chunk) and output to a txt file
         //the (on-method) allows to listen to events like (data-event, end-event)
@@ -277,6 +300,7 @@ const server = http.createServer((req, res) => {
             //take the part of the message after = sign, returns an array of the two splits, take the 2nd[1]
             //the buffer will keep concatenating incoming data and we will take the received part?
 
+        //finished taking the data, file write
         return req.on("end", () => {
             const parsedBody = Buffer.concat(requestDataBody).toString();
             console.log(parsedBody);    //parsedBody is now messageName=hi
@@ -288,27 +312,37 @@ const server = http.createServer((req, res) => {
             //writeFile is higher performance because it never stops/blocks the code or server
             //writeFile takes a 3rd argument, function to be executed on completion once its done,
                 // receives an error, null if no error, or can handle that error, or success response
-            //so this function executes once writing data is done working with the file
-            //switch to 302, set location
+            //so this callBack function executes once writing data is done working with the file
+            //switch to 302 (redirection), set header location (default header accepted by browser)
+            //to "/" page and end file writing after
 
+            //finished file write, 
             fs.writeFile("message.txt", message, (err) => {
                 res.statusCode = 302;
                 res.setHeader("Location", "/");
                 return res.end();
+
+                //or these two lines //
+                //res.writeHead(302, {});
+                //res.statusCode = 302;
+                //res.setHeader("Location", "/");
+                //return res.end();
+
+                //now will have in dev tools network
+                //message url of status 302 "redirected"
+                //and message.txt file created
+
+
             });
-        })
-
-
-//set header content-type, location
-//"on" data, end
-//nodejs adds async to an internal event listener 
-//and run their callback functions without blocking other code from executing
-
-        //res.setHeader("Content-Type", "text/html");
-        //res.write(htmlCode2);
-        //res.end();
-
+        });
     }
+
+
+        res.setHeader("Content-Type", "text/html");
+        res.write(htmlCode2);
+        res.end();
+
+    
 
 
 
@@ -326,6 +360,160 @@ const server = http.createServer((req, res) => {
 server.listen(3000);
 // # node app.js
 //open localhost:3000 in the browser
+
+*/
+
+
+const http = require("http");
+const fs = require("fs");
+
+let htmlCode = `<html>
+                    <head>
+                        <title>myPage</title>
+                    </head>
+                    <body>
+                        <h1>Hello myPage</h1>
+                        <p>this is a NodeJS page</p>
+
+                        <form action="/message" method="POST">
+                            <label for="html"> Enter Message </label>
+                            <input id="html" type="text" name="messageName">
+                            <button type="submit"> Send </button>
+                        </form>
+
+                    </body>
+                </html>`;
+
+let htmlCode2 = `<html>
+                    <head>
+                        <title>Message Page</title>
+                    </head>
+                    <body>
+                        <h1>Message Page</h1>
+                    </body>
+                </html>`;
+
+
+const server = http.createServer((req, res) => {
+
+
+    const url = req.url;
+    const method = req.method;
+
+    if( url === "/") {
+        res.setHeader("Content-Type", "text/html");
+        res.write(htmlCode);
+        return res.end();
+    }
+
+
+    if( url === "/message" && method === "POST") {
+        const requestDataBody = [];
+        req.on("data", (chunk) => {
+            requestDataBody.push(chunk);
+        });
+
+        return req.on("end", () => {
+            const parsedBody = Buffer.concat(requestDataBody).toString();
+            const message = parsedBody.split("=")[1];
+
+            fs.writeFile("message.txt", message, (err) => {
+                res.statusCode = 302;
+                res.setHeader("Location", "/");
+                return res.end();
+            });
+        });
+    }
+
+
+
+    res.setHeader("Content-Type", "text/html");
+    res.write(htmlCode2);
+    res.end();
+
+});
+
+server.listen(3000);
+
+
+//////Import Export
+////routes.js
+//take the req/res function into a constant
+//export.exportedFunction = constantFunction;
+
+////app.js
+// const exportedFile = require(./routes.js)
+// createServer(exportedFile.exportedFunction);
+
+//the exported files are locked, not accessible from outside
+//cannot change it but can read from outside
+
+
+
+
+
+
+
+
+
+//Nodejs uses only one JS thread (single process), but it handles multiple requests
+
+////handling fast finishing callbacks
+//event loop; 
+//starts with the server, keeps the nodejs process running
+//responds to requests, 
+//aware /handle event callbacks with some order
+
+//(1) checks if there are any "timer with callbacks" it should execute
+//(2) checks for other callbacks, disk I/O, network (code blocking operations)
+//if many outstanding callbacks, loop operation continues, callback operations postponed to the next iteration
+//(3) poll phase; checks for times if not, new I/O events (finis immediately or defer as a pending callBack)
+//(4) check phase; setImmediate callBacks will execute immediately after any open callBacks have been executed
+//(5) close callBacks; execute all 'close' event callBacks
+//(6) exit the js program after there are no event handlers registered internally
+        //exit using code or executing a file that did not listen to/on a web server
+
+//createServer, listen events are never really finished by default
+//thus we always have at least one reference
+//thus we never exit of a normal node webserver program
+
+
+
+//////handling long time taking operations
+//worker pool; manages these
+//runs on different threads
+//detached from the code/request/event-loop
+//connects to the event loop once the worker is done
+//then it will trigger the callback for the readfile operation
+//and this will end up in the event loop and the appropriate callBack will be executed
+
+
+
+////as a security
+//each function is only exposed to itself and not accessible
+//by the other functions
+//so by default we have this separation by how js works
+
+
+
+//////Wrap up
+//program lifecycle and event loop
+//node.js runs non-blocking js code and uses
+//an event driven code event loop for running your logic
+//a node program exits as soon as there is no more work to do
+//the createServer() event never finishes by default
+
+//asynchronous code as shown in all the callbacks
+//js code is non-blocking
+
+//avoid double responses
+
+//node.js and core modules, built in functionalities, imported using the require syntax
+//have to be imported in each file used
+
+//node module system
+//import via require, for custom files/modules/third-party modules
+//exports
 
 
 
