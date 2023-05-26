@@ -1,4 +1,7 @@
 
+//**recaped in practice1.js
+
+
 /////////////////////////////////////////////////////////////
 ////////////////////////////////
 
@@ -118,7 +121,7 @@ const server = http.createServer((req, res) => {
 
 
 //node app.js > start script 
-    //> pase code, register variables and function
+    //> parse code, register variables and function
         //>event loop (keep on running as long as there are
                     //event listeners registered like createServer)
                         //process.exit();
@@ -533,3 +536,5 @@ server.listen(3000);
 //node module system
 //import via require, for custom files/modules/third-party modules
 //exports
+
+

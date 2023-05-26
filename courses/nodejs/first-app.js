@@ -1,5 +1,5 @@
 /*
-
+**recaped in practice1.js
 
 server-side rendered views over REST APIs
 all the way up to GraphQL APIs
@@ -515,7 +515,7 @@ console.log("timer is not done");
 
 //nodejs is the code that makes the server
 //request and response transmission is done
-//through a protocol (standarized way of communicating/rules)
+//through a protocol (standardized way of communicating/rules)
 //http/https
 
 //hyper text transfer protocol

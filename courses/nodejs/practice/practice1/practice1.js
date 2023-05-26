@@ -72,7 +72,7 @@ protocols understood by the browser/server,
 
 the event loop 
 - manages the code
-- helps when there are many incoming requests, fast, multi-threading (multi-task)
+- helps when there are many incoming requests, it is fast, multi-threading (multi-task)
 - keeps the server always ready
 
 
@@ -140,7 +140,8 @@ core-modules: http, https, fs, path, os
 //require("node-module").moduleMethod("file", "string");
 
 //output a normal string using file-system module
-//require("fs").writeFileSync("practice1_output.txt", "this is the output for practice1 ex3");
+
+////require("fs").writeFileSync("practice1_output.txt", "this is the output for practice1 ex3");
 
 //output js code, must use toString
 //let myFunction = new Date().getFullYear();
@@ -158,8 +159,8 @@ core-modules: http, https, fs, path, os
 //const somefile = require("./fileName.js"); 
 //if the fileName is the same a core module the core module will be used
 //local files start with "./"
-const http = require("http");
-const fs = require("fs");
+//const http = require("http");
+//const fs = require("fs");
 
 
 //createServer takes a function that will run on each incoming request to the server
@@ -426,7 +427,7 @@ const server = http.createServer((req, res) => {
     }
 
 
-
+    //default
     res.setHeader("Content-Type", "text/html");
     res.write(htmlCode2);
     res.end();
@@ -438,7 +439,7 @@ server.listen(3000);
 
 //////Import Export
 ////routes.js
-//take the req/res function into a constant
+//declare the req/res function using a constant
 //export.exportedFunction = constantFunction;
 
 ////app.js

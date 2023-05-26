@@ -24,7 +24,7 @@ now the html part of user list can be edited independently
 
 
 // "/user" page with <ul><li> User1 </li> </ul>
-let usersHtml = `<html>
+/* let usersHtml = `<html>
                     <head>
                         <title>Users Page</title>
                     </head>
@@ -37,9 +37,10 @@ let usersHtml = `<html>
                         </ul>
                     </body>
                 </html>`;
+*/
 
-
-usersHtml_Users = `
+//bind each html part with its child
+let usersHtml_Users = `
                         <li> User1 </li>
                         <li> User2 </li>
                         <li> User3 </li>
@@ -78,6 +79,7 @@ let usersHtml_Html = `
                 </html>
                     `;
 
+//we will mainly need usersHtml_Html
 return { usersHtml_Html, usersHtml_Head, usersHtml_Body, usersHtml_UserList, usersHtml_Users };
 }
 
@@ -129,6 +131,7 @@ const serverHandler = (req, res) => {
     }
 
 
+    //generate /user html
     if ( url === "/user") {
         res.setHeader("Content-Type", "text/html");
         res.write(generateHTML(usersHtml_Users).usersHtml_Html);
@@ -137,10 +140,11 @@ const serverHandler = (req, res) => {
         return res.end();
     }
 
+    //generate /create-user html based on 
     if( url === "/create-user" && method === "POST") {
 
         let text = `<li> User4 </li>`;
-        usersHtml_UsersNew = generateHTML(usersHtml_Users).usersHtml_Users.concat(text);
+        let usersHtml_UsersNew = generateHTML(usersHtml_Users).usersHtml_Users.concat(text);
         res.setHeader("Content-Type", "text/html");
         //console.log(usersHtml_Users);
         //console.log(usersHtml_Html);
@@ -163,7 +167,7 @@ const serverHandler = (req, res) => {
             //console.log(usersHtml_Users);
 
 
-            usersHtml_Users =usersHtml_UsersNew;
+            usersHtml_Users = usersHtml_UsersNew;
             res.write(generateHTML(usersHtml_Users).usersHtml_Html);
             res.end();
 
