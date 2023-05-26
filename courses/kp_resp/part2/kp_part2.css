@@ -11,11 +11,33 @@ width:100% fixes that by dividing areas all evenly
 
 
 > flex row
-> adding space using;
+> adding gap space using;
     .row gap
-    . col + col
+    . col + col: margin-left
     . col margin
 > setting width to 100% so divide area evenly between columns
+
+
+
+//////(Day9)
+as long as the image is in a div it will not stretch
+
+removed inner-content 80% width and added padding on the container
+it has already margin auto and max-width so will center
+
+make the inner-content a flex-row
+add an image div, 
+
+change container2_cols padding from em to vmin to avoid overflow on large em's
+
+flex-wrap works when there are items 4 items each 33% width, the 4th will wrap
+
+i was able to allow mobile response using width of hero-items 75vmin, row-wrap
+but it need better control
+
+
+
+
 
 
 //challenge01_part2
@@ -26,12 +48,6 @@ reduce html by moving the flex_row class to the inner content div
 separate the responsibility across two classes
 
 center text using text-align
-
-
-
-**recap, put points and cont.
-
-
 
 
 
@@ -53,16 +69,20 @@ body {
 
 
 :root {
+    --color-border: rgba(255, 192, 203, 0.0);
 }
 
 .container {
-    padding: 10vmin 0; /**/
+    padding: 10vmin 5vmin; /**/
 }
 
 .inner-content {
     width: 80%; /**/
     margin: 0 auto; /*instead of container l/r padding*/
     max-width: 900px;   /*div float at left with max width for the text */
+    background-color: var(--color-border);
+
+
 }
 
 
@@ -71,21 +91,30 @@ body {
 .row { /* flex container */
     display: flex;
     flex-direction: row;    /*default*/
-
     /*adding space(1)*/
-    /*gap: 0.5em;*/
+    gap: 1em;
 
+    justify-content: center;
+}
+
+.row_wrap {
+    flex-wrap: wrap;
+}
+
+.container2__col {
+                /*some styling*/
+                background-color: #136C72;
+                color: white;
+                border-radius: 0.5em;
+                box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.15);
+                
+                text-align: center;
+                padding: 1.5vmin;
 }
 
 .col {
-            /*some styling*/
-            background-color: #136C72;
-            color: white;
-            border-radius: 0.5em;
-            box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.15);
-
-    /* divide spaces evenly */
-    width: 100%;
+    /* divide spaces evenly for flex items */
+    width: 30%;
 
     /*adding space(2)*/
     /*margin: 0.25em; /*affects outside spacing */
@@ -95,7 +124,7 @@ body {
 /*adding space(3)*/
 /* each col has a col after before it*/
 .col + .col {
-    margin-left: 0.25em;
+    /*margin-left: 0.5em;*/
 }
 
 
@@ -106,6 +135,7 @@ body {
 .hero {
     background-color: #23424A;
     color: white;
+    
 }
 
 
@@ -119,6 +149,8 @@ body {
     font-size: 2.5rem;
     line-height: calc(1.164*1em);
     margin-bottom: 1em;
+    background-color:var(--color-border);;
+
 
 }
 
@@ -132,6 +164,8 @@ body {
     line-height: calc(1.5*1em);
 
     margin-bottom: 2em;
+    background-color: var(--color-border);;
+
 }
 
 
@@ -149,8 +183,7 @@ body {
     border: 0px;
 
     display: inline-block;
-
-
+    
 }
 
 
@@ -159,5 +192,24 @@ body {
     opacity: 0.9;
 }
 
+
+
+.hero__image {
+    border: 1px solid  var(--color-border);
+    align-self: center;
+    margin: 0 auto;
+
+
+}
+
+.hero__items {
+    border: 1px solid var(--color-border);
+
+}
+
+.hero__image img {
+    width: 100%;
+    height: 80%;
+}
 
 
