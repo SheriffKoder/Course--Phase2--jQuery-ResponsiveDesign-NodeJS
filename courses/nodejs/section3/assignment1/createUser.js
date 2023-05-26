@@ -153,11 +153,11 @@ const serverHandler = (req, res) => {
 
         const incomingData = [];
 
-                req.on("data", (chunk) => {
-                    incomingData.push(chunk);
-                });
+        req.on("data", (chunk) => {
+            incomingData.push(chunk);
+        });
 
-        return  req.on("end", () => {
+        req.on("end", () => {
             const ParsedBody = Buffer.concat(incomingData).toString();
             const message = ParsedBody.split("=")[1];
 
@@ -169,10 +169,12 @@ const serverHandler = (req, res) => {
 
             usersHtml_Users = usersHtml_UsersNew;
             res.write(generateHTML(usersHtml_Users).usersHtml_Html);
-            res.end();
-
-
         });
+
+        //return to "/"
+        res.statusCode = 302;
+        res.setHeader("Location", "/");
+        return res.end();
     }
 
     if ( url === "/new-user") {
@@ -181,7 +183,7 @@ const serverHandler = (req, res) => {
         return res.end();
     }
 
-
+    //default-html
     res.setHeader("Content-Type", "text/html");
     res.write(generateHTML(usersHtml_Users).usersHtml_Html);
     return res.end();

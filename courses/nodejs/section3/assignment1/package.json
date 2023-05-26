@@ -1,0 +1,16 @@
+{
+  "name": "node_assignment1",
+  "version": "1.0.0",
+  "description": "assignment1 for nodejs course",
+  "main": "createUser.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node createUser.js",
+    "start-myServer": "node createUser.js"
+  },
+  "author": "Sheriff Koder",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^2.0.22"
+  }
+}

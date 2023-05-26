@@ -179,7 +179,7 @@ core-modules: http, https, fs, path, os
 
 //GET: when you click a link or enter a url
 //POST: has to be created by you by such a form, also other js ways available
-
+//casing does not matter
 
 
 //
@@ -244,6 +244,8 @@ const server = http.createServer((req, res) => {
         //after end, cannot write any more below it
         //adding return to it, will cause to exit from createServer's function
         //and not execute the code below if
+        //return re.end();
+        //should return if there is other res.write to be executed below
         return res.end();
     }
 
@@ -324,9 +326,7 @@ const server = http.createServer((req, res) => {
                 return res.end();
 
                 //or these two lines //
-                //res.writeHead(302, {});
-                //res.statusCode = 302;
-                //res.setHeader("Location", "/");
+                //res.writeHead(302, {"Location", "/"});
                 //return res.end();
 
                 //now will have in dev tools network
