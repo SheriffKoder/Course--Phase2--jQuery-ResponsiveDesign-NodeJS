@@ -36,6 +36,12 @@ i was able to allow mobile response using width of hero-items 75vmin, row-wrap
 but it need better control
 
 
+///
+align-self, allows the image to stay and retain its natural dimensions
+adding width% to flex columns then adjust with justify-content
+to create this gap from the leftover width %
+
+
 
 
 
@@ -49,8 +55,10 @@ separate the responsibility across two classes
 
 center text using text-align
 
-
-
+//allows all images to be responsive and not overflow their container div
+img {
+    max-width: 100%;
+}
 
 
 
@@ -91,14 +99,22 @@ body {
 .row { /* flex container */
     display: flex;
     flex-direction: row;    /*default*/
-    /*adding space(1)*/
-    gap: 1em;
 
-    justify-content: center;
+    justify-content: space-between;
+
+
+}
+
+.space-between {
+    justify-content: space-between;
 }
 
 .row_wrap {
     flex-wrap: wrap;
+    
+    /*adding space(1) */
+    gap: 1em;
+
 }
 
 .container2__col {
@@ -197,19 +213,22 @@ body {
 .hero__image {
     border: 1px solid  var(--color-border);
     align-self: center;
-    margin: 0 auto;
+    width: 30%;
+
+    align-self: flex-start;
+
 
 
 }
 
 .hero__items {
     border: 1px solid var(--color-border);
+    width: 60%;
 
 }
 
 .hero__image img {
-    width: 100%;
-    height: 80%;
+    max-width: 100%;
 }
 
 
