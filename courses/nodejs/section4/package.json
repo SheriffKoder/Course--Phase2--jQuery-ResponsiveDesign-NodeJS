@@ -5,8 +5,8 @@
   "main": "s4_app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon s4_app.js",
-    "start-myServer": "node s4_app.js"
+    "start-s4-nodemon": "nodemon s4_app.js",
+    "start-myServer4": "node s4_app.js"
   },
   "author": "Sheriff Koder",
   "license": "ISC",
@@ -14,6 +14,7 @@
     "nodemon": "^2.0.22"
   },
   "dependencies": {
+    "body-parser": "^1.20.2",
     "express": "^4.18.2"
   }
 }

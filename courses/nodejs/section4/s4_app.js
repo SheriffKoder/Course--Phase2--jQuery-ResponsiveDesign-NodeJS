@@ -95,7 +95,7 @@ once the a package is installed can be used in code
 
 
 //use nodemon auto-save
-change start script to nodemon createUser.js
+change start script to nodemon yourFilename.js
 however changes are reset
 
 
@@ -220,6 +220,8 @@ nodemon on s4_app ?
 */
 
 
+
+/*
 const http = require("http");
 const express = require("express");
 
@@ -235,7 +237,6 @@ const app = express();
 //next is a function will be passed by express
 //has to be exe to allow the request to be passed on to the next middleware
 //adding next(); allow the request to be passed to the next middleware inline
-// > sending a response to the next middle (next lecture)
 
 app.use((req, res, next) => {
     console.log("in the middleware");
@@ -244,8 +245,109 @@ app.use((req, res, next) => {
 
 app.use((req, res, next) => {
     console.log("in the next middleware");
+
+    //can still send responses as before with res.write 
+    
+    //send of express allows to send a response with data type any
+    //sending an html string has automatically the content-type set to html
+    //can overwrite this functionality
+    //by res.setHeader to change content type like before
+    //can check the source code for response.js > send
+    //to know what it does and how it switches to html type on string
+    //by default a string is considered an html
+    res.send("<h1> Hello from Express</h1>");
+    console.log(req.url);
+    
 });
 
-const server = http.createServer(app);
+//const server = http.createServer(app);
+//server.listen(3000);
+//which is
+//(require("http").createServer(this)).listen(3000);
+//can be replaced with
+app.listen(3000);
+*/
 
-server.listen(3000);
+//want to handle different urls
+//app.use(path,callback);
+//path string/pattern/reg-ex pattern to match paths or array of these
+//callback; middleware function, series of functions separated by commas, array of functions, combination of all of these
+
+//path of "/" means any url does start with "/" not just "/"
+//to separate, put the code for the url containing the next url before without next();
+//avoiding next(); here is like avoiding sending another response in vanilla node
+//next() allows the request to continue
+
+const http = require("http");
+const express = require("express");
+const app = express();
+
+let productAdd = `
+<form action="/product" method="POST">
+    <label for="html"> Add Product </label>
+    <input id="html" type="text" name="productAdded">
+    <button type="submit"> Add Product </button>
+</form>
+`;
+
+//this code will run twice
+//1st on its call, 2nd on visiting a page starting with "/"
+//as the request is allowed to continue
+/*app.use("/", (req, res, next) => {
+    console.log("this always runs");
+    next();
+});
+
+
+//parser
+//by default request does not parse the incoming
+//request body
+//to do that is to register a parser
+//before other route handling middlewares
+//because the parsing of the body
+//should be done no matter where the request ends up
+//by installing # npm install --save body-parser
+//urlencoded registers a middleware and call next() at its end
+//able to parse bodies like ones sent through a form, not files
+
+//configure in urlencoded the config option {extended:false}
+//to be able to parse non default features
+
+//now we are able to have an object of the input
+//easier to extract than before with the split
+
+*/
+
+const bodyParser = require("body-parser");
+app.use(bodyParser.urlencoded({extended: false}));
+
+app.use("/user", (req, res, next) => {
+    //console.log("in the user middleware");
+    res.send("<h1> Hello user Express</h1>");
+});
+
+//add form input page
+app.use("/add-product", (req, res, next) => {
+    //console.log("<h1>Add product page");
+    res.send(productAdd);
+});
+
+//output the added input
+app.use("/product", (req, res, next) => {
+    //console.log(req.body);    //outputs object, related to bodyParser
+    console.log(req.body["productAdded"]);
+    //res.send("<h1>Add product page 2");
+    res.redirect("/");
+});
+
+app.use("/", (req, res, next) => {
+    //console.log("in the / middleware");
+    res.send("<h1> Hello / Express</h1>");
+});
+
+app.listen(3000);
+
+
+//the request travels from top to bottom
+//but only goes from middleware to middleware
+//if you call next in the previous middleware "use" parameters
