@@ -38,8 +38,19 @@ but it need better control
 
 ///
 align-self, allows the image to stay and retain its natural dimensions
+
 adding width% to flex columns then adjust with justify-content
 to create this gap from the leftover width %
+
+when a width of % is set to a flex item, the other item will be like 100% 
+and the set % may not display accurate
+so its good when leaving a main content and giving the side content width ?
+
+
+
+
+
+
 
 
 
@@ -59,6 +70,19 @@ center text using text-align
 img {
     max-width: 100%;
 }
+
+
+//challenge02_part2
+use in the second container
+main >
+    section/article
+    aside
+
+//challenge03_part2
+creating a navigation header
+header > nav > ul > li's of a and button
+the key for aligning here is using nav-button padding/border on li as well as button
+however need to remove the right/left padding from the li's and increase flex gap
 
 
 
