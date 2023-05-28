@@ -187,7 +187,7 @@ that help you build your application
 
 //alternatives to Express.js
 vanilla node.js
-Adonis.js (larverl inspired)
+Adonis.js (larvel inspired)
 Koa
 Sails.js
 
@@ -278,6 +278,8 @@ app.listen(3000);
 //avoiding next(); here is like avoiding sending another response in vanilla node
 //next() allows the request to continue
 
+/*
+
 const http = require("http");
 const express = require("express");
 const app = express();
@@ -290,14 +292,15 @@ let productAdd = `
 </form>
 `;
 
+/*
 //this code will run twice
-//1st on its call, 2nd on visiting a page starting with "/"
+//1st on its call on /, 2nd on visiting any page starting with "/"
 //as the request is allowed to continue
-/*app.use("/", (req, res, next) => {
+app.use("/", (req, res, next) => {
     console.log("this always runs");
     next();
 });
-
+*/
 
 //parser
 //by default request does not parse the incoming
@@ -309,6 +312,7 @@ let productAdd = `
 //by installing # npm install --save body-parser
 //urlencoded registers a middleware and call next() at its end
 //able to parse bodies like ones sent through a form, not files
+//files will use a different parser
 
 //configure in urlencoded the config option {extended:false}
 //to be able to parse non default features
@@ -316,7 +320,8 @@ let productAdd = `
 //now we are able to have an object of the input
 //easier to extract than before with the split
 
-*/
+
+/*
 
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: false}));
@@ -333,8 +338,9 @@ app.use("/add-product", (req, res, next) => {
 });
 
 //output the added input
-app.use("/product", (req, res, next) => {
-    //console.log(req.body);    //outputs object, related to bodyParser
+app.post("/product", (req, res, next) => {
+    //console.log(req.body);    
+    //outputs object, so can know the keys, related to bodyParser
     console.log(req.body["productAdded"]);
     //res.send("<h1>Add product page 2");
     res.redirect("/");
@@ -350,4 +356,128 @@ app.listen(3000);
 
 //the request travels from top to bottom
 //but only goes from middleware to middleware
-//if you call next in the previous middleware "use" parameters
+//if you call next in the previous middleware "use" parameter
+
+
+
+
+
+//till here same code copied edited in the routes folder files
+//and started to work on html files from the views folder
+*/
+///////////////////////////////////////////////////////////
+//routing
+
+//want to only listen to a "post" request for the app.use having req.body
+// "app.use" works for all http methods
+//use "app.get" only will fire for incoming get requests
+// use "app.post" to filter for post requests
+
+//so the app.post above will run on the form post request
+//but not when url manually entered for /product
+
+//also have app.delete/patch/put
+
+
+
+//create a routes folder
+//create admin.js that handles the creation of products
+//which an admin of the shop can do
+//create shop.js (what the user will see)
+
+//put the product add code to admin.js
+
+//express.router explained in admin.js/
+//code copied from above example to the ./route files
+//removed app.use and replaced with get and post
+
+
+
+
+
+
+const http = require("http");
+const express = require("express");
+const app = express();
+
+
+//import the admin.js file module
+//order of import does not matter
+const adminJsRoutes = require("./routes/admin.js");
+const shopJsRoutes = require("./routes/shop.js");
+
+const bodyParser = require("body-parser");
+app.use(bodyParser.urlencoded({extended: false}));
+
+
+//calling the exported router object in app.use (just by itself)
+//so its code can run at this place/order (order matters)
+
+
+app.use(adminJsRoutes); //replaced code
+app.use(shopJsRoutes); //replaced code
+
+////filtering mechanism
+//useful to not repeat paths
+//app.use("/admin", adminJsRoutes);
+//only routes starting with /admin (ex. /admin/add-page)
+//will be executed from this code 
+//do not add the /admin in the route files's paths
+// "./admin" will be placed before any path
+//so place /product .. and enter /admin/product url for this to work
+//but the form should have a path with "/admin/add-product"
+
+//if we reach here, and no middleware executed
+//we will get and error as we did not handle that request
+//set a 404 error page
+
+//catch all middleware
+//handles all http methods (.use)
+//chaining the status() method before .send()
+//always before send() can call status(), setHeader() etc.
+//404 a common path for a page not found
+app.use((req, res, next) => {
+    res.status(404).send("<h1>Page not found</h1>");
+});
+
+
+
+app.listen(3000);
+
+//we can repeat the paths without conflict if used
+//different methods like get/post
+
+
+
+///////////////////////////////////////////////////////////
+//serving html pages
+
+
+//we will slowly work towards mvc
+//model view controller
+
+//create a views directory to place
+//what we serve to the user in our application
+//which will be a bunch of html files
+
+//create a shop.html in the views folder
+//this will be for users visiting "/"
+
+//create also add-product.html
+
+//will use these files later, 
+//with the concept of templating engines
+//to be able to dynamically add content to the html files
+
+//create in the html files
+//html nav bar links
+//main content of a form posting to /add-product (add-product.html)
+//main content of products (shop.html)
+
+//we will learn later how to manage data on the server
+
+
+//now want to serve these html files in our routes
+
+//// explanation continued from here in the shop.js
+
