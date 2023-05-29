@@ -28,25 +28,30 @@
         add padding top and bottom
 
     -->
-    <header>
-        <nav class="nav medium-color-bg">
-            <div class="container-wrapper">
-            <ul class="nav_list white-text">
-                <li class="nav-button"><a href="#" class="medium-color-bg white-text white-color-bg-focused"">Home</a></li>
-                <li class="nav-button"><a href="#" class="medium-color-bg white-text white-color-bg-focused"">Home</a></li>
-                <li class="nav-button"><a href="#" class="medium-color-bg white-text white-color-bg-focused"">Home</a></li>
-                <li class="nav-button"><a href="#" class="white-text white-color-bg-focused"">Home</a></li>
-                <li class=""><button class=" nav-button white-color-bg medium-text white-color-bg-focused">Home</button></li>
-            </ul>
-            </div>
-        </nav>
-        
+    <header class="medium-color-bg">
+        <div class="container-wrapper flex-row space-between">
+            <a href="#" class="flex__align-self-center">
+                <img src="./logo.svg" alt="conquering responsive layouts logo">
+            </a>
+            <nav class="nav flex-row  space-between">
+                    <ul class="tb nav__list flex-row space-between white-text margin-right">
+                        <li class="nav-button"><a href="#" class="medium-color-bg white-text white-color-bg-focused">Home</a></li>
+                        <li class="nav-button"><a href="#" class="medium-color-bg white-text white-color-bg-focused">About</a></li>
+                        <li class="nav-button"><a href="#" class="medium-color-bg white-text white-color-bg-focused">Contact</a></li>
+                    </ul>
+                
+                    <ul class="tb nav__list flex-row flex__center white-text margin-right">
+                        <li class="nav-button"><a href="#" class="white-text white-color-bg-focused">Sign in</a></li>
+                        <li class=""><button class=" nav-button white-color-bg medium-text white-color-bg-focused">Sign up</button></li>
+                    </ul>
+            </nav>
+        </div> 
     </header>
 
     
     <div class="main-container dark-color-bg">
 
-        <div class="container-wrapper flex-row hero-margin">
+        <div class="container-wrapper flex-row space-between hero-margin">
             <div class="container-1-text-wrapper-col white-text col tb">
                 <h1 class="container-1-header tb">
                     Responsive layouts are actually easy
@@ -71,7 +76,7 @@
 
     <div class="main-container">
 
-        <main class="container-wrapper flex-row flex-start">
+        <main class="container-wrapper flex-row space-between flex__align-flex-start">
 
             <article class="conatainer2-side1 tb ">
                 <h2 class="medium-text">

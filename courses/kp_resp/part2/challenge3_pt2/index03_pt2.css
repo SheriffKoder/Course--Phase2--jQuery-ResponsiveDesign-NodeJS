@@ -84,7 +84,23 @@ body {
 .flex-row {
     display: flex;
     flex-direction: row;
+}
+
+.space-between {
     justify-content: space-between;
+}
+
+.flex__center {
+    justify-content: center;
+}
+
+.flex__align-center {
+    align-content: center;
+}
+
+.flex__align-self-center {
+    align-self: center;
+
 }
 
 .col {
@@ -92,7 +108,7 @@ body {
 }
 
 
-.flex-start {
+.flex__align-flex-start {
     align-items: flex-start;
 }
 
@@ -101,38 +117,57 @@ body {
     flex-direction: column;
 }
 
+.margin-right {
+    margin: 0 0 0 auto;
+}
+
+.margin-center {
+    margin: 0 auto;
+}
+
+
 
 /*
 ///////////////////////////////
 ////// Navigation Header //////
 */
 
-.nav_list {
+header {
+    font-family: system-ui;
+
+}
+
+.nav {
+    flex-grow: 0.7; /* allow the nav col to grow to the full size remaining in the header row*/
+}
+
+.nav__list {
 
     /* normal adjustments */
-    margin: 0;
     list-style: none;
     text-transform: uppercase;
     padding: 1.4em 0em;
 
     /* flexing */
-    display: flex;
-    justify-content: center;
-    gap: 5em;
-
+    gap: 3em;
     /* universal font */
     font-family: system-ui;
     font-weight: 600;
 
 }
 
-.nav_list li {
+.nav__list li {
     /* default, just confirming to align with button */
     /* as we duplicated the button style, remove side paddings */
     font-size: 90%;
     padding-left: 0;
     padding-right: 0;
 
+}
+
+.nav__button--push-right {
+    color:aquamarine;
+    margin-left: auto;
 }
 
 /* the key for aligning here is using nav-button padding/border on li as well as button */
@@ -143,9 +178,10 @@ body {
     border-radius: 0.5em;
     text-transform: uppercase;
     font-weight: 600;
-    margin: 0;
     font-size: 90%;
 }
+
+
 
 .nav-button a {
     text-decoration: none;
