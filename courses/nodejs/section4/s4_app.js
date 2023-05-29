@@ -88,7 +88,7 @@ and when want to use them run # npm install
 
 
 
-once the a package is installed can be used in code
+once the a package is installed can be used in code (not used till now)
 # npm install --save express-session
 //const sessions = require ("express-session");
 
@@ -408,6 +408,16 @@ const shopJsRoutes = require("./routes/shop.js");
 
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: false}));
+//path to the folder we want to serve statically
+//grant read access to
+//with this user should be able to access the public path and in html
+//and in the html link, omit the ./public
+//can have many static folders
+//and will look into all of them, till finds the first find on the file
+//this can be for css, js files, images etc.
+app.use(express.static(path.join(__dirname, "public")));
+//app.use(express.static(path.join(__dirname, "public2")));
+
 
 
 //calling the exported router object in app.use (just by itself)
@@ -419,13 +429,16 @@ app.use(shopJsRoutes); //replaced code
 
 ////filtering mechanism
 //useful to not repeat paths
-//app.use("/admin", adminJsRoutes);
+////app.use("/admin", adminJsRoutes);
 //only routes starting with /admin (ex. /admin/add-page)
 //will be executed from this code 
 //do not add the /admin in the route files's paths
 // "./admin" will be placed before any path
-//so place /product .. and enter /admin/product url for this to work
-//but the form should have a path with "/admin/add-product"
+//so place /product in the .js file use's
+//and enter /admin/product url for this to work
+//but the .js file's form should have a path with "/admin/add-product"
+
+
 
 //if we reach here, and no middleware executed
 //we will get and error as we did not handle that request
@@ -498,8 +511,43 @@ app.listen(3000);
 //not built in modules
 //body parser
 //nodemon
-//
+//express, require("express").Router, 
+
+//built in modules
+//path, path.dirname, path.join
+//express: res.send, res.sendFile, res.redirect, express.static
 
 
 
 ////serving html pages
+//editing css in the <style> tags in html normally
+
+//how to use css files
+//files stored, will point at them when app gets served
+
+//create a folder named "public" > "css" > "main.css"
+//and copy the shop.html css to it
+//to indicate that this folder should be always
+//exposed to the public
+//and do not need any permissions to access it
+
+//because all the files in the project are not accessible by the users
+//for example url "localhost:3000/views/shop.html" wont work
+
+
+//feature express js offers
+//to serve files statically
+//static: not handled by the express routers or middleware
+//but directly forwarded to the file system
+//app.use(express.static(path.join(__dirname, "public")));
+
+
+
+
+//templates
+//allow to turn the static html code
+//hard coded html
+//into more dynamic elements
+//where we can inject data
+//into the js code
+//in the html returned to the user
