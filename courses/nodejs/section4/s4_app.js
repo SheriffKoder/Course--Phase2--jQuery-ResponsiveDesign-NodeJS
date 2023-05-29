@@ -399,7 +399,7 @@ app.listen(3000);
 const http = require("http");
 const express = require("express");
 const app = express();
-
+const path = require("path");
 
 //import the admin.js file module
 //order of import does not matter
@@ -437,7 +437,9 @@ app.use(shopJsRoutes); //replaced code
 //always before send() can call status(), setHeader() etc.
 //404 a common path for a page not found
 app.use((req, res, next) => {
-    res.status(404).send("<h1>Page not found</h1>");
+    //res.status(404).send("<h1>Page not found</h1>");
+    res.status(404).sendFile(path.join(__dirname, "views", "404.html"));
+
 });
 
 
@@ -450,7 +452,7 @@ app.listen(3000);
 
 
 ///////////////////////////////////////////////////////////
-//serving html pages
+////serving html pages
 
 
 //we will slowly work towards mvc
@@ -480,4 +482,24 @@ app.listen(3000);
 //now want to serve these html files in our routes
 
 //// explanation continued from here in the shop.js
+//where we added the path module also in admin.js
+//path module is a built in
 
+
+
+//const path = require("path");
+//res.sendFile(path.join(__dirname, "..", "views", "shop.html"));
+
+
+//we can get the parent directory with the help of a function
+//we created in util/path.js
+
+
+//not built in modules
+//body parser
+//nodemon
+//
+
+
+
+////serving html pages
