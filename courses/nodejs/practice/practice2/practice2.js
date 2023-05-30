@@ -65,11 +65,15 @@ vscode debugger helps with logical errors
 core-modules
 http, https, fs, os, path
 npm (pkg) - install libraries
+path.dirname (used in path.js), path.join (gives the path to res.sendFile)
+res.sendFile("path")
+res.send, res.redirect, res.setHeader, res.write, res.end
+req.on(data), req.on(end)
 
 external-modules
 nodemon (pkg) - autosave
-express (pkg) - for app.use etc
-body-parser - able to use html body
+express (pkg) - for (require("express")).use , require("express").static() 
+body-parser (pkg) - able to use html body
 
 
 //npm: node package manager - installed by default by node js
@@ -80,6 +84,8 @@ library cloud-repo allows installing third-party packages (codes that are used d
 // "app.get" only will fire for incoming get requests
 // "app.post" to filter for post requests
 //also have app.delete/patch/put
+//can repeat the paths without conflict if used different methods like get/post
+
 
 
 //                         ****** Project 1: understanding express ******
@@ -105,6 +111,8 @@ library cloud-repo allows installing third-party packages (codes that are used d
 [2] # npm start // # npm run nodemon-start
 
 */
+
+/*
 
 //this will be sent/viewed in "/add-product" and posts to "/product"
 let productAddHtml = `
@@ -171,11 +179,90 @@ app.listen(3000);
 
 
 
+
+
+
+*/
+//                         ****** Project 2: routing the code ******
+/*
+
+create local files and put the relevant code there
+routes >
+    admin.js    (product add code)
+    shop.js     (display code)
+
+utl >
+    path.js
+
+
+(1) create html files in the view folder (can have css <style>) and css files the public folder
+(2) code the utl/path.js to get the directory of the .js file calling it
+
+(3) copy relevant express code to the created routes folder files
+    & import express.Router and use its constant instead of app.
+    express router is like a mini express app
+    & use the path.join with the help of path.js import to send html
+
+//in app.js
+(4) import the routes folder files in a constant
+
+
+
+*/
+
+
+////starting modules
+const express = require("express");
+const app = express();
+const path = require("path");
+
+const bodyParser = require("body-parser");
+app.use(bodyParser.urlencoded({extended: false}));
+
+
+////(4) import route's folder files
+const adminJsRoutes = require("./routes/admin.js");
+const shopJsRoutes = require("./routes/shop.js");
+
+
+////static folders (for our css files)
+//for example url "localhost:3000/views/shop.html" wont work
+//static: not handled by the express routers or middleware
+//but directly forwarded to the file system
+//grant access to a local/public path/files html/css/js/images etc.
+//exposed to public no permissions
+//will go through all static folders provided till first match
+app.use(express.static(path.join(__dirname, "public")));
+//app.use(express.static(path.join(__dirname, "public2")));
+
+
+//app.use exported router object - order matters
+app.use(adminJsRoutes);
+app.use(shopJsRoutes);
+
+
+////filtering
+//app.use("/admin", adminJsRoutes);     // on accessing /admin + router.use adminJsRoutes's paths (/add-product) = url /admin/add-product
+//                                      // but other code parts like form etc should include /admin
+
+
+////wrong paths - 404
+//error as wrong urls are not handled
+//no location set to catch all middleware
+app.use((req, res, next) => {
+    //res.status(404).send("<h1>Page not found</h1>");
+    res.status(404).sendFile(path.join(__dirname, "views", "404.html"));
+
+});
+
+
+//End
+app.listen(3000);
+
+
+
+
 //check
 //source code for response.js > send
 //express();
-
-
-
-
-
+//express.Router
