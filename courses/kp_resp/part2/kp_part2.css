@@ -58,10 +58,37 @@ a nav flex row (separating between next flex nav items)
 with nav-items flex row each (to give them row)
 
 flex-grow: 1; /* allow the col to grow to the full size remaining in the parent row
-useful instead of width: 100% and will ignore the width
-flex-shrink: 1; //the default, this is what keeps flex items getting smaller
+useful instead of width: 100% and will ignore its set width, 0 by default
+flex-shrink: 1; //the default, this is what keeps flex items getting smaller and not overflow
 
 flex-grow: 0.6 on item with a space-between on parent allows creating a gap
+
+
+//will use the smallest of these values
+//can give three values even and it will pick the smallest
+//can change the width on the height vh values
+//can put max(,) in the min
+//can calc in values without using calc but include space between values
+width: min(500px, 70%);
+
+
+//
+width: clamp(min, width, max);
+width: clamp(300px, 50%, 20rem);
+
+//using viewport on fonts is not zoom friendly
+so use calc(1vw + .5rem); for example
+or better
+clamp (2rem, 5vw, 5rem);
+
+
+
+
+
+
+
+
+
 
 
 
@@ -90,6 +117,8 @@ main >
     section/article
     aside
 
+
+
 //challenge03_part2
 creating a navigation header
 header > nav > ul > li's of a and button
@@ -103,6 +132,41 @@ and removing margin from the ul, as well as the body
 }
 
 //the first nav link with a class active gives good style
+
+
+//challenge04_part2
+//on flex-row children helps have gap space on large screens and small gap on mobile
+.responsive-width {
+    width: 100%;
+}
+
+.padding_left {
+    padding-left: 3vmax;
+}
+
+//on flex-row children helps have gap space on large screens and no gap on mobile
+.responsive-width {
+    width: 37vmax;
+}
+
+//allow flex wrap on portrait mobile and allow flex-gap
+.responsive-width {
+    width: max(40%, 250px);
+}
+
+//80% with mobile 100%
+.container-wrapper {
+    width: max(80%,300px);
+    margin: 0 auto;
+    max-width: 1100px;
+}
+
+
+
+
+
+
+
 
 */
 
