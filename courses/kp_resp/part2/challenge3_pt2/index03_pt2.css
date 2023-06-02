@@ -237,6 +237,49 @@ header {
 }
 
 
+@media (max-width: 800px) {
+    .main-container > .flex-row  {
+        flex-direction: column;
+        gap: 1em;
+    }
+
+    /*
+    .main-container > .container-wrapper {
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+    }
+
+    .conatainer2-side1 {
+        width: 100%;
+    }
+    
+    .conatainer2-side2 {
+        width: 100%;
+        flex-direction: row;
+    }
+
+    header .container-wrapper {
+        overflow: scroll;
+    }
+
+    nav > .margin-right {
+        margin-left: 3em;
+
+    }
+
+    .nav-button {
+        width: 7em;
+    }
+    */
+
+    .conatainer2-side1, .conatainer2-side2, .container-1-text-wrapper-col, .container-1-image-container-col {
+        width: 100%;
+    }
+
+
+
+}
 
 
 

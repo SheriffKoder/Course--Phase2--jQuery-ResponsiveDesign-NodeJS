@@ -20,7 +20,7 @@ using css makes it not responsive
 >block elements by default have a width of 100% of the parent, 
 in this case the body
 
-giving fixed width/height to a child can cause overflow
+giving fixed width/height to a child can cause content overflow
 
 the area h&w is already adapting with the content to the screen size without giving fixed's
 

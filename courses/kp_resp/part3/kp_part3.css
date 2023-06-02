@@ -1,0 +1,83 @@
+/*
+
+//////(Day15)
+
+using media queries in challenge 3 of part 2
+
+
+place media queries at the bottom so they can overwrite things
+
+.main-container > .flex-row  {
+    display: block;
+}
+
+.conatainer2-side1, .conatainer2-side2, .container-1-text-wrapper-col, .container-1-image-container-col {
+    width: 100%;
+}
+
+
+//breakpoints
+when my layout starts to fail
+keep the bp to min for the css code to be easier to maintain
+
+
+
+
+
+
+
+
+*/
+
+
+
+
+/* the order you put things in is important 
+here 400 will apply till only 500 then 500 will take over
+however because the .box is stated after, 
+it will take over the two media queries above*/
+@media (min-width: 400px) {
+
+    .box {
+        background-color: #87629A;
+    }
+
+}
+
+@media (min-width: 500px) {
+
+    .box {
+        background-color: #cd91ec;
+    }
+
+}
+
+.box {
+    background-color: #23424A ;
+    width: 90%;
+    padding: 10em 0;
+    margin: 5em auto;
+}
+
+
+
+/* 600px or bigger, size between 600 and 900
+@media (min-width: 600px) and 
+(max-width:900px) {
+
+    .box {
+        background-color: #136C72;
+    }
+
+}
+
+/* 600px or smaller
+@media (max-width: 600px) {
+
+    .box {
+        background-color: #87629A;
+    }
+
+}
+
+*/
