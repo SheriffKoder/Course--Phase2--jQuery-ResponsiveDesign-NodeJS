@@ -51,7 +51,7 @@ router.get("/", (req, res, next) => {
     // and access it in .pug with prods
     //render shop.pug and export these values with these key names
     const products = adminData.products;
-    res.render("shop.pug", {prods: products, myTitle: "Shop page"});
+    res.render("shop.pug", {prods: products, myTitle: "Shop page", path:"/"});
 
     console.log("shop.js is logging: ", adminData.products );
 

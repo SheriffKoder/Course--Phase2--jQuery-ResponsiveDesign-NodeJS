@@ -38,7 +38,9 @@ router.get("/add-product", (req, res, next) => {
     //console.log("<h1>Add product page");
     //res.send(productAdd);
     //res.sendFile(path.join(__dirname, "..", "views", "add-product.html"));
-    res.sendFile(path.join(pathJSrootDir, "views", "add-product.html"));
+    //res.sendFile(path.join(pathJSrootDir, "views", "add-product.html"));
+
+    res.render("add-product.pug", {myTitle: "Add-Product page", path: "/add-product"});
 
 
 });

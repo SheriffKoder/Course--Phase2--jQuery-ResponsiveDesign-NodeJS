@@ -607,8 +607,8 @@ app.use(shopJsRoutes); //replaced code
 //used the __dirname directly here because we are in a root file
 app.use((req, res, next) => {
     //res.status(404).send("<h1>Page not found</h1>");
-    res.status(404).sendFile(path.join(__dirname, "views", "404.html"));
-
+    //res.status(404).sendFile(path.join(__dirname, "views", "404.html"));
+    res.status(404).render("404", {myTitle: "404 Page"});
 });
 
 
@@ -680,10 +680,10 @@ free temp engines
 
 
 //production dependency
-#npm install --save ejs pug express-handlebars
+#npm install --save ejs pug express-handlebars@3.0
 
 express-handlebars has integration with express rather than handlebars alone
-ejs and pug have integration
+ejs and pug have integrationn
 
 
 //tell express, we have a templating engine that is express conforming
@@ -693,12 +693,56 @@ use it to render dynamic templates
 
 
 ////Using pug
-(1) create a views > views.pug and add html syntax
-(2) got to the shop.js file and use res.render() in the router
-.render("shop.pug") by nodejs makes user of the defined templating engine
+(1) html, create your htmls
+(1) pug, create a views > shop/add-product/404.pug and add html syntax
+(2) render, got to the shop.js file and use res.render() in the router
+res.render("shop.pug", {anyKey: value}) by nodejs makes user of the defined templating engine
 and then return that template
 as we stated all the views are in the views folder, no need to construct a path
 can just say shop
+(4) put your exported dynamic values from render to .pug
+
+we can:
+.ability to output html
+.ability to output values using #{}
+.ability to add html for each value using products in prods
+req.body.productAdded(recent product) > admin products array > prods:  
+.if statement             if prods.length > 0 
+
+
+
+//adding layout
+what to do with repeating pug code in your files ?
+create a layout
+create views > layouts-folder > main-layout.pug
+
+other pug files use this layout and add more syntax
+define such a hook by having
+block 
+then having any name of our choice that will be used in other pug files
+
+main html
+and block content
+
+in the child pug
+extent /layouts/main-layout.pug
+block content
+    custom html indented
+
+
+//by extending the layout this will not define the hook
+//but add content
+
+
+
+//setting the active class depending on the link we are on
+
+routes > admin.js
+add to the render object, path: "/add-product"
+
+//and enable the add-product link only when path is add-product
+a(href="/add-product" class=(path === "/add-product" ? "active" : "" ) ) Add Product
+
 
 
 */
