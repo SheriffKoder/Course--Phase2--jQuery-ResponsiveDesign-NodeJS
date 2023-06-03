@@ -393,7 +393,7 @@ app.listen(3000);
 
 
 
-
+/*
 
 
 const http = require("http");
@@ -463,7 +463,8 @@ app.listen(3000);
 //different methods like get/post
 
 
-
+*/
+/*
 ///////////////////////////////////////////////////////////
 ////serving html pages
 
@@ -551,3 +552,153 @@ app.listen(3000);
 //where we can inject data
 //into the js code
 //in the html returned to the user
+
+*/
+/////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////
+//part 2
+
+const http = require("http");
+const express = require("express");
+const app = express();
+const path = require("path");
+
+//templates
+//set a global configuration value
+//allows to set any values globally on our express application
+//key or configuration items node does not understand
+//usually ignores them, but now can read them
+//from the app object with app get
+//another way of sharing data across our application
+//view engine key: tell express for any dynamic content we are trying to render
+    //please use this engine we are registering here
+//views key: allows us to tell express where to find these dynamic views
+
+app.set("view engine", "pug");
+//set an additional configuration
+//to let express know where to find our views
+//can change views to another folder named
+//as in the docs, the default setting for views is our project directory > views folder
+//app.set("views", "views-folder");
+app.set("views", "views");
+
+//telling express, want to compile dynamic content
+//with the pug engine and where to find these templates
+//now add a pug template file views > views.pug
+
+
+
+const adminJsRoutes = require("./routes/admin.js");
+const shopJsRoutes = require("./routes/shop.js");
+
+const bodyParser = require("body-parser");
+app.use(bodyParser.urlencoded({extended: false}));
+
+app.use(express.static(path.join(__dirname, "public")));
+
+
+
+app.use(adminJsRoutes.routes); //replaced code
+app.use(shopJsRoutes); //replaced code
+
+////filtering mechanism
+////app.use("/admin", adminJsRoutes);
+
+//used the __dirname directly here because we are in a root file
+app.use((req, res, next) => {
+    //res.status(404).send("<h1>Page not found</h1>");
+    res.status(404).sendFile(path.join(__dirname, "views", "404.html"));
+
+});
+
+
+
+app.listen(3000);
+
+
+/*
+
+
+Dynamic content & templates
+
+dynamic output into code that is sent to the users
+like data from a database
+
+managing data on a node express backend (without a database)
+
+> render dynamic content in our views
+for this we use Templating engines
+
+
+////global users data sharing with vanilla code
+for now can store the req.body data in js variables
+
+.changed the exports in admin.js to export router and products array
+.changed in app.js the app.use to adminJsRoutes.routes instead of adminJsRoutes
+.imported the admin.js into shop.js
+.and output the products
+    console.log("shop.js is logging: ", adminData.products );
+
+//adminData comes here in the form of routes, 
+//and in shop.js in the form of products
+
+
+so when opened another browser
+like a new user, does not share cookies just the ip address
+the data used here is shared there and inherited
+shared between "all" users
+later we will learn to share data for "each" user
+
+
+////templating engines
+html template
+node express content : products array
+temp engine understand certain syntax for which it scans your html'sh template
+and then replace the place holders or certain snippets
+depending on the engine used with real html content
+content generated on the fly/server by temp engine
+taking that dynamic content into account
+
+could output a ul with list items for the data in the node express app
+with the help of the temp engine
+
+and the result will be dynamically on the fly generated html file
+which is then sent back to users
+
+free temp engines
+. ejs; normal html       <p> <#= name %> </p>
+. pug (jade);  p #{name}
+    does not use real html, replaces with a minimized version
+    custom temp language
+
+.handlebars; <p> {{name}} </p>
+    normal html, custom temp language, limited set of features
+
+
+
+
+
+
+//production dependency
+#npm install --save ejs pug express-handlebars
+
+express-handlebars has integration with express rather than handlebars alone
+ejs and pug have integration
+
+
+//tell express, we have a templating engine that is express conforming
+use it to render dynamic templates
+//and is supported out of the box
+
+
+
+////Using pug
+(1) create a views > views.pug and add html syntax
+(2) got to the shop.js file and use res.render() in the router
+.render("shop.pug") by nodejs makes user of the defined templating engine
+and then return that template
+as we stated all the views are in the views folder, no need to construct a path
+can just say shop
+
+
+*/

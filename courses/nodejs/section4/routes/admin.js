@@ -17,6 +17,11 @@ const router = express.Router();
 
 const pathJSrootDir = require("../util/path.js");
 
+//
+const products = [];
+
+
+
 
 let productAdd = `
 <form action="/admin/product" method="POST">
@@ -43,13 +48,18 @@ router.get("/add-product", (req, res, next) => {
 router.post("/product", (req, res, next) => {
     //console.log(req.body);    
     //outputs object, so can know the keys, related to bodyParser
-    console.log(req.body["productAdded"]);
+    //console.log(req.body["productAdded"]);
+
+    //change the value of products[] before getting to export
+    products.push({"recent_product": req.body.productAdded});
     //res.send("<h1>Add product page 2");
     res.redirect("/");
 });
 
-//the router will be exported with these two routes registered
+//the router will be exported with these two above routes registered
 
 
 
-module.exports = router;
+//module.exports = router;
+exports.routes = router;
+exports.products = products;
