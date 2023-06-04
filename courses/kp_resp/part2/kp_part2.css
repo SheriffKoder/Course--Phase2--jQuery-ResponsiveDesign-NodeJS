@@ -3,6 +3,12 @@
 //////(Day8)
 Flexbox in responsive design:
 
+the idea is to start with a blank css
+write the main html content in empty divs
+then layer them upwards with flex/wrapper-widths
+while checking on their responsiveness
+with the least css possible to make it lean and functional
+
 check caniuse.com to check on the css support
 
 flex items, they take the least possible size 
@@ -107,6 +113,8 @@ separate the responsibility across two classes
 center text using text-align
 
 //allows all images to be responsive and not overflow their container div
+//max width not just width to allow it to shrink if there is not enough room
+//but wont stretch them if not, and get pixelated
 img {
     max-width: 100%;
 }

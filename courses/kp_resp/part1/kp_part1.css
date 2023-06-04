@@ -21,6 +21,7 @@ using css makes it not responsive
 in this case the body
 
 giving fixed width/height to a child can cause content overflow
+if want to give heights, use values that adjust to the screen
 
 the area h&w is already adapting with the content to the screen size without giving fixed's
 

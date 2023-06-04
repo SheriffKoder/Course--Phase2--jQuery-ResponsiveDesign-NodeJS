@@ -20,6 +20,56 @@ place media queries at the bottom so they can overwrite things
 when my layout starts to fail
 keep the bp to min for the css code to be easier to maintain
 
+phone, tablet,  tab landscape, desktop, big desktop
+600px, 900px, 1200px, and 1800px,+
+
+generally the smallest devices are 320px
+
+the less breakpoints you have, the easier it is to maintain them
+
+//////(Day16)
+
+html
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+//makes the website responsive and not show desktop view on mobile phones
+
+
+//font in the body is mainly for p's, the main content of the document
+//and then can overwrite later on headers etc.
+body {
+    margin: 0;
+    font-family: 
+    font-size:
+}
+
+try plain html without any css on mobile mode, it is already responsive
+then work from mobile to desktop in css
+moving from section to section
+for <section> added padding: 4em 0;
+for <container-wrap> added width 85%, margin 0 auto, max-width: 1120px;
+
+its simpler there because most of the edits will be for the colors,fonts etc
+then on larger sizes handle the layout using media queries
+
+avoid texts that going all the way across in larger sizes
+use responsive mode to check on breakpoints on text spread size
+starting around 600-800px
+
+as we are working from mobile up will use min width
+@media (min-width: 600px) {
+    row {
+        display: row
+    }
+}
+
+
+in html, lorem + tab, lorem100 + tab (100 words) emmet
+
+
+
+
+
+
 
 
 
@@ -32,7 +82,7 @@ keep the bp to min for the css code to be easier to maintain
 
 
 
-/* the order you put things in is important 
+/* the order you put things in is important //
 here 400 will apply till only 500 then 500 will take over
 however because the .box is stated after, 
 it will take over the two media queries above*/
