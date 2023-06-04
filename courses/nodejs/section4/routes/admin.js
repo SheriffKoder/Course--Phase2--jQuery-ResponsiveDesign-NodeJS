@@ -40,7 +40,9 @@ router.get("/add-product", (req, res, next) => {
     //res.sendFile(path.join(__dirname, "..", "views", "add-product.html"));
     //res.sendFile(path.join(pathJSrootDir, "views", "add-product.html"));
 
-    res.render("add-product.pug", {myTitle: "Add-Product page", path: "/add-product"});
+    //add-product with file extension left out
+    //productCSS is for handlebars layout link insertion
+    res.render("add-product", {myTitle: "Add-Product page", path: "/add-product", productCSS: true, formsCSS: true, activeProductAdd: true});
 
 
 });

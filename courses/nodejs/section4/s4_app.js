@@ -557,6 +557,7 @@ app.listen(3000);
 /////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////
 //part 2
+/*
 
 const http = require("http");
 const express = require("express");
@@ -615,7 +616,7 @@ app.use((req, res, next) => {
 
 app.listen(3000);
 
-
+*/
 /*
 
 
@@ -691,7 +692,8 @@ use it to render dynamic templates
 //and is supported out of the box
 
 
-
+///////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////
 ////Using pug
 (1) html, create your htmls
 (1) pug, create a views > shop/add-product/404.pug and add html syntax
@@ -744,5 +746,103 @@ add to the render object, path: "/add-product"
 a(href="/add-product" class=(path === "/add-product" ? "active" : "" ) ) Add Product
 
 
+///////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////
+
+
+
 
 */
+///////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////
+//using handlebars
+
+const http = require("http");
+const express = require("express");
+const app = express();
+const path = require("path");
+
+//import
+//return a function of the initialized view engine that can be called
+const expressHbs = require("express-handlebars");
+
+//registers a new templating engine, incase no built in
+//pug was built in kind of, hbs is not
+//the object in expressHbs is for the layouts directory
+//default layout to be used for all files
+//adding extname: "customExtension" if using custom extension on the layout file
+app.engine("handlebars", expressHbs({layoutsDir: "views/layouts", defaultLayout: "main-hbs-layout"}));
+app.set("view engine", "handlebars");
+app.set("views", "views");
+
+
+const adminJsRoutes = require("./routes/admin.js");
+const shopJsRoutes = require("./routes/shop.js");
+
+const bodyParser = require("body-parser");
+app.use(bodyParser.urlencoded({extended: false}));
+
+app.use(express.static(path.join(__dirname, "public")));
+
+
+
+app.use(adminJsRoutes.routes); //replaced code
+app.use(shopJsRoutes); //replaced code
+
+////filtering mechanism
+////app.use("/admin", adminJsRoutes);
+
+//used the __dirname directly here because we are in a root file
+app.use((req, res, next) => {
+    //res.status(404).send("<h1>Page not found</h1>");
+    //res.status(404).sendFile(path.join(__dirname, "views", "404.html"));
+    res.status(404).render("404", {myTitle: "404 Page"});
+});
+
+
+
+app.listen(3000);
+
+
+
+//depending on the temp engine
+//some are used using require like handle-bars (as stated in the document)
+
+//import
+//add engine
+//create .handlebars files in views folder
+    // or any extension as named in the app.engine()
+//add html syntax from .html to .handlebars
+
+//the way you pass template values in res.render
+//are the same across all templating engine
+//the difference is how you use it from engine to engine
+
+//if helper
+//# hashtag for special block statement
+//not just outputting some text, but actually wrap some content
+//that should be output conditionally or in a loop
+//cannot use logic in handlebar's if's its passed from the js file render object
+// {{#if hasProducts}}
+//{{/if}}   //close the if condition
+//{{else}}
+
+//repeating html for every product added
+//{{#each array}}   //array here is prods in our case
+    //{{this.adminjsfilekey}}
+//{{/each}}
+
+
+////the layout
+//add layouts folder to app.engine in app.js
+//copy the html code to a layouts file
+//handlebars does not have insertion block like pug
+//we can use     {{{ body }}} and keep only the main html in the .handlebars
+//to add insertions like add extra link in html head
+//will have to make a workaround using if statement or use custom helpers
+
+//{{#if productCSS}}
+    //link
+//{{/if}}
+
+//in the relevant .js file add to the render object productCSS: true

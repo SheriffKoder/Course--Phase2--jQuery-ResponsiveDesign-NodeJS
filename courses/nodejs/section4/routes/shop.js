@@ -50,8 +50,10 @@ router.get("/", (req, res, next) => {
     // wrap products in an object to map and use in the template
     // and access it in .pug with prods
     //render shop.pug and export these values with these key names
+    //hasProducts is for handlebars, because in handlebars we cannot run logic in the template
+    //true values are for handlebars layout, also the key "layout: false" will disable the layout functionality
     const products = adminData.products;
-    res.render("shop.pug", {prods: products, myTitle: "Shop page", path:"/"});
+    res.render("shop", {prods: products, myTitle: "Shop page", path:"/", hasProducts: products.length > 0, productCSS: true, activeShop: true});
 
     console.log("shop.js is logging: ", adminData.products );
 
