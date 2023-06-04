@@ -65,12 +65,58 @@ as we are working from mobile up will use min width
 
 in html, lorem + tab, lorem100 + tab (100 words) emmet
 
+can use min-height: 600px at the hero part
+so it can stretch with content
+to center items use flex centers
+
+////variables
+//root has higher specificity than html, so thats why we choose to put variables in
+:root {
+    --dark: #000000;
+}
+
+p {
+    //yellow is a secondary color, fallback in case --dark does not work
+    color: var(--dark, yellow);
+
+    //variable that is accessible only in this block
+    --localVariable: #000000
+
+    //change a variable for this block only
+    --dark: #ffffff
+}
+
+
+
+//re-construct the navigation in challenge3
+//start mobile, flex column, 100% width, icon and logo first row, icon on left
+
+//nav will have display none class and display block to be toggled with js 
 
 
 
 
 
+//Challenge03 part2 continue
+work on the navigation to make it mobile clicked menu
+also adjusted the centering of the links in the middle
 
+
+    /* this to give equal widths both sides of the middle navigation icons
+    in order for the middle navigation icons container to have an exact centering
+    on the layout with its margin auto because one side smaller than the other 
+    will not distribute spaces around it equally on both sides
+    .icon2, .nav__list3 {
+        width: 11vw;
+        max-width: 280px;
+        justify-content: flex-end;
+    }
+
+    /* this is to adjust the button to be slightly lower to be on the same
+    baseline as the rest of the links in the menu
+    .nav-button__button {
+        padding-top: 1px;
+    }
 
 
 

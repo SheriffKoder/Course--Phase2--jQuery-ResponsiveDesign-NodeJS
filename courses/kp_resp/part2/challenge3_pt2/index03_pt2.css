@@ -70,7 +70,7 @@ body {
 ////// Main Containers //////
 */
 .main-container {
-    padding: 5rem 5vmax;
+    padding: 5rem 0;
     font-family: system-ui;
 }
 
@@ -187,6 +187,137 @@ header {
     text-decoration: none;
 }
 
+
+/*
+/////////////////////////
+/////////////////////////
+////// Mobile nav //////
+*/
+
+header {
+    padding: 1em;
+}
+
+.menu_flex {
+    display:flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.icon_row {
+    border-bottom: 2px solid white;
+    padding-bottom: 10px;
+    margin: 0 -2%;
+    margin-top: -2%;
+}
+
+.menu_icon {
+    height: 7.5vmax;
+    width: 7.5vmax;
+    background-color: rgb(200, 200, 200);
+    border-radius: 12px;
+
+    max-height: 50px;
+    max-width: 50px;
+
+}
+
+.icon1, .icon2{
+
+    margin-right: auto;
+}
+
+.nav__list2 {
+    /* normal adjustments */
+    list-style: none;
+    text-transform: uppercase;
+
+    /* universal font */
+    font-family: system-ui;
+    font-weight: 600;
+
+    padding: 0;
+    margin: 0;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.nav__list2 > li {
+    margin: 1em auto 0 auto;
+}
+
+.display_none {
+    display: none;
+}
+
+/*
+/////////////////////////
+Nav for sizes wider than mobile
+*/
+@media  (min-width: 750px) {
+
+    .menu_flex {
+        flex-direction: row;
+    }
+
+    .icon_row {
+        border-bottom: none;
+        padding-bottom: 0;
+        margin: 0;
+    }
+
+    .icon1, .icon3 {
+        display: none;
+    }
+
+    .icon2 {
+        margin-right: 1em;
+    }
+
+    header {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        padding: 1em 0;
+    }
+
+    .list {
+        width: 100%;
+        display: flex;
+    }
+
+    .nav__list2 {
+        flex-direction: row;
+        margin-left: auto;
+        gap: 1em;
+        justify-content: center;
+        min-width: 203px;
+    }
+
+    .nav__list2 > li {
+        margin: 0;
+    }
+
+    /* this to give equal widths both sides of the middle navigation icons
+    in order for the middle navigation icons container to have an exact centering
+    on the layout with its margin auto because one side smaller than the other 
+    will not distribute spaces around it equally on both sides */
+    .icon2, .nav__list3 {
+        width: 11vw;
+        max-width: 280px;
+        justify-content: flex-end;
+    }
+
+    /* this is to adjust the button to be slightly lower to be on the same
+    baseline as the rest of the links in the menu */
+    .nav-button__button {
+        padding-top: 1px;
+    }
+
+    
+
+}
 
 
 
