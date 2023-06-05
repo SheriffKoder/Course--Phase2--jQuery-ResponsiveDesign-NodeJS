@@ -681,10 +681,10 @@ free temp engines
 
 
 //production dependency
-#npm install --save ejs pug express-handlebars@3.0
+#npm install --save ejs pug express-handlebars
 
 express-handlebars has integration with express rather than handlebars alone
-ejs and pug have integrationn
+ejs and pug have integration
 
 
 //tell express, we have a templating engine that is express conforming
@@ -696,13 +696,13 @@ use it to render dynamic templates
 ///////////////////////////////////////////////////////////////////
 ////Using pug
 (1) html, create your htmls
-(1) pug, create a views > shop/add-product/404.pug and add html syntax
+(1) pug, create a views > shop/add-product/404.pug and add htmlish syntax
 (2) render, got to the shop.js file and use res.render() in the router
 res.render("shop.pug", {anyKey: value}) by nodejs makes user of the defined templating engine
 and then return that template
 as we stated all the views are in the views folder, no need to construct a path
 can just say shop
-(4) put your exported dynamic values from render to .pug
+(4) put/insert your exported dynamic values from render to .pug
 
 we can:
 .ability to output html
@@ -745,6 +745,11 @@ add to the render object, path: "/add-product"
 //and enable the add-product link only when path is add-product
 a(href="/add-product" class=(path === "/add-product" ? "active" : "" ) ) Add Product
 
+//as you can see here
+path is put without #{}
+because it would not be considered a text
+like putting after h1, have to declare it is not a text but a variable
+
 
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
@@ -756,6 +761,8 @@ a(href="/add-product" class=(path === "/add-product" ? "active" : "" ) ) Add Pro
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
 //using handlebars
+
+/*
 
 const http = require("http");
 const express = require("express");
@@ -804,7 +811,7 @@ app.use((req, res, next) => {
 app.listen(3000);
 
 
-
+*/
 //depending on the temp engine
 //some are used using require like handle-bars (as stated in the document)
 
@@ -846,3 +853,98 @@ app.listen(3000);
 //{{/if}}
 
 //in the relevant .js file add to the render object productCSS: true
+
+
+
+
+
+
+///////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////
+//using ejs
+
+const http = require("http");
+const express = require("express");
+const app = express();
+const path = require("path");
+
+
+app.set("view engine", "ejs");
+app.set("views", "views");
+
+
+const adminJsRoutes = require("./routes/admin.js");
+const shopJsRoutes = require("./routes/shop.js");
+
+const bodyParser = require("body-parser");
+app.use(bodyParser.urlencoded({extended: false}));
+
+app.use(express.static(path.join(__dirname, "public")));
+
+
+
+app.use(adminJsRoutes.routes); //replaced code
+app.use(shopJsRoutes); //replaced code
+
+////filtering mechanism
+////app.use("/admin", adminJsRoutes);
+
+//used the __dirname directly here because we are in a root file
+app.use((req, res, next) => {
+    //res.status(404).send("<h1>Page not found</h1>");
+    //res.status(404).sendFile(path.join(__dirname, "views", "404.html"));
+    res.status(404).render("404", {myTitle: "404 Page", path: "404"});
+});
+
+
+
+app.listen(3000);
+
+/*
+ejs is supported out of the box no engine register needed
+
+adding a value
+<%=value %> //html will be displayed as text
+
+<% vanilla js code %>
+
+<% if (prods.length > 0) { %>
+    //html
+<% } else { %>
+    <h1> no products found </h1>
+<% } %>
+
+
+<%  for (let products of prods) {%>
+    //html
+<% } %>
+
+in the html form name=productAdded
+
+
+ejs does not have layouts
+but we can use "partials or includes"
+a feature pug/handlebars also know
+
+create a folder "includes" in the views folder
+will create there shared files
+head.ejs bodyEnd.ejs navigation.ejs
+and copy the html to them
+
+now import the html temps into the 404.ejs/shop.ejs etc.
+<%- htmlcode %>
+<%- include("includes/head.ejs") %> //from the pov of the file using this code
+
+
+//to add class to links
+<a class="<%= path === '/add-product' ? 'active' :'' %>" > </a>
+
+
+-delete layout
+-delete hbs pug files
+copy the cleaned project till now for future work ?
+
+
+
+
+*/
