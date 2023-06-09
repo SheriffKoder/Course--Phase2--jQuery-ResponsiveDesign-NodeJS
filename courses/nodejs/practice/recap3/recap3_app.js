@@ -27,7 +27,7 @@
 
 [2] # npm start // # npm run nodemon-start
 
-# npm install --save ejs pug express-handlebars
+# npm install --save ejs pug express-handlebars@3.0
 
 
 //express-handlebars has integration with express rather than handlebars alone
@@ -46,10 +46,21 @@ const path = require("path");
 
 
 /////////////////////////////////////////////////////////////////
+
+////for HandleBars (hbs) as it is not built in
+//const expressHbs = require("express-handlebars");
+//the object in expressHbs is for the layouts directory used for all files
+//can change default layout to have an extension if using a custom extension
+//app.engine("handlebars", expressHbs({layoutsDir: "myViewsFolder/layouts", defaultLayout: "main-hbs-layout"}));
+
 //tell express what templating engine we are using and where our public files folder is
-app.set("view engine", "pug");
+app.set("view engine", "ejs"); //pug, handlebars
 //tell express what folder is the views(html) folder in our root directory
 app.set("views", "myViewsFolder");
+
+
+
+
 
 //set static file locations, allows to use .css/.js files in the public folder
 app.use(express.static(path.join(__dirname, "myPublicFolder")));
@@ -91,6 +102,13 @@ app.listen(3000);
 // .render("...") by nodejs makes user of the defined temp engine and then return that template
 // as we stated all the views are in the views folder, no need to construct a path, can just say shop
 
+//the way you pass template values in res.render
+//are the same across all templating engine
+//the difference is how you use it from engine to engine
+
+
+
+
 
 //app.js:   write this code - where myTitle is a variable shared with html-templates
 //utl:      copy the utl folder (for root directory code)
@@ -101,17 +119,72 @@ app.listen(3000);
 ////temp-engines allow to
 // output html
 // output values using insertion syntax
-// repeat a part of the html for each url visit/post (pug: if prods.length > 0 )
-// if statement (pug: if prods.length > 0 )
+// repeat a part of the html for each url visit/post 
+        //pug: each product in prods
+        //hbs   //{{#each array}}   //array here is prods in our case
+                //{{this.adminjsfilekey}}
+                //{{/each}}
+
+        //ejs
+        // <%  for (let products of prods) {%>
+        //     normal html
+        // <% } %>
+        
+
+
+// if statement //pug: if prods.length > 0
+                //hbs   //{{#if hasProducts}}
+                        //{{/if}}   //close the if condition
+                        //{{#else}}
+
+                //ejs
+                // <% if (prods.length > 0) { %>
+                //     normal html
+                // <% } else { %>
+                //     <h1> no products found </h1>
+                // <% } %>
+  
+
+//in the html form name=productAdded
+//pug is uses indenting to order its html nesting output, indenting sensitive
+
+
+////layouts:
+//handlebars does not have insertion block like pug
+//we can use     {{{ body }}} and keep only the main html in the .handlebars
+//to add insertions like add extra link in html head
+//use if statements for object keys exported from the render
+//{{#if productCSS}}
+    //link
+//{{/if}}
+
+
+//ejs does not have layouts
+//can use <%- include("includes/head.ejs") %> to include html'sh parts in the .ejs files
+//a feature pug/handlebars also know
+//create a folder "includes" in the views folder
+//syntax:
+    //<%=value %> //html will be displayed as text
+    //<% vanilla js code %>
+
+
 
 
 //notes:
 //in routes js files 
-    //we render fileName and the temp engine extension will be added depending on the defined template in app.js
-    //also we add an object to the render, of key values, will be used in the htmlish 
+    //we render fileName and the temp engine file extension will be added depending on the defined template in app.js
+    //also we add an object to the render, of keys values, will be used in the htmlish syntax
         //like myTitle, path, 
 
         //pug
         //and enable the add-product link only when path is add-product
         //a(href="/add-product" class=(path === "/add-product" ? "active" : "" ) ) Add Product
         //path is put without #{} because it would not be considered a text
+
+        //hbs
+        //we used activeShop, productCSS true values in order to be used 
+        //in the html'sh if's as we cannot insert
+
+        //ejs
+        //<a class="<%= path === '/add-product' ? 'active' :'' %>" > </a>
+
