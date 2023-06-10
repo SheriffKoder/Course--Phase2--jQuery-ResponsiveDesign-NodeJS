@@ -1,0 +1,29 @@
+<%- include("includes/head.ejs") %>
+
+    <link rel="stylesheet" href="/css/home.css">
+</head>
+<body>
+
+    <%- include("includes/header.ejs") %>
+
+    <div class="container2 center-text">
+        <h1>
+            Welcome to my Page
+        </h1>
+
+        <form method="POST" action="/user-add">
+            <label for="html">
+                Please enter a username
+                <input type="text" name="formUser"></input>
+            </label>
+            <button id="addUser" type="submit"> Add User </button>
+
+        </form>
+    </div>
+
+
+    <script src="/js/home.js">
+    </script>
+
+<%- include("includes/bodyEnd.ejs") %>
+
