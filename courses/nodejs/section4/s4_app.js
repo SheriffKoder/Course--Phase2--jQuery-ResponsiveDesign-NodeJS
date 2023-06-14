@@ -557,8 +557,8 @@ app.listen(3000);
 /////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////
 //part 2
-/*
 
+/*
 const http = require("http");
 const express = require("express");
 const app = express();
@@ -832,7 +832,7 @@ app.listen(3000);
 //cannot use logic in handlebar's if's its passed from the js file render object
 // {{#if hasProducts}}
 //{{/if}}   //close the if condition
-//{{else}}
+//{{#else}}
 
 //repeating html for every product added
 //{{#each array}}   //array here is prods in our case
@@ -940,9 +940,17 @@ now import the html temps into the 404.ejs/shop.ejs etc.
 <a class="<%= path === '/add-product' ? 'active' :'' %>" > </a>
 
 
--delete layout
--delete hbs pug files
-copy the cleaned project till now for future work ?
+
+
+
+
+*/
+
+/*
+
+other hbs html files will replace the {{{body}}} in the main layout
+
+
 
 
 

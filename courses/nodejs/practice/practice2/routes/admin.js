@@ -1,6 +1,10 @@
 
+//on visit add-product html is served
+//on posting to product-list , the product is displayed in an h1
 
 // express.Router is like a mini express app
+// create modular, mountable route handlers
+// complete middleware and routing system
 const express = require("express");
 const router = express.Router();
 const path = require("path");
@@ -17,7 +21,7 @@ let productAdd = `
 </form>
 `;
 
-
+// middleware that is specific to this "router"
 //find and send html to response
 router.get("/add-product", (req, res, next) => {
     //res.send(productAddHtml);
@@ -26,6 +30,7 @@ router.get("/add-product", (req, res, next) => {
 });
 
 //**runs on form post
+//req.body used here as the body parser is called in caller app.js file
 router.post("/product-list", (req, res, next) => {
     //console.log(req.body["productAdded"]);
     res.send(`<h1>The added product is : ${req.body["productAdded"]}<h1>`);

@@ -47,7 +47,7 @@ server.listen(3000,localhost);
 
 # node fileName.js & open url localhost:3000
 //export.myExportedServerFn = myServerFunction;     //routes.js
-//myServerImport= require(./myServerFnFile.js);     //app.js
+//myServerImport= require(./myServerFnFile.js);     //app.js, require the routes.js
 //createServer(myServerImport.myExportedServerFn);
 
 //the event loop is aware/handles/registers events and their callbacks in some order
@@ -90,7 +90,7 @@ library cloud-repo allows installing third-party packages (codes that are used d
 
 //                         ****** Project 1: understanding express ******
 
-(1) # npm init   - to initialize the project for npm usage
+(1) # npm init   - to initialize the project directory for npm usage
 (2) edit the scripts object in the package.json provided, "start": "node fileName.js", "start-myServer": "nodemon createUser.js"
 (3) # npm start / npm run customStart
 (4) # npm install nodemon --save-dev    (development dependency: not needed on real server)
@@ -111,6 +111,9 @@ library cloud-repo allows installing third-party packages (codes that are used d
 [2] # npm start // # npm run nodemon-start
 
 */
+
+//in v-node res.write(htmlString), express res.send(htmlString) or res.sendFile(path.join..)
+// utilRoot or __dirname for root file location
 
 /*
 
@@ -192,7 +195,14 @@ routes >
     shop.js     (display code)
 
 utl >
-    path.js
+    path.js     (code outputs project's root path)
+
+views >
+    .html
+
+public >
+    .css
+    .js
 
 
 (1) create html files in the view folder (can have css <style>) and css files the public folder
@@ -248,7 +258,7 @@ app.use(shopJsRoutes);
 
 ////wrong paths - 404
 //error as wrong urls are not handled
-//no location set to catch all middleware
+//no url location set to catch all not used urls
 app.use((req, res, next) => {
     //res.status(404).send("<h1>Page not found</h1>");
     res.status(404).sendFile(path.join(__dirname, "views", "404.html"));
@@ -260,9 +270,34 @@ app.use((req, res, next) => {
 app.listen(3000);
 
 
+//do not forget the module.exports at the end of router js files
+//using the path module in sendFile helps the path to work on all os system types
 
 
-//check
-//source code for response.js > send
-//express();
-//express.Router
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+//app.all() //for all http request methods
+
+//When the queue has been exhausted or the callback limit is reached, the event loop will move to the next phase, and so on.
+//The main advantage to using setImmediate() over setTimeout() is setImmediate() will always be executed before any timers if scheduled within an I/O cycle, independently of how many timers are present.
+//all callbacks passed to process.nextTick() will be resolved before the event loop continues.
+
+//because Node.js has only a few threads, you must structure your application to use them wisely.
+//Node.js is fast when the work associated with each client at any given time is "small".
+//Why should I avoid blocking the Event Loop and the Worker Pool?
+
+//thread is taking a long time to execute a callback (Event Loop) or a task (Worker), 
+//we call it "blocked". While a thread is blocked working on behalf of one client, 
+//it cannot handle requests from any other clients. 
+//shouldn't do too much work for any client in any single callback or task. ensure fair shcduling
+//If your callback takes a constant number of steps no matter what its arguments are, then you'll always give every pending client a fair turn.
+//Node.js uses the Google V8 engine for JavaScript, which is quite fast for many common operations. Exceptions to this rule are regexps (with exponential number of trips) and JSON operations
+//Several Node.js core modules have synchronous expensive APIs, including: encryption, compression, file system, child process
+//JSON.parse and JSON.stringify are other potentially expensive operations. While these are O(n) in the length of the input, for large n they can take surprisingly long.
+//To minimize variation in Task times, as far as possible you should partition each Task into comparable-cost sub-Tasks. When each sub-Task completes it should submit the next sub-Task, and when the final sub-Task completes it should notify the submitter.
+//Node.js developers benefit tremendously from the npm ecosystem, with hundreds of thousands of modules offering functionality to accelerate your development process.
+
+//to install a module temporarily and not add it to the dependencies list:
+// # npm install express --no-save

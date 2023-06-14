@@ -135,8 +135,8 @@ const serverHandler = (req, res) => {
     if ( url === "/user") {
         res.setHeader("Content-Type", "text/html");
         res.write(generateHTML(usersHtml_Users).usersHtml_Html);
-        console.log("............");
-        console.log(generateHTML(usersHtml_Users).usersHtml_Html);
+        //console.log("............");
+        //console.log(generateHTML(usersHtml_Users).usersHtml_Html);
         return res.end();
     }
 

@@ -1,4 +1,6 @@
 
+//on visiting product-list, h1 is displayed
+//on visiting / , html is displayed
 
 
 const express = require("express");

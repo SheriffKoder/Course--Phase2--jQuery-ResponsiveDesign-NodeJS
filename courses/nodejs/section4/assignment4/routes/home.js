@@ -16,7 +16,7 @@ router.get("/", (req, res, next) => {
 router.post("/user-add", (req, res, next) => {
 
     console.log(req.body.formUser);
-    userHomeArray.push({"pushed_user": req.body.formUser});
+    userHomeArray.push({"homeJSpushed_user": req.body.formUser});
     res.redirect("/user-list");
 
 });
@@ -25,5 +25,5 @@ exports.routes = router;
 exports.usersHomeExport = userHomeArray;
 
 
-//userList_users < usersHomeExport < userHomeArray < {"pushed_user": req.body.formUser}
+//userList_users < usersHomeExport < userHomeArray < {"homeJSpushed_user": req.body.formUser}
 //in the end userList_users is {"pushed_user": req.body.formUser} use key pushed_user

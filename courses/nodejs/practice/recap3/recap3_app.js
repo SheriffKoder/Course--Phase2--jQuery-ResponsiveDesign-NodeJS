@@ -24,10 +24,8 @@
 (5*) # npm install --save express    (production dependency: be present with every application shipped)
 (6*) # npm install --save body-parser
 
-
 [2] # npm start // # npm run nodemon-start
-
-# npm install --save ejs pug express-handlebars@3.0
+(7*) npm install --save ejs pug express-handlebars@3.0
 
 
 //express-handlebars has integration with express rather than handlebars alone
@@ -37,6 +35,7 @@
 
 */
 
+//(1) default requires
 const http = require("http");
 const express = require("express");
 const app = express();
@@ -47,6 +46,7 @@ const path = require("path");
 
 /////////////////////////////////////////////////////////////////
 
+//(2) set temp engine
 ////for HandleBars (hbs) as it is not built in
 //const expressHbs = require("express-handlebars");
 //the object in expressHbs is for the layouts directory used for all files
@@ -61,7 +61,7 @@ app.set("views", "myViewsFolder");
 
 
 
-
+//(3) set static
 //set static file locations, allows to use .css/.js files in the public folder
 app.use(express.static(path.join(__dirname, "myPublicFolder")));
 
@@ -69,6 +69,7 @@ app.use(express.static(path.join(__dirname, "myPublicFolder")));
 
 
 /////////////////////////////////////////////////////////////////
+//(4) import/use routes and body-parser
 //import route code files as normal and use the body-parser
 const adminJsRoutes = require("./myRoutesFolder/admin.js");
 const shopJsRoutes = require("./myRoutesFolder/shop.js");
@@ -83,7 +84,7 @@ app.use(shopJsRoutes);
 
 
 
-
+//(5) default 404 use
 app.use((req,res,next) => {
     //res.status(404).send("<h1>Page not found</h1>");
     //res.status(404).sendFile(path.join(__dirname, "views", "404.html"));
@@ -95,6 +96,7 @@ app.use((req,res,next) => {
 });
 
 
+//(6) listen
 app.listen(3000);
 
 
@@ -107,14 +109,20 @@ app.listen(3000);
 //the difference is how you use it from engine to engine
 
 
+//res.writeFile (node), res.send (express), res.render (temp)
+
+
+//(1) app.js:   write this code - where myTitle is a variable shared with html-templates
+//(2) utl:      copy the utl folder (for root directory code)
+//(3) routes:   code admin.js/shop.js to render.pug on get and push data on post
+//(4) .pugs:    no need for .html files, we will render htmlish template engine files (.pug) in views folder
+//(5) layout.pug: views/layouts/main-layout.pug
 
 
 
-//app.js:   write this code - where myTitle is a variable shared with html-templates
-//utl:      copy the utl folder (for root directory code)
-//routes:   code admin.js/shop.js to render.pug on get and push data on post
-//.pugs:    no need for .html files, we will render htmlish template engine files (.pug) in views folder
-//layout.pug: views/layouts/main-layout.pug
+
+
+
 
 ////temp-engines allow to
 // output html
@@ -146,7 +154,7 @@ app.listen(3000);
   
 
 //in the html form name=productAdded
-//pug is uses indenting to order its html nesting output, indenting sensitive
+//pug uses indenting to order its html nesting output, indenting sensitive
 
 
 ////layouts:
@@ -159,10 +167,11 @@ app.listen(3000);
 //{{/if}}
 
 
-//ejs does not have layouts
+//ejs// does not have layouts
 //can use <%- include("includes/head.ejs") %> to include html'sh parts in the .ejs files
 //a feature pug/handlebars also know
 //create a folder "includes" in the views folder
+//that will contain the header, etc.
 //syntax:
     //<%=value %> //html will be displayed as text
     //<% vanilla js code %>
@@ -173,7 +182,7 @@ app.listen(3000);
 //notes:
 //in routes js files 
     //we render fileName and the temp engine file extension will be added depending on the defined template in app.js
-    //also we add an object to the render, of keys values, will be used in the htmlish syntax
+    //also we add/pass an object to the render, of keys values, will be used in the htmlish syntax
         //like myTitle, path, 
 
         //pug
@@ -188,3 +197,6 @@ app.listen(3000);
         //ejs
         //<a class="<%= path === '/add-product' ? 'active' :'' %>" > </a>
 
+
+
+//followed by assignment4 in section4

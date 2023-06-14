@@ -38,14 +38,14 @@ so we can do using nodejs the following with js code
 //Domain lookup on DNS name to ip address of the server requested
 //the browser then sends a request to the given ip address of the server
 
-
+//and handling requests is what we are doing here
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 //////how nodejs works
 we write the server in js code and run the server
     (1) start script
     (2) enter an event loop as long as there are event listeners registered internally like createServer
-listen for incoming requests
+    (3) listen for incoming requests
 
 //nodejs keeps tack of its open event listeners
 //by a counter reference "refs" that increments 
@@ -60,7 +60,7 @@ reached from your backend
 
 return data/response to the user based on the request using node-core-modules
 response can be html/json/xml/files/dynamic-content-html
-    (3) process.exit(); // optional if want to exit after handling request
+    (4) process.exit(); // optional if want to exit after handling request
 
 
 requests and responses have descriptive headers
@@ -78,7 +78,7 @@ the event loop
 
 //setHeader: content-type, location
 //req.on: data, end
-//nodejs adds async to an internal event listener 
+//nodejs adds/handles async to an internal event listener 
 //and run their callback functions without blocking other code from executing
 
 
@@ -120,6 +120,7 @@ core-modules: http, https, fs, path, os
 
 */
 /////////////////////////////////////////////////////////////////////////////////////////////
+//ways of using nodejs
 
 //////(REPL method), no saving, # node
 //////EX1:

@@ -12,7 +12,7 @@ add two routes
 //create the html
 //add includes
 //create the .ejs files with includes from the html, add res.render to routers
-
+//add the if/ for each / added user value from form to the html to be displayed
 
 
 */
