@@ -126,9 +126,19 @@ and write to the file the products array in json format with checking on an erro
 
 now in the fetchAll method which gives the "/" the products to be viewed
 will parse the json file into js format
+by calling the render after file is read giving it the appropriate parsed products data using callback
 
 json.parse > js
 json.stringify > text
+
+
+
+///////////////////////////////////////////////////////////////////
+refactoring
+
+clean reused code
+
+
 
 
 */

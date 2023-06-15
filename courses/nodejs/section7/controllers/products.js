@@ -37,10 +37,14 @@ exports.getProducts = (req, res, next) => {
     //const products = adminData.products;
     //products already exists in this file no no need to define it
 
-    const products = Product.fetchAll();
+    //on fetchAll call, send this function that will be called to retrieve render 
+    //based on the product status empty-array or data
+    Product.fetchAll(products => {
+        res.render("shop", {prods: products, myTitle: "Shop page", path:"/", hasProducts: products.length > 0, productCSS: true, activeShop: true});
 
-    res.render("shop", {prods: products, myTitle: "Shop page", path:"/", hasProducts: products.length > 0, productCSS: true, activeShop: true});
+    });
 
-    console.log("shop.js is logging: ", products );
+
+    //console.log("shop.js is logging: ", products );
 
 };

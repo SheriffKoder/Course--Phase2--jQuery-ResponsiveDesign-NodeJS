@@ -4,7 +4,9 @@
 const fs = require("fs");
 const path = require("path");
 const rootPath = require("../util/path.js");
-const { error } = require("console");
+//const { error } = require("console");
+
+
 
 const products = [];
 
@@ -51,17 +53,24 @@ module.exports = class Product {
 
     }
 
-    static fetchAll() {
+    static fetchAll(cb) {
         
         //return empty array if no products
+        //the readFile callback here is async, it is registered but not used when fetchAll is called
+        //thus content is undefined, and we get a length error
+        //so will call the render from contr/product.js once fetchAll is done reading
+        //just like the readFile which takes our function as a callBack
+        //however had to make at least one input in JSON and ignore it in .ejs html as [] do no work
+        //gives unexpected end of json input
+        //also can give a starting json an empty array
         const myDataFilePath = path.join(rootPath, "data", "products.json");
 
         fs.readFile(myDataFilePath, (error, fileContent) => {
             if (error) {
-                return [];
+                //cb([]);
             }
-            return JSON.parse(fileContent);
-        })
+            cb(JSON.parse(fileContent));
+        });
 
         //return products;
     }
