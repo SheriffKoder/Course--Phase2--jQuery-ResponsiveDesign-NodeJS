@@ -110,7 +110,25 @@ and call the class save method
 in the .get call its the fetchAll method of the class itself
 
 
-will move from array storage to file storage
+///////////////////////////////////////////////////////////////////
+saving our product to a file
+
+create a data folder in project root
+will use the save method in the controller with the fs, path modules and util
+const myDataFilePath = path.join(rootPath, "data", "products.json");
+data folder, file name = products
+
+will read the file contents put into an array
+or if no contents, keep array empty
+and write to the file the products array in json format with checking on an error
+
+//now did output the title to a json file
+
+now in the fetchAll method which gives the "/" the products to be viewed
+will parse the json file into js format
+
+json.parse > js
+json.stringify > text
 
 
 */
