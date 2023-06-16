@@ -5,7 +5,35 @@ const fs = require("fs");
 const path = require("path");
 const rootPath = require("../util/path.js");
 //const { error } = require("console");
+const myDataFilePath = path.join(rootPath, "data", "products.json");
 
+
+const getProductsFromFile = (in_cb) => {
+
+    fs.readFile(myDataFilePath, (error, fileContent) => {
+        fs.readFile(myDataFilePath, (error, fileContent) => {
+            //if (error) {
+                //in_cb([]);
+            //}
+
+            if (!error) {
+                console.log("file content " + JSON.parse(fileContent));
+
+                //*if no error my reading into products
+                in_cb(JSON.parse(fileContent));
+            }
+        });
+    });
+
+};
+
+let cb2 = (products) => {
+        products.push(this);
+
+        fs.writeFile(myDataFilePath, JSON.stringify(products), (error) => {
+            console.log(error);
+        });
+}
 
 
 const products = [];
@@ -22,6 +50,19 @@ module.exports = class Product {
 
     save() {
         //products.push(this);  //push new instances to the products array to iterate on
+        
+        //getProductsFromFile(cb2);
+        getProductsFromFile((products) => {
+            products.push(this);
+    
+            fs.writeFile(myDataFilePath, JSON.stringify(products), (error) => {
+                console.log(error);
+            });
+        });
+
+    
+
+        /*
         const myDataFilePath = path.join(rootPath, "data", "products.json");
 
         //reads the entire file content of a file
@@ -38,9 +79,12 @@ module.exports = class Product {
 
             let products = [];
 
+            //*if no error my reading into products
             if (!error) {
                 products = JSON.parse(fileContent);
             }
+
+            //*write filecontent + this
 
             products.push(this);
             //products into json and written to the file
@@ -50,10 +94,11 @@ module.exports = class Product {
             });
 
         });
+        */
 
     }
 
-    static fetchAll(cb) {
+    static fetchAll(cb1) {
         
         //return empty array if no products
         //the readFile callback here is async, it is registered but not used when fetchAll is called
@@ -63,14 +108,23 @@ module.exports = class Product {
         //however had to make at least one input in JSON and ignore it in .ejs html as [] do no work
         //gives unexpected end of json input
         //also can give a starting json an empty array
+        /*
         const myDataFilePath = path.join(rootPath, "data", "products.json");
 
         fs.readFile(myDataFilePath, (error, fileContent) => {
             if (error) {
                 //cb([]);
             }
-            cb(JSON.parse(fileContent));
+
+            if (!error) {
+                //*if no error my reading into products
+                cb(JSON.parse(fileContent));
+            }
         });
+        */
+
+        getProductsFromFile(cb1);
+
 
         //return products;
     }

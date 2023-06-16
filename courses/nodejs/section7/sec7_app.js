@@ -42,11 +42,12 @@ app.use(express.static(path.join(__dirname, "public")));
 
 
 //app.use(adminJsRoutes.routes); //replaced code
-app.use(adminJsRoutes); //replaced code
+//app.use(adminJsRoutes); //replaced code
 app.use(shopJsRoutes); //replaced code
 
 ////filtering mechanism
-////app.use("/admin", adminJsRoutes);
+//not put /admin/.. in the routes links but put in the navigation/form etc.
+app.use("/admin", adminJsRoutes);
 
 //used the __dirname directly here because we are in a root file
 /*
@@ -66,6 +67,13 @@ app.listen(3000);
 
 /*
 
+
+app.js 
+< routes (method redirection) 
+< controllers: middleware callback functions = render ejs / call model class js
+new product/save / pass to fetchall my product render to render the readfile
+
+
 the router.get is an example of a controller
 interacting with data, returning a view
     
@@ -76,7 +84,7 @@ res.render(
 create controllers folder
 create controllers for the functionalities in .js files we have
 create a products.js file that only works with product logic
-copy the res,req function from the /add-product router.get etc. into contr>products.js
+copy the res,req function from the routes /add-product router.get etc. into contr>products.js
 
 now want to add a link to the products.js function in the routes admin.js
 by exporting the function (a middleware function)
@@ -97,12 +105,12 @@ now we have models, views, controllers - and that makes the mvc pattern
 
 //
 create product.js
-where we create an a product class
+where we create a product class
     which we will create new instances of the product
 and create in the class save/fetch methods
 
 //
-remove the product array logic from routes>products.js*
+remove the product array logic from controller>products.js*
 and import the product class
 in the .post create a new const of a new product class with form title passed
 and call the class save method
@@ -138,6 +146,64 @@ refactoring
 
 clean reused code
 
+model: responsible for representing and managing your data
+doesn't matter if you manage data in memory, files, databases
+contains data-related logic
+
+view: what the user sees, should not contain much logic
+
+controller: connects model and view, makes sure the two can communicate in both directions
+
+
+-- before project check the node links
+
+
+
+
+
+
+///////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////
+//Creating the shop structure
+
+starting page
+view all products
+create new products
+add products
+as an admin to delete products
+add products to a shopping cart
+go to a checkout page and pay for the products
+see our orders as a customer
+
+
+//make admin folder in the views
+put in it the add-product.ejs, edit-product.ejs, products.ejs
+
+//shop folder for customers
+put in it the shop.ejs and rename it to product-list.ejs
+adjust the links using this file in other js files and the includes to ../includes
+
+make a starting page index.ejs, product-details.ejs, cart.ejs, checkout
+
+work on the navigation
+add links to all important views
+
+//
+add routes to links
+add fitting controller functions
+or even new controllers
+and make sure you render the appropriate views with navigation and content
+//
+
+
+> add route for added navigation links in route > shop.js and admin.js
+
+> make two controllers for admin and shop
+    move middlewares to the appropriate controller
+    add new middlewares then add their routes from the appropriate controller export
+
+> work on the ejs files that will be rendered from the routes
 
 
 

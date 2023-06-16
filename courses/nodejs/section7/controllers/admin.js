@@ -1,7 +1,6 @@
 
 const Product = require("../models/product.js");
 
-
 exports.getAddProduct = (req, res, next) => {
     //console.log("<h1>Add product page");
     //res.send(productAdd);
@@ -10,7 +9,7 @@ exports.getAddProduct = (req, res, next) => {
 
     //add-product with file extension left out
     //productCSS is for handlebars layout link insertion
-    res.render("add-product", {myTitle: "Add-Product page", path: "/add-product", productCSS: true, formsCSS: true, activeProductAdd: true});
+    res.render("admin/add-product", {myTitle: "Add-Product page", path: "/admin/add-product", productCSS: true, formsCSS: true, activeProductAdd: true});
 
 };
 
@@ -33,18 +32,11 @@ exports.postAddProduct = (req, res, next) => {
     res.redirect("/");
 };
 
-exports.getProducts = (req, res, next) => {
-    //const products = adminData.products;
-    //products already exists in this file no no need to define it
 
-    //on fetchAll call, send this function that will be called to retrieve render 
-    //based on the product status empty-array or data
+exports.getProducts = (req, res, next) => {
+
     Product.fetchAll(products => {
-        res.render("shop", {prods: products, myTitle: "Shop page", path:"/", hasProducts: products.length > 0, productCSS: true, activeShop: true});
+        res.render("admin/products.ejs", {prods: products, myTitle: "Admin Products", path:"/admin/products"});
 
     });
-
-
-    //console.log("shop.js is logging: ", products );
-
 };
