@@ -27,10 +27,15 @@ router.get("/", (req, res, next) => {
 
 router.get("/products", shopController.getProducts);
 
-router.get("/cart", shopController.getCart);
+//tell express router that there will be some variable segment
+//by adding a : then any name of our choice, that we will use to extract that information
+router.get("/products/:productId", shopController.getProduct);
 
 router.get("/checkout", shopController.getCheckout);
 
+router.get("/cart", shopController.getCart);
+
+router.get("/orders", shopController.getOrders);
 
 
 

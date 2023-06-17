@@ -18,6 +18,14 @@ exports.getProducts = (req, res, next) => {
 
 };
 
+//express js gives us a params object on our request
+//access our productId because its used in the routes js files
+exports.getProduct = (req, res, next) => {
+    const prodId = req.params.productId;
+    console.log("prodId", prodId);
+    res.redirect("/");
+}
+
 //main-page
 exports.getIndex = (req, res, next) => {
     ProductClassModel.fetchAll(products => {
@@ -39,5 +47,13 @@ exports.getCheckout = (req, res, next) => {
     res.render("shop/checkout", {
         path: "/checkout",
         myTitle: "Checkout"
+    });
+};
+
+
+exports.getOrders = (req, res, next) => {
+    res.render("shop/orders", {
+        path: "/orders",
+        myTitle: "Your Orders"
     });
 };

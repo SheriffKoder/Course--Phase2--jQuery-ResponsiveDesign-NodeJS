@@ -221,20 +221,83 @@ and make sure you render the appropriate views with navigation and content
 
 //adding a product image, price, text
 go to the model
-add to the constructor parameters imageUrl, description, price
+add to the class constructor parameters imageUrl, description, price
 
-add to the add-product.ejs more form inputs
+add to the view add-product.ejs more form html inputs
 
 add to the admin.js controller these req.body received inputs
-and pass to the new product class
+and pass to the created new product class
 
 add these variables to the product-list.ejs and index.ejs forms
 
 //
 add edit link to product.js (admin products)
-that have an href to /admin/edit-product
+that has an href to /admin/edit-product
+
+later we will work on editing a specific product not all products
+also when working on delete
+
+the delete button
+should not send a get request
+instead wrap in a form leads to /admin/delete-product with post method
+
+//working on the add to cart button
+i need to have an idea of the product i want to add 
+and want to add it to the route/path we are loading
+so will also wrap it in a form /add-to-cart
+
+so now we have three routes
 
 
+
+///////////////////////////////////////////////////////////////////
+
+create in views/shop /orders/ejs
+responsible for displaying orders
+
+copy the cart empty ejs for now
+and add a link to the navigation /orders
+
+add route and controller middleware in shop.js's
+
+
+
+///////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////
+section 9: passing dynamic data through our routes
+
+encode data as a part of the url so can pass an id in the url
+passing route Params/parameters
+using query Params
+we will also use these to enhance our models
+
+add more functionalities and new models
+
+add a details link to the product-list.ejs
+this is a case use for passing additional information as part of our path
+/product/information-for-this-specific-product
+for that we need a unique identifier id for each product created
+
+add an id property to the class model in the save method before saving
+this.id = Math.random().toString();
+and add this "id" to the ejs link using /products/<%= products.id %>
+
+use this id in the path of the routes file to load the correct product
+
+//output the id
+add in the shop.js router
+tell express router that there will be some variable segment
+by adding a : then any name of our choice, that we will use to extract that information
+router.get("/products/:productId", shopController.getProduct);
+
+then go to controllers/shop.js
+
+order does matter, in the router files
+
+express js gives us a params object on our request
+access our productId because its used in the routes js files
+exports.getProduct = (req, res, next) => {
+    const prodId = req.params.productId;
 
 
 */

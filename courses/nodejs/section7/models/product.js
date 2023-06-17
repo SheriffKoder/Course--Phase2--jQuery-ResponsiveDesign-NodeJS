@@ -10,20 +10,18 @@ const myDataFilePath = path.join(rootPath, "data", "products.json");
 
 const getProductsFromFile = (in_cb) => {
 
-    fs.readFile(myDataFilePath, (error, fileContent) => {
         fs.readFile(myDataFilePath, (error, fileContent) => {
             //if (error) {
                 //in_cb([]);
             //}
 
             if (!error) {
-                console.log("file content " + JSON.parse(fileContent));
+                //console.log("file content " + JSON.parse(fileContent));
 
                 //*if no error my reading into products
                 in_cb(JSON.parse(fileContent));
             }
         });
-    });
 
 };
 
@@ -52,6 +50,7 @@ module.exports = class Product {
     }
 
     save() {
+        this.id = Math.floor(Math.random()*11).toString();
         //products.push(this);  //push new instances to the products array to iterate on
         
         //getProductsFromFile(cb2);
