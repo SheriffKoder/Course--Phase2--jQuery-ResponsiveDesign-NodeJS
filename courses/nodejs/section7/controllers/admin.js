@@ -1,5 +1,5 @@
 
-const Product = require("../models/product.js");
+const ProductClassModel = require("../models/product.js");
 
 exports.getAddProduct = (req, res, next) => {
     //console.log("<h1>Add product page");
@@ -25,7 +25,13 @@ exports.postAddProduct = (req, res, next) => {
     //products.push({"recent_product": req.body.productAdded});
 
     //pass the form title and push the title to the products array in product.js using save
-    const product = new Product(req.body.productAdded);
+    const title = req.body.productAdded;
+    const imageUrl = req.body.imageUrl;
+    const price = req.body.price;
+    const description = req.body.description;
+
+    const product = new ProductClassModel(title, imageUrl, price, description);
+
     product.save();
 
     //res.send("<h1>Add product page 2");
@@ -35,7 +41,7 @@ exports.postAddProduct = (req, res, next) => {
 
 exports.getProducts = (req, res, next) => {
 
-    Product.fetchAll(products => {
+    ProductClassModel.fetchAll(products => {
         res.render("admin/products.ejs", {prods: products, myTitle: "Admin Products", path:"/admin/products"});
 
     });

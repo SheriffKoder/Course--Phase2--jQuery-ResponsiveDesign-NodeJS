@@ -1,5 +1,5 @@
 
-const Product = require("../models/product.js");
+const ProductClassModel = require("../models/product.js");
 
 
 exports.getProducts = (req, res, next) => {
@@ -8,7 +8,7 @@ exports.getProducts = (req, res, next) => {
 
     //on fetchAll call, send this function that will be called to retrieve render 
     //based on the product status empty-array or data
-    Product.fetchAll(products => {
+    ProductClassModel.fetchAll(products => {
         res.render("shop/product-list", {prods: products, myTitle: "All Products page", path:"/products"});
 
     });
@@ -20,7 +20,7 @@ exports.getProducts = (req, res, next) => {
 
 //main-page
 exports.getIndex = (req, res, next) => {
-    Product.fetchAll(products => {
+    ProductClassModel.fetchAll(products => {
         res.render("shop/index.ejs", {prods: products, myTitle: "Shop page", path:"/"});
 
     });

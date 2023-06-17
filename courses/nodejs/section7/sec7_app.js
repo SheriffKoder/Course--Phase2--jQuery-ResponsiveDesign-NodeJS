@@ -71,7 +71,8 @@ app.listen(3000);
 app.js 
 < routes (method redirection) 
 < controllers: middleware callback functions = render ejs / call model class js
-new product/save / pass to fetchall my product render to render the readfile
+new product
+< model (data logic) /save / pass to fetchall my product render to render the readfile
 
 
 the router.get is an example of a controller
@@ -165,6 +166,7 @@ controller: connects model and view, makes sure the two can communicate in both 
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
+//Part2
 //Creating the shop structure
 
 starting page
@@ -186,7 +188,7 @@ adjust the links using this file in other js files and the includes to ../includ
 
 make a starting page index.ejs, product-details.ejs, cart.ejs, checkout
 
-work on the navigation
+//work on the navigation
 add links to all important views
 
 //
@@ -204,6 +206,34 @@ and make sure you render the appropriate views with navigation and content
     add new middlewares then add their routes from the appropriate controller export
 
 > work on the ejs files that will be rendered from the routes
+
+
+
+*/
+
+
+///////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////
+// Part3
+/*
+
+
+//adding a product image, price, text
+go to the model
+add to the constructor parameters imageUrl, description, price
+
+add to the add-product.ejs more form inputs
+
+add to the admin.js controller these req.body received inputs
+and pass to the new product class
+
+add these variables to the product-list.ejs and index.ejs forms
+
+//
+add edit link to product.js (admin products)
+that have an href to /admin/edit-product
+
 
 
 

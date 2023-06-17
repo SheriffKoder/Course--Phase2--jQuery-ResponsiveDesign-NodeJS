@@ -44,8 +44,11 @@ const products = [];
 //static makes the method accessible from the class itself not the new instances
 
 module.exports = class Product {
-    constructor (title1) {
+    constructor (title1, imageUrl1, price1, description1) {
         this.title = title1;
+        this.imageUrl = imageUrl1;
+        this.description = description1;
+        this.price = price1;
     }
 
     save() {
