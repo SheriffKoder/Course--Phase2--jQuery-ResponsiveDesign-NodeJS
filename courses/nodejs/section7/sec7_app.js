@@ -265,6 +265,7 @@ add route and controller middleware in shop.js's
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
 section 9: passing dynamic data through our routes
+accessing product details by id
 
 encode data as a part of the url so can pass an id in the url
 passing route Params/parameters
@@ -298,6 +299,74 @@ express js gives us a params object on our request
 access our productId because its used in the routes js files
 exports.getProduct = (req, res, next) => {
     const prodId = req.params.productId;
+
+
+//--//
+class creates id
+product-list.ejs uses this id in the href - redirects to a link with the id
+shop router /products/:productId will take any link after /products as an id
+    (however it can over rule a products/notId for example, so :productId get has to be put below noId)
+shop controller req.params.productId to access the router's :productId
+pass this prodId to the findMyId static method and a callback that console it
+
+////
+create a static method in the class findMyId
+that finds in the read products the id passed
+
+jpeg file links are encoded in base64, text encoding technique
+
+
+////add a view to display the details
+create a product-details.ejs in views/shop
+to access the product.information
+
+in the shop controller
+now make the callback passed to findMyId render, render the ejs with the product found
+
+//
+add a form that leads to /cart with a post request as we want to add this product
+and add a button with type submit
+
+
+
+
+///////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////
+//working on the add to cart functionality in the product-details
+
+form method post button add to cart
+in the post request, we can use the req.body
+
+will add additional information with the sent request
+using input with type hidden, not shown but sent
+
+we have a get request for the /cart
+but we need a post request
+work on the route, then add a post middleware in the controller
+to get the additional information productId
+and redirect to the cart
+
+copy the add to cart form button to all the places using it
+
+so add to cart product has an independent functionality
+using the router, controller and passed productId generated on the product card/details-page
+
+can also use <%- include("../included/add-to-cart.ejs", {product: product})%>
+as this piece of code is repeated
+{product: product}) allows to pass the ejs variable to the include ejs
+to make the include works when "in a loop"
+
+
+///////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////
+//working on the cart
+
+add a new model, cart.js
+
+
+
+
+
 
 
 */

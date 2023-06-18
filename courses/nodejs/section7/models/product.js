@@ -131,4 +131,28 @@ module.exports = class Product {
         //return products;
     }
 
+
+    static findMyId(id, cb) {
+
+        //returns a parsed object of the products
+        //will filter the id interested in
+        getProductsFromFile((products) => {
+            const product = products.find(p => p.id === id);    //default js
+            //ex a function on every element in the array
+            //return an element if the function we pass returns true
+            //p is the product it is currently looking at
+            //check the id of the product looking at is equal to the id passed to this method
+            //if true then the product will be stored in the constant
+            //then ex a callback with this product
+            cb(product);
+
+        });
+
+
+    };
+
+
+
+
+
 }

@@ -22,8 +22,12 @@ exports.getProducts = (req, res, next) => {
 //access our productId because its used in the routes js files
 exports.getProduct = (req, res, next) => {
     const prodId = req.params.productId;
-    console.log("prodId", prodId);
-    res.redirect("/");
+    //console.log("prodId", prodId);
+    ProductClassModel.findMyId(prodId, product => {
+        //console.log(product);
+        res.render("shop/product-details", {product: product, myTitle: product.title, path: "/products"});
+    });
+    //res.redirect("/");
 }
 
 //main-page
@@ -34,6 +38,17 @@ exports.getIndex = (req, res, next) => {
     });
 };
 
+
+exports.postCart = (req, res, next) => {
+    //retrieve the product id from the incoming request
+    //then fetch our product in the database/file
+    //add to our cart
+    //productId is the name used in the view file form on hidden input
+    const prodId = req.body.productId;
+    console.log(prodId);
+    res.redirect("/cart");
+
+};
 
 exports.getCart = (req, res, next) => {
     res.render("shop/cart", {
