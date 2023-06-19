@@ -362,8 +362,63 @@ to make the include works when "in a loop"
 //working on the cart
 
 add a new model, cart.js
+reads our cart file
+search if product exists in the cart and inc quantity
+else quantity +1
+update cart price
 
 
+save the cart back to our file
+work on cart.js and shop.js controller postCart
+
+
+
+
+///////////////////////////////////////////////////////////////////
+query parameters helping with editing a product
+
+want to edit a product
+want to render the same product i have for edit-product
+want to pre-populate the form with the product existing values
+
+delete the add-product.ejs file
+and change the controllers/admin.s getAddProduct
+
+add a getEditProduct same as getAddProduct
+
+add a router in the admin.js 
+
+add editable=true in the controller render
+
+
+can use query parameters to pass in additional information
+using the value in the url after "?"
+http://localhost:3000/admin/edit-product/7?edit=true
+
+by adding in the controller
+using string "true" etc.
+const editMode - req.query.edit;
+if (!editMode || editMode === "false") {
+    res.redirect("/");
+}
+res.render(..., editing: editMode);
+
+
+///////////////////////////////////////////////////////////////////
+next step is to populate the form with the product existing values
+when edit mode is true
+
+as we have the :productId in the router
+can extract it in the controller
+by using the model findMyId
+
+and passing the product to the ejs
+using the if editing to populate and change form action
+
+
+
+///////////////////////////////////////////////////////////////////
+next is to hook up the edit button and work on the functionality to store the updated info
 
 
 

@@ -50,6 +50,7 @@ module.exports = class Product {
     }
 
     save() {
+        //from 1-10
         this.id = Math.floor(Math.random()*11).toString();
         //products.push(this);  //push new instances to the products array to iterate on
         

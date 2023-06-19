@@ -12,21 +12,21 @@ const fs = require("fs");
 const path = require("path");
 
 const rootPath = require("../util/path.js");
-const myDataFilePath = path.join(rootPath, "data", "cart.json");
+const myCartFilePath = path.join(rootPath, "data", "cart.json");
 
 
 module.exports = class Cart {
-    constructor() {
+    //constructor() {
 
         //should hold the product's id and quantity
         //this.products = [];
         //increases with every product we add, initially 0
         //this.price = 0;
         //but will use a different way
-
-        static addProduct(id) {
+    //}
+        static addProduct(id, productPrice) {
             // fetch the previous cart
-            fs.readFile(myDataFilePath, (error, fileContent) => {
+            fs.readFile(myCartFilePath, (error, fileContent) => {
 
                 let cart = {products: [], totalPrice: 0};
 
@@ -40,18 +40,47 @@ module.exports = class Cart {
                     cart = JSON.parse(fileContent);
                 }
 
+                //now we know we have a cart
+                //now we can analyze it and add a product
+                //and see if the product we want to add already exists
+                //analyze the cart, see if we already have that product => find existing product
+                const existingProductIndex = cart.products.findIndex(prod => prod.id === id);
+                console.log("product exists at", existingProductIndex);
+                const existingProduct = cart.products[existingProductIndex];
+                console.log("product of ", existingProduct);
+
+                let updatedProduct;
+                //add new product or increase the quantity
+                if (existingProduct) {
+                    updatedProduct = {...existingProduct};
+                    updatedProduct.qty = updatedProduct.qty + 1;
+                    console.log("updated product qty", updatedProduct);
+                    //replace the product with the updated product with new quantity
+                    cart.products = [...cart.products];
+                    cart.products[existingProductIndex] = updatedProduct;
+                } else {
+                    updatedProduct = {id: id, qty: 1};
+                    //array of all the old cart products, with a new additional product
+                    cart.products = [...cart.products, updatedProduct]; 
+                }
+
+                // +productPrice to convert the string to a number
+                cart.totalPrice = cart.totalPrice + +productPrice;
+                
+                //array of all the old cart products
+                cart.products = [...cart.products];
+                
+                //copy the cart to file
+                fs.writeFile(myCartFilePath, JSON.stringify(cart), err => {
+                    console.log(err);
+                });
 
             });
 
-            //now we know we have a cart
-            //now we can analyze it and add a product
-            //analyze the cart, see if we already have that product => find existing product
 
-            //add new product or increase the quantity
+
 
 
         };
 
-
-    };
 };

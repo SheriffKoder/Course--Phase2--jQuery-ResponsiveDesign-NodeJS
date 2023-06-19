@@ -69,6 +69,7 @@ router.post("/product", (req, res, next) => {
 
 //the router will be exported with these two above routes registered
 
+router.get("/edit-product/:productId", adminController.getEditProduct);
 
 
 module.exports = router;

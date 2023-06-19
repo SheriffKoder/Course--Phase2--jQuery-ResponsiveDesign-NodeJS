@@ -29,6 +29,7 @@ router.get("/products", shopController.getProducts);
 
 //tell express router that there will be some variable segment
 //by adding a : then any name of our choice, that we will use to extract that information
+//router.get("/products/delete",...);
 router.get("/products/:productId", shopController.getProduct);
 
 router.get("/checkout", shopController.getCheckout);

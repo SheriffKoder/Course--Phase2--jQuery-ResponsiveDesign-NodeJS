@@ -1,6 +1,6 @@
 
 const ProductClassModel = require("../models/product.js");
-
+const Cart = require("../models/cart.js");
 
 exports.getProducts = (req, res, next) => {
     //const products = adminData.products;
@@ -39,13 +39,19 @@ exports.getIndex = (req, res, next) => {
 };
 
 
+//relevant to add-to-cart button on ejs which passes productId
 exports.postCart = (req, res, next) => {
     //retrieve the product id from the incoming request
     //then fetch our product in the database/file
     //add to our cart
     //productId is the name used in the view file form on hidden input
     const prodId = req.body.productId;
-    console.log(prodId);
+    //console.log(prodId);
+
+    ProductClassModel.findMyId(prodId, (product) => {
+        Cart.addProduct(prodId, product.price);
+    });
+
     res.redirect("/cart");
 
 };
