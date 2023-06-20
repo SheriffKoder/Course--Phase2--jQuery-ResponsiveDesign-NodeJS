@@ -1,7 +1,7 @@
 /*
 
 animations on websites are js and maybe css,
-changing content without reloading js
+changing content without reloading, js
 
 create animations like slide down a form, fade elements etc.
 manipulate the content of any element on your site

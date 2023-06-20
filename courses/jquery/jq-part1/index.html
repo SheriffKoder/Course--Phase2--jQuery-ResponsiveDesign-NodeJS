@@ -3,9 +3,13 @@
 <head>
   <meta charset="UTF-8">
 
-  <!--import jquery script-->
+  <!--import jquery script
   <script src="https://code.jquery.com/jquery-1.12.3.min.js" integrity="sha256-aaODHAgvwQW1bFOGXMeX+pC4PZIPsvn2h1sArYOhgXQ=" crossorigin="anonymous"></script>
-  
+  -->
+  <script
+  src="./js/code.jquery.com_jquery-3.7.0.js"></script>
+
+
   <script src="js/script.js"></script>
   <link rel="stylesheet" href="css/style.css">
   <title>The Complete jQuery Course - Project Structure</title>
@@ -16,7 +20,9 @@
     <h1>The Complete jQuery Course - Project Structure</h1>
 
     <div class="red-box">Red</div>
+    <!--
     <div class="blue-box" style="display:none;">Blue (d none) </div>
+    -->
     <div class="blue-box">Blue 2</div>
     <div class="green-box">Green</div>
 
@@ -25,6 +31,63 @@
     <h2>Hi, I'm the Base Project!</h2>
     <p>Add elements here as you like to try out jQuery. This is your playground to test out anything that comes into your mind.</p>
     <p><strong>OR:</strong> Copy this project structure into a new directory first to create separate playgrounds for animations, manipulations, event handlers etc.</p>
+  
+    <!--    ul#list>li*4>{Main item $}>ul>li*2>{Sub item $} -->
+    <ul id="list">
+      <li>
+        Main item 1
+        <ul>
+          <li>Sub item 1</li>
+          <li>Sub item 2</li>
+        </ul>
+      </li>
+      <li>
+        Main item 2
+        <ul>
+          <li>Sub item 1</li>
+          <li>Sub item 2</li>
+        </ul>
+      </li>
+      <li>
+        Main item 3
+        <ul>
+          <li>Sub item 1</li>
+          <li id="nestedLi">Sub item 2</li>
+        </ul>
+      </li>
+      <li>
+        Main item 4
+        <ul>
+          <li>Sub item 1</li>
+          <li>Sub item 2</li>
+        </ul>
+      </li>
+    </ul>
+
+    <form action="">
+      <input type="text" name="" id="" placeholder="name"><br>
+      <input type="email" name="" id="" placeholder="email"><br>
+      <textarea cols="30" rows="10"></textarea><br>
+      <input type="submit" value="Submit">
+    </form>
+
+
+    <!-- lightbox example -->
+    <div class="lightbox">
+      <h2>Lightbox</h2>
+      <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. 
+        Quam eligendi minus illo sed. Necessitatibus, vero iure? Repellat, 
+        temporibus magnam amet facere harum officia delectus, tempore quasi odit 
+        est asperiores cumque!
+      </p>
+      <form action="">
+        <input type="email" placeholder="best email" name="" id="">
+        <input type="submit" value="sign me up">
+      </form>
+    </div>
+  
+  
+  
   </div>
 </body>
 </html>
