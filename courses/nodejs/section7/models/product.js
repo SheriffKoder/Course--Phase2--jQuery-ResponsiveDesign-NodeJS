@@ -7,6 +7,7 @@ const rootPath = require("../util/path.js");
 //const { error } = require("console");
 const myDataFilePath = path.join(rootPath, "data", "products.json");
 
+const cartModel = require("./cart.js");
 
 const getProductsFromFile = (in_cb) => {
 
@@ -42,7 +43,8 @@ const products = [];
 //static makes the method accessible from the class itself not the new instances
 
 module.exports = class Product {
-    constructor (title1, imageUrl1, price1, description1) {
+    constructor (id, title1, imageUrl1, price1, description1) {
+        this.id = id;   //null for new product, existing product will be assigned here
         this.title = title1;
         this.imageUrl = imageUrl1;
         this.description = description1;
@@ -50,18 +52,55 @@ module.exports = class Product {
     }
 
     save() {
-        //from 1-10
-        this.id = Math.floor(Math.random()*11).toString();
-        //products.push(this);  //push new instances to the products array to iterate on
+
         
         //getProductsFromFile(cb2);
         getProductsFromFile((products) => {
-            products.push(this);
+            //if id, update the existing one
+            if (this.id) {
+                const existingProductIndex = products.findIndex(prod => prod.id === this.id);
+                const updatedProducts = [...products];
+                //replace it in the array which is stored in the file with the newly created product i am in
+                updatedProducts[existingProductIndex] = this;
+                fs.writeFile(myDataFilePath, JSON.stringify(updatedProducts), (error) => {
+                    console.log(error);
+                });
     
-            fs.writeFile(myDataFilePath, JSON.stringify(products), (error) => {
-                console.log(error);
-            });
+            } else {
+                //if no id yet, then proceed with this
+                
+                //from 1-10
+                this.id = Math.floor(Math.random()*11).toString();
+                //products.push(this);  //push new instances to the products array to iterate on
+
+                products.push(this);
+        
+                fs.writeFile(myDataFilePath, JSON.stringify(products), (error) => {
+                    console.log(error);
+                });
+            }
         });
+
+    }
+
+        static deleteById (id) {
+            getProductsFromFile((products) => {
+
+                const product = products.find(prod => prod.id === id);
+
+                //filter takes a function and returns a new array of
+                //the elements that match the criteria my function returns
+                const updatedProducts = products.filter(prod => prod.id !== id);    //default js
+    
+                fs.writeFile(myDataFilePath, JSON.stringify(updatedProducts), (error) => {
+                    console.log(error);
+                    if (!error) {
+                        cartModel.deleteProduct(id, product.price);
+                    }
+                });
+
+            });
+        };
 
     
 
@@ -99,7 +138,7 @@ module.exports = class Product {
         });
         */
 
-    }
+    
 
     static fetchAll(cb1) {
         

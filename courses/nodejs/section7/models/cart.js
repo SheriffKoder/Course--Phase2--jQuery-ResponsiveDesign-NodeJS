@@ -77,10 +77,36 @@ module.exports = class Cart {
 
             });
 
+        };
 
+        static deleteProduct(id, productPrice) {
+            fs.readFile(myCartFilePath, (error, fileContent) => {
+                let cart = {products: [], totalPrice: 0};
 
+                //console.log("in the cart delete");
 
+                if (error) {
+                    return;
+                }
 
+                else if (!error) {
+                    //console.log("in the cart delete !error");
+
+                    //got an existing cart, our cart should be equal to parsed file content
+                    cart = JSON.parse(fileContent);
+                    const updatedCart = {...cart};
+                    const product = updatedCart.products.find(p => p.id === id);
+                    const productQty = product.qty;
+                    updatedCart.products = updatedCart.products.filter(prod => prod.id !== id );
+                    updatedCart.totalPrice = updatedCart.totalPrice - productPrice * productQty;
+
+                    fs.writeFile(myCartFilePath, JSON.stringify(updatedCart), err => {
+                        console.log(err);
+                    });
+    
+
+                }
+            });
         };
 
 };

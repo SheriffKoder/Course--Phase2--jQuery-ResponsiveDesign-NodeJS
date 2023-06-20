@@ -420,6 +420,37 @@ using the if editing to populate and change form action
 ///////////////////////////////////////////////////////////////////
 next is to hook up the edit button and work on the functionality to store the updated info
 
+change the edit link in the products.js 
+to have an href to /admin/product.id?edit=true
+
+//work on the update product button link
+register this route in admin.js
+create the controller middleware in admin.js
+
+add a hidden input in the ejs to hold the id value to access with req.body
+
+work on the save method in the class to 
+update products with the edited product as well as a new product
+
+///////////////////////////////////////////////////////////////////
+//work on the delete functionality
+
+add a post router in the admin.js router based on the delete button url in products.ejs
+also add a hidden input to pass the product.id
+
+in the product class add a delete method that "filters" the products for this id
+so you can have products without this product and store them in the file again
+
+also start working on removing from the cart
+by adding a delete method 
+and call that method in the product class model
+
+this will be accessed from the postDeleteProduct controller
+
+
+///////////////////////////////////////////////////////////////////
+//display items on the cart
+
 
 
 

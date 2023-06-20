@@ -35,7 +35,7 @@ exports.postAddProduct = (req, res, next) => {
     const price = req.body.price;
     const description = req.body.description;
 
-    const product = new ProductClassModel(title, imageUrl, price, description);
+    const product = new ProductClassModel(null, title, imageUrl, price, description);
 
     product.save();
 
@@ -73,7 +73,26 @@ exports.getEditProduct = (req, res, next) => {
 };
 
 
+exports.postEditProduct = (req,res, next) => {
+    //construct a new product
+    //replace the existing product
 
+    //fetch info for the product
+    //new product instance and populate it with that information
+    //call save
+
+    const prodId = req.body.productId;
+    const updatedTitle = req.body.productAdded;
+    const updatedImageUrl = req.body.imageUrl;
+    const updatedPrice = req.body.price;
+    const updatedDescription = req.body.description;
+
+    const updatedProduct = new ProductClassModel(prodId, updatedTitle, updatedImageUrl, updatedPrice, updatedDescription);
+
+    updatedProduct.save();
+    res.redirect("/admin/products");
+
+}
 
 exports.getProducts = (req, res, next) => {
 
@@ -81,4 +100,11 @@ exports.getProducts = (req, res, next) => {
         res.render("admin/products.ejs", {prods: products, myTitle: "Admin Products", path:"/admin/products"});
 
     });
+};
+
+exports.postDeleteProduct = (req, res, next) => {
+    const prodId = req.body.productId;
+    ProductClassModel.deleteById(prodId);
+    res.redirect("/admin/products");
+
 };
