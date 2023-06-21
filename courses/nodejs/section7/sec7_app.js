@@ -1,5 +1,7 @@
 /*
 
+//a shop website using file data storage
+
 Model View controller MVC
 follow a certain pattern for structuring code
 
@@ -450,6 +452,33 @@ this will be accessed from the postDeleteProduct controller
 
 ///////////////////////////////////////////////////////////////////
 //display items on the cart
+
+
+add to cart model a static method that gives a callback the parsed cart json
+work on the getCart controller to store each cart product in myProducts
+and pass to the cart.ejs
+
+//deleting from the cart using a button
+add a form with "/cart-delete-item" route and hidden input for the item id
+got to route refer to the controller
+got to controller and using deleteProduct
+
+
+
+///////////////////////////////////////////////////////////////////
+//wrap-up
+
+Dynamic routing
+can pass dynamic paths using : and use with req.params. the name after :
+
+query parameters can also be passed
+?param=value&b2
+and extracted req.query.myParam
+
+can interact between models
+
+file for data storage is slow, better use databases
+
 
 
 

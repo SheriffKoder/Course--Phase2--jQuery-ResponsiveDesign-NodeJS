@@ -8,6 +8,7 @@ exports.getProducts = (req, res, next) => {
 
     //on fetchAll call, send this function that will be called to retrieve render 
     //based on the product status empty-array or data
+    //*read file then pass read-products into this function to pass to the rendered ejs
     ProductClassModel.fetchAll(products => {
         res.render("shop/product-list", {prods: products, myTitle: "All Products page", path:"/products"});
 
@@ -56,12 +57,39 @@ exports.postCart = (req, res, next) => {
 
 };
 
-exports.getCart = (req, res, next) => {
-    res.render("shop/cart", {
-        path: "/cart",
-        myTitle: "Your Cart"
+exports.getCart = (req, res, next) => {             //router
+    Cart.getCart(cart => {                          //returns cart to use in render
+        
+        ProductClassModel.fetchAll(products => {    //returns all my products
+            const cartProducts = [];
+            for (product of products) {             //for each product
+                const cartProductData = cart.products.find(prod => prod.id === product.id);
+                //find in cart products the product matching fetchAll products
+
+                if (cartProductData) {
+                    cartProducts.push({productData: product, qty: cartProductData.qty });
+                }
+            }
+            res.render("shop/cart", {
+                path: "/cart",
+                myTitle: "Your Cart",
+                products: cartProducts
+            });
+        });   
+
     });
 };
+
+
+exports.postCartDeleteProduct = (req, res, next) => {
+    //need to remove product from the cart not the product it self
+    const prodId = req.body.productId;
+    //get the price
+    ProductClassModel.findMyId(prodId, product => {
+        Cart.deleteProduct(prodId, product.price);
+        res.redirect("/cart");
+    });
+}
 
 
 exports.getCheckout = (req, res, next) => {

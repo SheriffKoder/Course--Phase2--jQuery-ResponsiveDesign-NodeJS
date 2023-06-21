@@ -55,6 +55,7 @@ module.exports = class Product {
 
         
         //getProductsFromFile(cb2);
+        //edit or add product
         getProductsFromFile((products) => {
             //if id, update the existing one
             if (this.id) {
@@ -83,6 +84,7 @@ module.exports = class Product {
 
     }
 
+        //add new product list and also call the cartModel to delete from cart+price
         static deleteById (id) {
             getProductsFromFile((products) => {
 

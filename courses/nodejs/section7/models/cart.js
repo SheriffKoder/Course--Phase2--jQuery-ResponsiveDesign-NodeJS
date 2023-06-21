@@ -45,16 +45,16 @@ module.exports = class Cart {
                 //and see if the product we want to add already exists
                 //analyze the cart, see if we already have that product => find existing product
                 const existingProductIndex = cart.products.findIndex(prod => prod.id === id);
-                console.log("product exists at", existingProductIndex);
+                //console.log("product exists at", existingProductIndex);
                 const existingProduct = cart.products[existingProductIndex];
-                console.log("product of ", existingProduct);
+                //console.log("product of ", existingProduct);
 
                 let updatedProduct;
                 //add new product or increase the quantity
                 if (existingProduct) {
                     updatedProduct = {...existingProduct};
                     updatedProduct.qty = updatedProduct.qty + 1;
-                    console.log("updated product qty", updatedProduct);
+                    //console.log("updated product qty", updatedProduct);
                     //replace the product with the updated product with new quantity
                     cart.products = [...cart.products];
                     cart.products[existingProductIndex] = updatedProduct;
@@ -72,7 +72,7 @@ module.exports = class Cart {
                 
                 //copy the cart to file
                 fs.writeFile(myCartFilePath, JSON.stringify(cart), err => {
-                    console.log(err);
+                    //console.log(err);
                 });
 
             });
@@ -96,17 +96,39 @@ module.exports = class Cart {
                     cart = JSON.parse(fileContent);
                     const updatedCart = {...cart};
                     const product = updatedCart.products.find(p => p.id === id);
+
+                    //not proceed if item is not in cart
+                    //other wise removing deleting item not in cart will give a qty error
+                    if (!product) {
+                        return;
+                    }
                     const productQty = product.qty;
                     updatedCart.products = updatedCart.products.filter(prod => prod.id !== id );
                     updatedCart.totalPrice = updatedCart.totalPrice - productPrice * productQty;
 
                     fs.writeFile(myCartFilePath, JSON.stringify(updatedCart), err => {
-                        console.log(err);
+                        //console.log(err);
                     });
     
 
                 }
             });
         };
+
+
+
+    //want to get all products in the cart
+    static getCart(cb) {
+        fs.readFile(myCartFilePath, (error, fileContent) => {
+            const cart = JSON.parse(fileContent);
+            if (error) {
+                cb(null);
+            }
+            else {
+                cb(cart);
+            }
+        });
+    }
+
 
 };
