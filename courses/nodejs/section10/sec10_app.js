@@ -95,7 +95,7 @@ but also has an advantage that we do not have to write code to relate all datas
 for example we can have all the data we need in the orders collection without reaching to other collections
 
 characteristics:
-> no data schema - no structure is required
+> no data schema - no structure is required for the documents
 > no data relations - you can relate documents but you do not have to 
                         and shouldn't do it too much or your queries become slow
                         we do have no / few connections
@@ -133,7 +133,7 @@ thus SQL can reach limits
 NoSQL:
 schema-less
 has only a few relations if at all
-data is not distributed accross multiple collections
+data is not distributed across multiple collections
 but instead we work with merged or nested documents in an existing document
 though we have different collections for the different features in our application
 horizontal scaling is easier, still you know what you are doing
@@ -149,8 +149,10 @@ and there also the relations might not be that important because you can always 
 the shopping information that belongs to a shopping cart in one single document
 
 
-
 //////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
+working with SQL (mySQL)
 go to mySQL.com and download the community edition
 
 mySQL community server, mySQL workbench
@@ -170,8 +172,117 @@ you will find you have a couple of tables
 will later store data in the tables drop down
 
 
+//////////////////////////////////////////////////////////////////////
+in our project to use/interact with SQL from inside node
+we have to install a new package
+
+//allows to write and execute SQL code and interact with a database
+# npm install --save mysql2
+
+need to connect to a database from inside our application
+create database.js file in the utl folder
+
+>>database.js
 
 
+*/
+
+
+
+///////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////
+//using ejs
+
+const http = require("http");
+const express = require("express");
+const app = express();
+const path = require("path");
+
+//the pool which allows us to use a connection in it
+const db = require("./util/database.js");
+
+
+app.set("view engine", "ejs");
+app.set("views", "views");
+
+
+const adminJsRoutes = require("./routes/admin.js");
+const shopJsRoutes = require("./routes/shop.js");
+
+// methods.execute (execute queries)
+// .query same but .execute is a bit safer
+// .end //if we want to end it whenever our application is shut down
+// .getConnection
+//we want to connect or execute a command
+//we can execute here by writing a SQL syntax as a string
+//we will learn here basic SQL commands but for further commands take a SQL course
+//select everything from products
+//then is provided by the fact that we are using promise in the db export
+//promises have two functions, then and catch()
+//catch executes in case of an error, in case the db failed or something
+//we can chain them on to the result of the execute call
+//so they will execute on whenever db(pool).promise gives us back
+//then can take a function
+//result is the whole result, 0 outputs the products
+db.execute("SELECT * FROM products")
+    .then((result) => {
+        console.log("result", result[1]);
+    })
+    .catch((err) => {
+        console.log(err);
+    });
+
+const bodyParser = require("body-parser");
+app.use(bodyParser.urlencoded({extended: false}));
+
+app.use(express.static(path.join(__dirname, "public")));
+
+
+//app.use(adminJsRoutes.routes); //replaced code
+//app.use(adminJsRoutes); //replaced code
+app.use(shopJsRoutes); //replaced code
+
+////filtering mechanism
+//not put /admin/.. in the routes links but put in the navigation/form etc.
+app.use("/admin", adminJsRoutes);
+
+//used the __dirname directly here because we are in a root file
+/*
+app.use((req, res, next) => {
+    //res.status(404).send("<h1>Page not found</h1>");
+    //res.status(404).sendFile(path.join(__dirname, "views", "404.html"));
+    res.status(404).render("404", {myTitle: "404 Page", path: "404"});
+});
+*/
+const errorController = require("./controllers/errorController.js");
+app.use(errorController.get404);
+
+
+app.listen(3000);
+
+/*
+
+
+we have no products table yet
+for the db.method
+so get to the workbench and on tables right click create table
+give it a name of products
+and can add new fields
+
+add in the columns
+id > with datatype INT and checkmarks for PK, NN, UQ, UN, AI
+title > with type VARCHAR(45) which is basically a string
+and edit the 45 to 255 characters long (longer titles will be cut off)
+check NN
+price > type double (so we can enter decimal) check NN
+description > type TEXT, check NN
+imageUrl > type VARCHAR(255) (means longer urls will not work), check NN
+
+click apply
+now we can see the products table in the tables on the left pane
+and if clicked on the table icon can see the entries in there
+
+can add an entry manually in the result grid
 
 
 */
