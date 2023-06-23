@@ -8,7 +8,7 @@ $
 //uses: user clicks a read more button, show modal window taking whole screen, form next input/field
 
 
-.hide() gets display none instantly, if ms used will have disappearing animation
+.hide() gets display none instantly, if ms used will have "disappearing animation"
 .show() gets display block
 .toggle() toggles .hide/.show
 //uses: hovering/click of a menu to show a sub-menu/details
@@ -181,7 +181,7 @@ $(function() {
   //in callbacks first animation has to end for second to start
   //make an animation run after another animation end
   //time your animation
-  //can chain fadeOut().fadeIn().delay() etc
+  //can chain fadeOut().fadeIn().delay() etc*
 
   //.delay to wait then put the .animation wanted
   // .animation(time, callback) - callback of js code or $("p").animation
@@ -194,7 +194,7 @@ $(function() {
 
 
 
-  //adding a callback function as a parameter will be exe after animation is finished
+  //adding a callback "function" as a parameter will be "exe after animation" is finished
   /*
   $(".blue-box").fadeTo(1000, 0.5, ()=> {
     alert("blue box");
@@ -256,8 +256,8 @@ $(function() {
   //any element on the page using jq functions that allows to traverse the html document
   //starting at one element making your way through the targeted element want to get
 
-  //all children, direct children, all parents, direct parents
-  //siblings, all next/previous
+  //select all children, direct children, all parents, direct parents
+  //select siblings, all next/previous
 
   $("#nestedLi").css("border", "2px solid rgba(0,0,255,0.2");
 
@@ -373,6 +373,8 @@ $(function() {
 //on the objects/html elements to manipulate them
 
 
+//adding children using append/appendTo, prepend/prependTo
+//adding siblings using after/insertAfter, before/insertBefore
 
 
 //adding children
@@ -433,6 +435,9 @@ for (myColor in color) {
 
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
+
+//replace/replaceAll(rev)
+
 //replace existing elements on the page
 //with either another element that is on your page
 //or with a completely new element created to replace the other element
@@ -443,14 +448,130 @@ for (myColor in color) {
 //replace an item (delete) with an existing item (move)
 //$("p:first").replaceWith($("li:last"));
 
-//will be cloned for all p instances
+//li:last will be removed and cloned for all p instances
 //$("p").replaceWith($("li:last"));
 
-//green-box replaces red/blue
+//green-box deleted and cloned to replace red/blue
 //$(".red-box, .blue-box").replaceWith($(".green-box"));
 
 //green-box replaces red/blue
 //$(".green-box").replaceAll(".red-box, .blue-box");
+
+
+
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+//removing elements and content
+
+//remove, detach, empty
+
+//$("ul li ul li").remove();
+
+//remove all direct children of the form element keep (text-area, input of type=text, br)
+//$("form *").not("textarea, input[type=text], br").remove();
+//$("form").children().not("textarea, input[type=text], br").remove();
+
+
+//detach in contrast to the remove function, will remember all the data and event handlers
+//that are associated with the removed element
+
+//able to remove an item from the page
+//store it in a variable (with keeping its data in event handlers)
+//then use it again
+//var myForm = $("#form1").detach();
+//myForm.insertBefore("#list");
+
+
+//empty everything inside the element - "but not remove it"
+//removes inside elements as well as text
+//$("ul li ul").empty();
+
+//remove inner-content for all boxes
+//$("#content div").empty();
+
+
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+//manipulate the attributes and properties of such elements
+//id, class, type, value, src etc.
+//attr() > attribute
+//prop() > properties
+//val() > values of input elements
+
+//store element in a variable
+//var specialLink = $("#mylink");
+//output the value for the href attribute href
+//console.log(specialLink.attr("href"));
+//set a value for the attribute
+//specialLink.attr("href", "/www.google.com");
+
+//toggle boolean selectors in html checked/selected/enabled
+//$("input[type=checkbox]").attr("checked", false);
+
+
+
+//attr will always return checked, cannot check if the input has been clicked check/uncheck
+//"prop" returns true if checked etc.
+//can use it with an event listener
+//returns the current value of the element  
+
+//console.log($("input[type=checkbox]").prop("checked")); //true
+//console.log(specialLink.prop("href"));  // https://url/
+
+
+
+//val , reads the current value attr of our input elements
+//use: take all values from a form element to validate them
+//val will return the first element of the type only
+//var textInput = $("input[type=text");
+//console.log(textInput.val()); //peter
+//the the value attr using val
+//textInput.val("peter peter");
+
+//var textInput = $("input[type=range");
+//console.log(textInput.val()); //7
+
+
+
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+//create an image slideshow using jQuery
+
+let galleryImage = $(".gallery").find("img").first();
+let images = [
+"images/laptop-mobile_small.jpg",
+"images/laptop-on-table_small.jpg",
+"images/people-office-group-team_small.jpg"
+];
+
+/*
+let i = 0;
+setInterval(() => {
+  i = (i + 1) % images.length; //0,1,2,0,1,2 ..
+  galleryImage.fadeOut(() => {
+    $(this).attr("src", images[i]);
+    $(this).fadeIn();
+  });
+  console.log(galleryImage.attr("src"));
+}, 2000);
+*/
+
+//galleryImage.attr("src", images[1]);
+
+let i = 1;
+setInterval(()=> {
+
+  galleryImage.fadeOut(1500, () => {
+    galleryImage.attr("src", images[i]);
+    galleryImage.fadeIn(1500);
+  });
+
+  i++;
+  if (i === images.length) i = 0;
+
+}, 2000);
+
+
 
 
 
