@@ -280,24 +280,48 @@ app.listen(3000);
 
 //app.all() //for all http request methods
 
-//When the queue has been exhausted or the callback limit is reached, the event loop will move to the next phase, and so on.
-//The main advantage to using setImmediate() over setTimeout() is setImmediate() will always be executed before any timers if scheduled within an I/O cycle, independently of how many timers are present.
-//all callbacks passed to process.nextTick() will be resolved before the event loop continues.
+//When the queue has been exhausted or the callback limit is reached, the event loop will 
+//move to the next phase, and so on.
 
-//because Node.js has only a few threads, you must structure your application to use them wisely.
+//The main advantage to using setImmediate() over setTimeout() is setImmediate() will 
+//always be executed before any timers if scheduled within an I/O cycle, independently 
+//of how many timers are present.
+
+//all callbacks passed to process.nextTick() will be resolved before the event loop 
+//continues.
+
+//because Node.js has only a few threads, you must structure your application to 
+//use them wisely.
+
 //Node.js is fast when the work associated with each client at any given time is "small".
 //Why should I avoid blocking the Event Loop and the Worker Pool?
 
 //thread is taking a long time to execute a callback (Event Loop) or a task (Worker), 
 //we call it "blocked". While a thread is blocked working on behalf of one client, 
 //it cannot handle requests from any other clients. 
-//shouldn't do too much work for any client in any single callback or task. ensure fair shcduling
-//If your callback takes a constant number of steps no matter what its arguments are, then you'll always give every pending client a fair turn.
-//Node.js uses the Google V8 engine for JavaScript, which is quite fast for many common operations. Exceptions to this rule are regexps (with exponential number of trips) and JSON operations
-//Several Node.js core modules have synchronous expensive APIs, including: encryption, compression, file system, child process
-//JSON.parse and JSON.stringify are other potentially expensive operations. While these are O(n) in the length of the input, for large n they can take surprisingly long.
-//To minimize variation in Task times, as far as possible you should partition each Task into comparable-cost sub-Tasks. When each sub-Task completes it should submit the next sub-Task, and when the final sub-Task completes it should notify the submitter.
-//Node.js developers benefit tremendously from the npm ecosystem, with hundreds of thousands of modules offering functionality to accelerate your development process.
+//shouldn't do too much work for any client in any single callback or task. 
+//ensure fair scheduling
+//If your callback takes a constant number of steps no matter what its arguments are, 
+//then you'll always give every pending client a fair turn.
+
+//Node.js uses the Google V8 engine for JavaScript, which is quite fast 
+//for many common operations. Exceptions to this rule are 
+//regexps (with exponential number of trips) and JSON operations
+
+//Several Node.js core modules have synchronous expensive APIs, 
+//including: encryption, compression, file system, child process
+
+//JSON.parse and JSON.stringify are other potentially expensive operations. 
+//While these are O(n) in the length of the input, for large n they can take surprisingly long.
+
+//To minimize variation in Task times, as far as possible you should partition each 
+//Task into comparable-cost sub-Tasks. When each sub-Task completes 
+//it should submit the next sub-Task, and when the final sub-Task completes 
+//it should notify the submitter.
+
+//Node.js developers benefit tremendously from the npm ecosystem, 
+//with hundreds of thousands of modules offering functionality to accelerate 
+//your development process.
 
 //to install a module temporarily and not add it to the dependencies list:
 // # npm install express --no-save

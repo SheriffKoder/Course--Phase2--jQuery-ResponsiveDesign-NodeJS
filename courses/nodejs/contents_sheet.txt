@@ -1,0 +1,14 @@
+//Recap1/Practice1 from section4
+how to use "vanilla node" to output data files
+how to handle requests/give responses
+
+//Recap2/Practice2 from section 4
+use express with middlewares of method/url/sendfile
+allow middlewares to send html/css as a response
+divide an app into app.js/routes.js/html files
+
+//Recap3 from section4
+use templating engines ejs/pug/handlebars with layouts
+set templating engine in app.js
+render templating engine files from middlewares and pass variables to them
+get products from a form "post" and display each on a shop "get"
