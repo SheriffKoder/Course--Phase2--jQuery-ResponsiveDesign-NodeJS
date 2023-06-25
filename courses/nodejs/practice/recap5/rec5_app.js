@@ -1,6 +1,8 @@
 /*
 a shop website using file data storage
 
+//remaining files to be put from section7
+//and check text notes in sec7_app.js
 
 
 */

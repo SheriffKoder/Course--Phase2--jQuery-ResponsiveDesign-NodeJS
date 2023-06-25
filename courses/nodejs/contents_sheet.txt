@@ -1,14 +1,77 @@
+//
+//recap on all section7 from note-book notes to be more clear
+//
+
+////////////////////////////////////////////////////////////////////////
 //Recap1/Practice1 from section4
 how to use "vanilla node" to output data files
 how to handle requests/give responses
 
+
+
+
+////////////////////////////////////////////////////////////////////////
 //Recap2/Practice2 from section 4
 use express with middlewares of method/url/sendfile
 allow middlewares to send html/css as a response
 divide an app into app.js/routes.js/html files
 
+
+
+
+////////////////////////////////////////////////////////////////////////
 //Recap3 from section4
 use templating engines ejs/pug/handlebars with layouts
 set templating engine in app.js
 render templating engine files from middlewares and pass variables to them
 get products from a form "post" and display each on a shop "get"
+
+
+
+
+////////////////////////////////////////////////////////////////////////
+//Recap4 from section7.0
+//simple app to add product from form and display all saved products in "/"
+App.js , routes, 
+controller (middlwares) render ejs views with models 
+models do help in
+reading files to help controller render fetchAll JSON array file contents
+create new product with properties from form input
+save product to existing products file
+
+
+
+
+////////////////////////////////////////////////////////////////////////
+//Recap5 from section7
+//construct a shop website
+
+admin router > admin controller (using admin ejs's)
+admin controller: 
+- render, render product edit (auto fill), 
+- create new product or edit if it is existing (c)
+- post delete-by-id (c)
+
+shop controller: 
+- render
+- render specific product by having a param url product/:prodId
+    find by id (c) then render the returned product
+-
+
+-product model:
+- save product to current product with random id or (Replace of same id if existing)
+- delete using "get products from file" and filer method id
+- find by id using "get products from file" and find method id
+
+
+- cart model: 
+add product if exists: parsedCartfile.products[find index method id], inc quantity and put into cart
+                if not: parsedCartfile.products=[...parsedCartfile.products, {id:id, qty:1}]
+
+delete product from cart:  product.find method id then filter method out this id, into cart
+    then cart.totalprice - the product price * product quantity
+
+get cart: read, parse, cb(parsed), cb would be render to ejs { products: parsed}
+
+
+
