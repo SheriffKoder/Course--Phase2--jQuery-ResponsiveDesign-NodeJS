@@ -188,6 +188,7 @@ create database.js file in the utl folder
 //create pool
 //export pool with promise
 //in app.js require the database.js
+//attach.then to the execute syntax in app.js
 
 //in the workbench
 //create new schema "node-module"
@@ -299,6 +300,72 @@ and if clicked on the table icon can see the entries in there
 
 can add an entry manually in the result grid
 
+
+above we were able to output a record from the db
+time to use sql in the project code
+
+
+right now we are fetching data from our files
+in the product model
+want to fetch data from the database
+
+(1)////////////////////////////////////////////////
+do not need fs and path modules
+empty all the methods in the product model as we will not use files
+also remove the callbacks from parameters
+we will use promises
+
+(2)////////////////////////////////////////////////
+return from "fetchAll" the db.execute
+db returns a promise
+
+(3)////////////////////////////////////////////////
+and in the shop controller getIndex destruct in the .then
+and use the first element as products for render
+
+now when we change values in the database workbench
+the change can be seen on the page
+
+(4)////////////////////////////////////////////////
+do the same for getProducts of url (/products product-list.ejs)
+
+skill : extracting different elements of an array
+let [element1, element2] = arrayof2elements;
+
+
+(5)////////////////////////////////////////////////
+working on the save() for postAddProduct
+go to the model
+add db.execute(INSERT INTO..)
+
+
+
+
+(6)////////////////////////////////////////////////
+in the admin.js controller
+add to save .then().catch()
+just redirect in then (once the insertion is completed)
+
+now (add product) data can be inserted in the db
+can be viewed by refreshing the table in the workbench
+
+
+(7)////////////////////////////////////////////////
+working on the product-details
+by working on the findById in the product model
+
+(id here is passed as a value from the argument)
+selects the whole row of this id
+"SELECT * FROM products WHERE products.id = ?", [id]
+
+
+(8)////////////////////////////////////////////////
+return to shop.js controller
+add the render to the .then
+
+
+
+
 */
 
 
@@ -306,7 +373,7 @@ can add an entry manually in the result grid
 
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
-//using ejs
+//using ejs and sqlz
 
 const http = require("http");
 const express = require("express");
@@ -314,7 +381,7 @@ const app = express();
 const path = require("path");
 
 //the pool which allows us to use a connection in it
-const db = require("./util/database.js");
+const sequelize = require("./util/database.js");
 
 
 app.set("view engine", "ejs");
@@ -351,72 +418,22 @@ const errorController = require("./controllers/errorController.js");
 app.use(errorController.get404);
 
 
-app.listen(3000);
+//has a look at all the models you defined and sync them to the db and if you have relations
+//and start our server if we made it into then
+//when running the app.js, will find the SQL syntax used in the console result
+//the product model is not linked anywhere in code, did it auto check the models folder ?
+sequelize.sync()
+    .then((result) => {
+        //console.log(result);
+        app.listen(3000);
+    })
+    .catch((err) => {
+        //console.log(err);
+    });
+
 
 
 /*
-
-above we were able to output a record from the db
-time to use sql in the project code
-
-
-right now we are fetching data from our files
-in the product model
-want to fetch data from the database
-
-(1)
-do not need fs and path modules
-empty all the methods in the product model as we will not use files
-also remove the callbacks from parameters
-we will use promises
-
-(2)
-return from "fetchAll" the db.execute
-db returns a promise
-
-(3)
-and in the shop controller getIndex destruct in the .then
-and use the first element as products for render
-
-now when we change values in the database workbench
-the change can be seen on the page
-
-(4)
-do the same for getProducts of url (/products product-list.ejs)
-
-skill : extracting different elements of an array
-let [element1, element2] = arrayof2elements;
-
-
-(5)
-working on the save() for postAddProduct
-go to the model
-add db.execute(INSERT INTO..)
-
-
-
-
-(6)
-in the admin.js controller
-add to save .then().catch()
-just redirect in then (once the insertion is completed)
-
-now (add product) data can be inserted in the db
-can be viewed by refreshing the table in the workbench
-
-
-(7)////////////////////////////////////////////////
-working on the product-details
-by working on the findById in the product model
-
-(id here is passed as a value from the argument)
-selects the whole row of this id
-"SELECT * FROM products WHERE products.id = ?", [id]
-
-
-(8)
-return to shop.js controller
-add the render to the .then
 
 
 ////////////////////////////////////////////////
@@ -431,7 +448,7 @@ so can focus more on Node.js not on SQL
 still using sql database in the background 
 but the code we write will be different
 
-allows to work with js objects and convinient methods
+allows to work with js objects and convenient methods
 to create new elements to the database, edit, delete, find, connect them
 
 is an object relational mapping library
@@ -484,9 +501,86 @@ we want sqlz to manage our tables
 >> util> database.js
 use SQL to connect to db / setup a connection pool
 
+>> (a) create pool in database.js
 
 (10)////////////////////////////////////////////////
 //defining and working with the models 
+
+go to the products.js model and delete everything
+(copied the model using SQL syntax to another file)
+define the Product model using sqlz syntax and export
+
+>> (b) import and sequelize.define("product" in product model
+
+
+(11)////////////////////////////////////////////////
+//Syncing JS Definitions (defined table) to the database
+
+
+we need a product table, sqlz can create it
+models are transferred into tables or tables that refer to the models
+whenever we start the application
+if the table exists it will not overwrite it by default except if we told it to do so
+
+change the name of the database file import to sequelize
+"lower case because it is not an external third-party import"
+
+
+>>sync the product model to the db
+>> (c) in app.js sequlize.sync()
+then go to the work bench and right-click the schema, refresh all - will find the table
+to proof its from sqlz, will find fields of createdAt, updatedAt
+
+
+
+(12)////////////////////////////////////////////////
+//inserting data and creating product
+
+
+
+//controllers, create a new product
+
+controllers > admin.js > postAddProduct
+squelize.create to create a new product instance
+
+>> (d)  ProductClassModel.create({ , .then
+
+
+visit add product page
+>> now can add-product and see it in the db
+
+
+(13)////////////////////////////////////////////////
+//use sqlz to retrieve data - fetchAll for index/products pages
+
+With Sequelize v5, findById() (which we'll use in this course) 
+was replaced by findByPk().
+You use it in the same way, so you can simply replace all occurrences 
+of findById() with findByPk()
+
+
+//working on the fetchAll for ctr shop getIndex
+>>    ProductClassModel.findAll().then(products into render)
+
+//findAll gets all the records for this data
+//can pass an object with some options
+//like where to restrict the kind of data we retrieve (more in the official docs/Querying)
+//for more options like greater than, different optios etc.
+//ProductClassModel.findAll({where:..}).then().catch();
+
+
+(14)////////////////////////////////////////////////
+//how to retrieve a single product if clicked on details
+
+
+
+
+ctr shop getProduct
+>>ProductClassModel.findByPk(prodId)
+//findAll always gives multiple items in an array even if it is only one element
+>>ProductClassModel.findAll({where: {id: prodId}})
+
+
 
 
 

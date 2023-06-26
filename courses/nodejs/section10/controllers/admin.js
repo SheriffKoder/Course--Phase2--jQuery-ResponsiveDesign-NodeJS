@@ -28,9 +28,11 @@ exports.postAddProduct = (req, res, next) => {
     const price = req.body.price;
     const description = req.body.description;
 
-    const product = new ProductClassModel(null, title, imageUrl, price, description);
+    //const product = new ProductClassModel(null, title, imageUrl, price, description);
 
+    //mySQL
     //just redirect in then (once the insertion is completed)
+    /*
     product.save()
     .then(() => {
         res.redirect("/");
@@ -38,6 +40,25 @@ exports.postAddProduct = (req, res, next) => {
     .catch((err) => {
         console.log(err);
     });
+    */
+
+   //Sequelize
+   //create; creates a new element based on that models + saves it to the db
+   //build; creates a new element but in js and have to save it manually
+   //object model name: js name
+   //sqlz works with promises
+   ProductClassModel.create({
+    title: title,
+    price: price,
+    imageUrl: imageUrl,
+    description: description
+   }).then((result) => {
+        console.log("created product");
+   }).catch((err) => {
+    console.log("error" + err);
+
+   });
+
 
 };
 

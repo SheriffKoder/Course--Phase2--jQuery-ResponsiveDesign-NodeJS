@@ -16,6 +16,8 @@ exports.getProducts = (req, res, next) => {
     });
     */
 
+    /*
+    //mySQL
     ProductClassModel.fetchAll()
     .then(([rows, fieldData]) => {
         res.render("shop/product-list", {prods: rows, myTitle: "All Products page", path:"/products"});
@@ -24,8 +26,21 @@ exports.getProducts = (req, res, next) => {
     .catch((err)=> {
         console.log(err);
     })
-
+    */
     //console.log("shop.js is logging: ", products );
+
+
+    //Sequelize
+    ProductClassModel.findAll()
+    .then((products)=>{
+        res.render("shop/product-list.ejs", {prods: products, myTitle: "All products page", path:"/products"});
+    })
+    .catch((err) => {
+        console.log(err);
+    });
+
+
+
 
 };
 
@@ -46,6 +61,8 @@ exports.getProduct = (req, res, next) => {
 
     const prodId = req.params.productId;
 
+    //mySQL
+    /*
     //use [0] because the returned value is an "array" with the product inside it
     ProductClassModel.findMyId(prodId)
     .then(([product])=> {
@@ -56,6 +73,34 @@ exports.getProduct = (req, res, next) => {
     .catch((err) => {
         console.log(err);
     });
+    */
+
+    //Sequelize
+    //we receive a single product not in an array like mySQL
+    //findAll always gives multiple items in an array even if it is only one element
+    /*
+    ProductClassModel.findAll({where: {id: prodId}})
+        .then((product)=> {
+            //console.log(product[0].title);
+            res.render("shop/product-details", {product: product[0], myTitle: product[0].title, path: "/products"});
+
+        })
+        .catch((err) => {
+            console.log(err);
+        });
+    */
+
+    
+    ProductClassModel.findByPk(prodId)
+    .then((product)=> {
+        //console.log(product[0].title);
+        res.render("shop/product-details", {product: product, myTitle: product.title, path: "/products"});
+
+    })
+    .catch((err) => {
+        console.log(err);
+    });
+    
 
 
 }
@@ -69,14 +114,36 @@ exports.getIndex = (req, res, next) => {
     });
     */
 
+
+    //mySQL code
     //use destructuring to pull out information of the value received as an argument
     //custom name for first and second elements
+    /*
     ProductClassModel.fetchAll()
     .then(([rows, fieldData]) => {
         res.render("shop/index.ejs", {prods: rows, myTitle: "Shop page", path:"/"});
 
     })
     .catch(err => console.log(err));
+    */
+
+
+    //Sequelize
+    //findAll gets all the records for this data
+    //can pass an object with some options
+    //like where to restrict the kind of data we retrieve (more in the official docs)
+    //ProductClassModel.findAll({where:..}).then().catch();
+
+
+
+    ProductClassModel.findAll()
+    .then((products)=>{
+        res.render("shop/index.ejs", {prods: products, myTitle: "Shop page", path:"/"});
+    })
+    .catch((err) => {
+        console.log(err);
+    });
+
 
 
 

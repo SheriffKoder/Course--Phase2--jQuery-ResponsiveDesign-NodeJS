@@ -70,7 +70,7 @@ module.exports = pool.promise();
 //it will use the same syntax above behind the scenes
 
 const Sequelize = require("sequelize");
-//schema, root, password
+//schema name, root name, password
 //dialect makes sure we connect to mysql database, for using the correct syntax
 //host, by default it is set to localhost but we will set it here
 const sequelize = new Sequelize("node-complete", "root", "Blackvulture_92", {
