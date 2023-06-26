@@ -33,7 +33,7 @@ $(".blue-box").animate({
   marginTop: "+=200px",
   opacity: "0.2",
 
-}, 1000), "linear";
+}, 1000, "linear)";
 
 
 
@@ -139,14 +139,14 @@ $(function() {
     "margin-top": "+=200px",
     opacity: "0.2",
 
-  }, 1000), "linear";
+  }, 1000, "linear)";
 
   //removing the added margin (back to original)
   $(".blue-box").animate({
     "margin-top": "-=200px",
     opacity: "1",
 
-  }, 1000), "linear";
+  }, 1000, "linear)";
   */
 
   //custom: animation: fade out to right direction
@@ -236,6 +236,7 @@ $(function() {
   //ways of selecting elements in the document
   //selecting attribute selectors, (:email does not work)
   //:checked(radio), :selected(select option tags)
+
   //$("input[type=submit]").css("background-color", "rgba(180,180,30,0.8");
   //$("input:submit").css("background-color", "rgba(180,180,30,0.8");
 
@@ -299,7 +300,7 @@ $(function() {
 
   //all the direct next elements that come after the header
   //$(":header").next().css("border", "2px solid rgba(255,0,0,0.8");
-  //all input child elements of the form element with password input
+  //all input child elements of the form element with email input
   //$("form").children("input[type=email]").css("border", "2px solid rgba(255,0,0,0.8");
 
 
@@ -436,7 +437,7 @@ for (myColor in color) {
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 
-//replace/replaceAll(rev)
+//replaceWith/replaceAll(rev)
 
 //replace existing elements on the page
 //with either another element that is on your page
@@ -494,7 +495,7 @@ for (myColor in color) {
 //////////////////////////////////////////////////////////////////////////
 //manipulate the attributes and properties of such elements
 //id, class, type, value, src etc.
-//attr() > attribute
+//attr(targetAttr, giveValue) > attribute
 //prop() > properties
 //val() > values of input elements
 
@@ -513,14 +514,14 @@ for (myColor in color) {
 //attr will always return checked, cannot check if the input has been clicked check/uncheck
 //"prop" returns true if checked etc.
 //can use it with an event listener
-//returns the current value of the element  
+//>> "prop" returns the current value of the element
 
 //console.log($("input[type=checkbox]").prop("checked")); //true
 //console.log(specialLink.prop("href"));  // https://url/
 
 
 
-//val , reads the current value attr of our input elements
+//val , reads the current (value attr) of our input elements
 //use: take all values from a form element to validate them
 //val will return the first element of the type only
 //var textInput = $("input[type=text");
@@ -537,12 +538,18 @@ for (myColor in color) {
 //////////////////////////////////////////////////////////////////////////
 //create an image slideshow using jQuery
 
+/*
 let galleryImage = $(".gallery").find("img").first();
 let images = [
 "images/laptop-mobile_small.jpg",
 "images/laptop-on-table_small.jpg",
 "images/people-office-group-team_small.jpg"
 ];
+
+galleryImage.css("width", "80vw");
+*/
+
+
 
 /*
 let i = 0;
@@ -558,7 +565,9 @@ setInterval(() => {
 
 //galleryImage.attr("src", images[1]);
 
-let i = 1;
+/*
+//working
+let i = 0;
 setInterval(()=> {
 
   galleryImage.fadeOut(1500, () => {
@@ -569,12 +578,184 @@ setInterval(()=> {
   i++;
   if (i === images.length) i = 0;
 
-}, 2000);
+}, 3100); //timer has to be more than animations duration to avoid clapping
+*/
+
+
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+//Accessing /changing css properties of elements
+//appearance, contents, data associated with elements
+
+
+//output the value of the css property
+//var redBox = $(".red-box");
+//console.log(redBox.css("width"));
+
+
+
+//will output the value without px etc. if left empty
+//can set value if given a "value"
+//also have .height()
+//console.log(redBox.width());
+
+
+
+//increase the width the element "already" has
+//or -= to decrease
+//redBox.width("+=10px"); 
+
+
+//get all the properties you want into an object
+//var properties = redBox.css(["background-color", "width", "height"]);
+//console.log(properties);
+//console.log(properties["background-color"]);
+
+
+
+//jQ will add css with the appropriate browser prefix automatically -moz -webkit
+//no need to specify prefix
+
+
+
+//jQ will ignore !important in the .css
+
+
+
+//can pass functions to .css
+//redBox.css("user-select", ()=> {  return "none"; });
+
+
+
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+//Add and remove multiple css classes
+
+//add an already defined css class to an element
+//do not put a dot "." before
+//$("a").addClass("fancy-link");
+
+
+
+//add multiple classes by separating with space
+//$("p:first").addClass("large emphasize");
+
+
+
+//can use functions in .addClass
+//the function passed will receive index and currentClass
+/*
+$("li li").addClass(function(index) {
+  $(this).addClass(`item-${index}`);
+});
+*/
+
+
+//the function passed will receive index and currentClass
+//this works if there is only one class, "dummy"
+//adds class beside the currentClass
+/*
+$("div").addClass((index, currentClass) => {
+  if (currentClass === "dummy") {
+    return "blue-box";
+  }
+});
+*/
+
+
+//remove class for any have blue-box
+//$(".blue-box").removeClass("blue-box");
+
+
+
+//switch classes
+//$(".red-box").removeClass("red-box").addClass("blue-box");
+
+
+
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+//changing the data attr of an element
+
+//reference that data later on and retrieve back from that object
+//uses capacity from memory
+//installing into a variable makes jq not have to look though the dom each time use that element
+/*
+let gallery = $(".gallery");
+let images = [
+  "images/laptop-mobile_small.jpg",
+  "images/laptop-on-table_small.jpg",
+  "images/people-office-group-team_small.jpg"
+  
+];
+*/
+
+
+////associate and access data related to an element
+//set value for data for gallery
+// gallery.data("availableImages", images);
+//get value for data for gallery
+//console.log(gallery.data("availableImages"));
+
+
+
+//gallery.data("name", "awesome gallery");
+//console.log(gallery.data("name"));
+
+
+
+//returns "all the data" associated with that gallery element in an array
+//console.log(gallery.data());
+
+//remove associated data from an element
+// gallery.removeData("name");
+//console.log(gallery.data());
+
+//remove all associated data from an element
+//gallery.removeData();
+//console.log(gallery.data());
+
+
+
+//in html5 we have data attr like data-anyname="some data" (small letters)
+//let firstP = $("p:first");
+//console.log(firstP.data("mydata"));
+//console.log(firstP.data());
+
+
+
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+//retrieving and changing the content of an element
+
+//text(), html()
+//always call first if multiple elements selected
+//can also pass in functions that return content want to be added
+//let firstP = $("p:first");
+//console.log(firstP.text()); //output text with no html tags inside
+//console.log(firstP.html()); //output text with the html tags inside like <em>
+
+//firstP.text("<h3> hello world </h3>"); //displays text
+//firstP.html("<h3> <em> hello world</em> </h3>"); //displays html
+
+//keep the original content and append text to it
+//let text1 = firstP.html();  //to keep the tags inside
+//firstP.html(text1 + " <button> appended button !!!</button>"); //displays text
+
+
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+//What are Events and event handles
 
 
 
 
 
 
-//end of jQuery
+
+
+
+
+//check fancy-link in css
+//end of jQuery function
 });
