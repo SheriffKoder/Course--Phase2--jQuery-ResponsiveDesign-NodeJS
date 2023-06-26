@@ -22,13 +22,6 @@ exports.getAddProduct = (req, res, next) => {
 
 
 exports.postAddProduct = (req, res, next) => {
-    //console.log(req.body);    
-    //outputs object, so can know the keys, related to bodyParser
-    //console.log(req.body["productAdded"]);
-
-    //change the value of products[] before getting to export
-    //products.push({"recent_product": req.body.productAdded});
-
     //pass the form title and push the title to the products array in product.js using save
     const title = req.body.productAdded;
     const imageUrl = req.body.imageUrl;
@@ -37,10 +30,15 @@ exports.postAddProduct = (req, res, next) => {
 
     const product = new ProductClassModel(null, title, imageUrl, price, description);
 
-    product.save();
+    //just redirect in then (once the insertion is completed)
+    product.save()
+    .then(() => {
+        res.redirect("/");
+    })
+    .catch((err) => {
+        console.log(err);
+    });
 
-    //res.send("<h1>Add product page 2");
-    res.redirect("/");
 };
 
 

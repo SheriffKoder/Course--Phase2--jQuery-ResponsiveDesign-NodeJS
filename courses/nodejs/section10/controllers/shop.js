@@ -9,11 +9,21 @@ exports.getProducts = (req, res, next) => {
     //on fetchAll call, send this function that will be called to retrieve render 
     //based on the product status empty-array or data
     //*read file then pass read-products into this function to pass to the rendered ejs
+    /*
     ProductClassModel.fetchAll(products => {
         res.render("shop/product-list", {prods: products, myTitle: "All Products page", path:"/products"});
 
     });
+    */
 
+    ProductClassModel.fetchAll()
+    .then(([rows, fieldData]) => {
+        res.render("shop/product-list", {prods: rows, myTitle: "All Products page", path:"/products"});
+
+    })
+    .catch((err)=> {
+        console.log(err);
+    })
 
     //console.log("shop.js is logging: ", products );
 
@@ -22,21 +32,54 @@ exports.getProducts = (req, res, next) => {
 //express js gives us a params object on our request
 //access our productId because its used in the routes js files
 exports.getProduct = (req, res, next) => {
+
+    /*
     const prodId = req.params.productId;
     //console.log("prodId", prodId);
     ProductClassModel.findMyId(prodId, product => {
         //console.log(product);
         res.render("shop/product-details", {product: product, myTitle: product.title, path: "/products"});
     });
+    
     //res.redirect("/");
+    */
+
+    const prodId = req.params.productId;
+
+    //use [0] because the returned value is an "array" with the product inside it
+    ProductClassModel.findMyId(prodId)
+    .then(([product])=> {
+        //console.log(product[0].title);
+        res.render("shop/product-details", {product: product[0], myTitle: product[0].title, path: "/products"});
+
+    })
+    .catch((err) => {
+        console.log(err);
+    });
+
+
 }
 
 //main-page
 exports.getIndex = (req, res, next) => {
+    /*
     ProductClassModel.fetchAll(products => {
         res.render("shop/index.ejs", {prods: products, myTitle: "Shop page", path:"/"});
 
     });
+    */
+
+    //use destructuring to pull out information of the value received as an argument
+    //custom name for first and second elements
+    ProductClassModel.fetchAll()
+    .then(([rows, fieldData]) => {
+        res.render("shop/index.ejs", {prods: rows, myTitle: "Shop page", path:"/"});
+
+    })
+    .catch(err => console.log(err));
+
+
+
 };
 
 

@@ -61,6 +61,7 @@ many-to-many; multiple records in table A can fit multiple records in table B
 tables are connected
 
 ex: SELECT * FROM users WHERE age > 28
+SELECT * FROM (table) where (field) > (record)
 SQL Keywords/Syntax: SELECT, FROM, WHERE
 Parameters/Data to connect with these keywords; *, users, age > 28
 
@@ -184,6 +185,15 @@ create database.js file in the utl folder
 
 >>database.js
 
+//create pool
+//export pool with promise
+//in app.js require the database.js
+
+//in the workbench
+//create new schema "node-module"
+//create new table "products" in the schema
+//will ask for "fields" in this table for id, title, price etc
+//then can populate "fields with records"
 
 */
 
@@ -192,7 +202,7 @@ create database.js file in the utl folder
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
 //using ejs
-
+/*
 const http = require("http");
 const express = require("express");
 const app = express();
@@ -218,15 +228,16 @@ const shopJsRoutes = require("./routes/shop.js");
 //we will learn here basic SQL commands but for further commands take a SQL course
 //select everything from products
 //then is provided by the fact that we are using promise in the db export
-//promises have two functions, then and catch()
+//promises have two functions, then() and catch()
+//then() runs when the promise is resolved and its "argument" is "the returned from promise"
 //catch executes in case of an error, in case the db failed or something
 //we can chain them on to the result of the execute call
 //so they will execute on whenever db(pool).promise gives us back
 //then can take a function
-//result is the whole result, 0 outputs the products
+//result is the whole result, result[0] outputs the products
 db.execute("SELECT * FROM products")
     .then((result) => {
-        console.log("result", result[1]);
+        console.log("result", result[0]);
     })
     .catch((err) => {
         console.log(err);
@@ -247,22 +258,26 @@ app.use(shopJsRoutes); //replaced code
 app.use("/admin", adminJsRoutes);
 
 //used the __dirname directly here because we are in a root file
-/*
-app.use((req, res, next) => {
+
+//app.use((req, res, next) => {
     //res.status(404).send("<h1>Page not found</h1>");
     //res.status(404).sendFile(path.join(__dirname, "views", "404.html"));
-    res.status(404).render("404", {myTitle: "404 Page", path: "404"});
-});
-*/
+    //res.status(404).render("404", {myTitle: "404 Page", path: "404"});
+//});
+
 const errorController = require("./controllers/errorController.js");
 app.use(errorController.get404);
 
 
 app.listen(3000);
 
+*/
+
+
 /*
 
-
+///////////////////////////////////////////////////////////////
+//using the mySQL workbench
 we have no products table yet
 for the db.method
 so get to the workbench and on tables right click create table
@@ -283,6 +298,214 @@ now we can see the products table in the tables on the left pane
 and if clicked on the table icon can see the entries in there
 
 can add an entry manually in the result grid
+
+*/
+
+
+
+
+///////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////
+//using ejs
+
+const http = require("http");
+const express = require("express");
+const app = express();
+const path = require("path");
+
+//the pool which allows us to use a connection in it
+const db = require("./util/database.js");
+
+
+app.set("view engine", "ejs");
+app.set("views", "views");
+
+
+const adminJsRoutes = require("./routes/admin.js");
+const shopJsRoutes = require("./routes/shop.js");
+
+
+const bodyParser = require("body-parser");
+app.use(bodyParser.urlencoded({extended: false}));
+
+app.use(express.static(path.join(__dirname, "public")));
+
+
+//app.use(adminJsRoutes.routes); //replaced code
+//app.use(adminJsRoutes); //replaced code
+app.use(shopJsRoutes); //replaced code
+
+////filtering mechanism
+//not put /admin/.. in the routes links but put in the navigation/form etc.
+app.use("/admin", adminJsRoutes);
+
+//used the __dirname directly here because we are in a root file
+
+//app.use((req, res, next) => {
+    //res.status(404).send("<h1>Page not found</h1>");
+    //res.status(404).sendFile(path.join(__dirname, "views", "404.html"));
+    //res.status(404).render("404", {myTitle: "404 Page", path: "404"});
+//});
+
+const errorController = require("./controllers/errorController.js");
+app.use(errorController.get404);
+
+
+app.listen(3000);
+
+
+/*
+
+above we were able to output a record from the db
+time to use sql in the project code
+
+
+right now we are fetching data from our files
+in the product model
+want to fetch data from the database
+
+(1)
+do not need fs and path modules
+empty all the methods in the product model as we will not use files
+also remove the callbacks from parameters
+we will use promises
+
+(2)
+return from "fetchAll" the db.execute
+db returns a promise
+
+(3)
+and in the shop controller getIndex destruct in the .then
+and use the first element as products for render
+
+now when we change values in the database workbench
+the change can be seen on the page
+
+(4)
+do the same for getProducts of url (/products product-list.ejs)
+
+skill : extracting different elements of an array
+let [element1, element2] = arrayof2elements;
+
+
+(5)
+working on the save() for postAddProduct
+go to the model
+add db.execute(INSERT INTO..)
+
+
+
+
+(6)
+in the admin.js controller
+add to save .then().catch()
+just redirect in then (once the insertion is completed)
+
+now (add product) data can be inserted in the db
+can be viewed by refreshing the table in the workbench
+
+
+(7)////////////////////////////////////////////////
+working on the product-details
+by working on the findById in the product model
+
+(id here is passed as a value from the argument)
+selects the whole row of this id
+"SELECT * FROM products WHERE products.id = ?", [id]
+
+
+(8)
+return to shop.js controller
+add the render to the .then
+
+
+////////////////////////////////////////////////
+//Module 11 Sequelize
+next step is not to write our own queries
+as going through the app it will get complex and need to relate tables
+using sql syntax
+however we can use a third-party library for that without using sql syntax
+using Sequelize
+so can focus more on Node.js not on SQL
+
+still using sql database in the background 
+but the code we write will be different
+
+allows to work with js objects and convinient methods
+to create new elements to the database, edit, delete, find, connect them
+
+is an object relational mapping library
+does all the heavy lifting, sql code, behind the scenes for us 
+and maps it into js objects with convenience methods 
+which we can call to execute behind the scenes sql code
+so we never have to write sql code on our own
+
+object of user with name,age,email,password
+then is mapped to a database table by Sequelize using a method
+
+automatically creates tables, set relations for tables 
+
+from
+"INSERT INTO table (field1, field2,..) VALUES (?, ?, ..)", [value1, value2, ..]
+to
+const user = User.create({value1: "..", value2: ".."});
+
+sqlz offers us the models to work with our database 
+and define such models, which data makes up a model, which data will be saved in the db
+Models: e.g "User", Product
+
+
+can instantiate these models / classes so to say
+can execute their constructor functions or use utility methods 
+    to create a new user object based on that model
+Instances: const user = "User".build()
+
+can then run queries on that, save a new user, find all users
+Queries: "User".findAll()
+
+can also associate our models
+associate for example the User model to a Product model
+Associations: "User".hasMany(Product)
+
+
+(9)////////////////////////////////////////////////
+install sqlz
+
+sqlz needs the sql2 package to be installed
+# npm install --save sequelize
+
+1. create a model to sqlz
+2. connect to the db
+
+go to the workbench and delete/drop the existing products table
+we want sqlz to manage our tables
+
+
+>> util> database.js
+use SQL to connect to db / setup a connection pool
+
+
+(10)////////////////////////////////////////////////
+//defining and working with the models 
+
+
+
+
+
+
+
+
+sql-skill: 
+db.execute("..");
+SELECT * FROM products
+
+insert these valuses in db:
+"INSERT INTO table (field1, field2,..) VALUES (?, ?, ..)", [value1, value2, ..]
+
+selects the whole row of this id
+using "?" make it secure to get/send values
+"SELECT * FROM products WHERE products.id = ?", [id]
+
 
 
 */

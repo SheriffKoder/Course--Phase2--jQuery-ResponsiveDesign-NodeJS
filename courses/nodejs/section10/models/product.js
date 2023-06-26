@@ -1,14 +1,15 @@
 /* models/product.js */
 
 
-const fs = require("fs");
-const path = require("path");
-const rootPath = require("../util/path.js");
+//const fs = require("fs");
+//const path = require("path");
+//const rootPath = require("../util/path.js");
 //const { error } = require("console");
-const myDataFilePath = path.join(rootPath, "data", "products.json");
+//const myDataFilePath = path.join(rootPath, "data", "products.json");
 
 const cartModel = require("./cart.js");
 
+/*
 const getProductsFromFile = (in_cb) => {
 
         fs.readFile(myDataFilePath, (error, fileContent) => {
@@ -34,13 +35,12 @@ let cb2 = (products) => {
         });
 }
 
+*/
+//const products = [];
 
-const products = [];
+const db = require("../util/database.js");
 
-//add property title
-//add save method
-//this in save refers to the object created based on the class
-//static makes the method accessible from the class itself not the new instances
+
 
 module.exports = class Product {
     constructor (id, title1, imageUrl1, price1, description1) {
@@ -53,9 +53,8 @@ module.exports = class Product {
 
     save() {
 
-        
-        //getProductsFromFile(cb2);
         //edit or add product
+        /*
         getProductsFromFile((products) => {
             //if id, update the existing one
             if (this.id) {
@@ -81,101 +80,67 @@ module.exports = class Product {
                 });
             }
         });
+        */
+
+        //should reach out to the database and save the data there
+        //fields should be like the order in the database
+        //no need to specify the id because it will be specified automatically by the db engine
+        //followed by values
+        //values can be unsafe to specify directly
+        //so will add "?" and then specify the values for db engine to handle that replacement 
+        return db.execute("INSERT INTO products (title, price, description, imageUrl) VALUES (?,?,?,?)",
+        [this.title, this.price, this.description, this.imageUrl ]
+        );
+
 
     }
 
-        //add new product list and also call the cartModel to delete from cart+price
-        static deleteById (id) {
-            getProductsFromFile((products) => {
-
-                const product = products.find(prod => prod.id === id);
-
-                //filter takes a function and returns a new array of
-                //the elements that match the criteria my function returns
-                const updatedProducts = products.filter(prod => prod.id !== id);    //default js
-    
-                fs.writeFile(myDataFilePath, JSON.stringify(updatedProducts), (error) => {
-                    console.log(error);
-                    if (!error) {
-                        cartModel.deleteProduct(id, product.price);
-                    }
-                });
-
-            });
-        };
-
-    
-
+    //add new product list and also call the cartModel to delete from cart+price
+    static deleteById (id) {
         /*
-        const myDataFilePath = path.join(rootPath, "data", "products.json");
+        getProductsFromFile((products) => {
 
-        //reads the entire file content of a file
-        //for big files, more memory efficient ways, using fs.createReadStream
-        ////p is the file interested in, 
-        //then will do something once reading it in
-        //there we either get error or the data (fileContent)
-        //if no error then i want to read the products from the file we extracted
-        //transform the json to js code using parse
-        //so my product will be an empty array or what is read from file
-        //arrow function is useful here to allow "this" to have the context of this class
-        fs.readFile(myDataFilePath, (error, fileContent) => {
-            //console.log(fileContent);
+            const product = products.find(prod => prod.id === id);
 
-            let products = [];
+            //filter takes a function and returns a new array of
+            //the elements that match the criteria my function returns
+            const updatedProducts = products.filter(prod => prod.id !== id);    //default js
 
-            //*if no error my reading into products
-            if (!error) {
-                products = JSON.parse(fileContent);
-            }
-
-            //*write filecontent + this
-
-            products.push(this);
-            //products into json and written to the file
-            //also use callback to log if got an error
-            fs.writeFile(myDataFilePath, JSON.stringify(products), (error) => {
+            fs.writeFile(myDataFilePath, JSON.stringify(updatedProducts), (error) => {
                 console.log(error);
+                if (!error) {
+                    cartModel.deleteProduct(id, product.price);
+                }
             });
 
         });
         */
+    
+    
+    };
 
     
 
-    static fetchAll(cb1) {
+    //static fetchAll(cb1) {
+            //getProductsFromFile(cb1);
+    static fetchAll() {
+
+        //should reach out to the database
+        //need access to the database
+        //import the pool object from the database js file
         
-        //return empty array if no products
-        //the readFile callback here is async, it is registered but not used when fetchAll is called
-        //thus content is undefined, and we get a length error
-        //so will call the render from contr/product.js once fetchAll is done reading
-        //just like the readFile which takes our function as a callBack
-        //however had to make at least one input in JSON and ignore it in .ejs html as [] do no work
-        //gives unexpected end of json input
-        //also can give a starting json an empty array
-        /*
-        const myDataFilePath = path.join(rootPath, "data", "products.json");
-
-        fs.readFile(myDataFilePath, (error, fileContent) => {
-            if (error) {
-                //cb([]);
-            }
-
-            if (!error) {
-                //*if no error my reading into products
-                cb(JSON.parse(fileContent));
-            }
-        });
-        */
-
-        getProductsFromFile(cb1);
+        //select just the id and title "SELECT id, title"
+        //this returns a promise
+        //can use then() and catch() here, but will use it in the place we will call fetchAll
+        return db.execute("SELECT * FROM products");
 
 
-        //return products;
     }
 
+    //static findMyId(id, cb) {
+    static findMyId(id) {
 
-    static findMyId(id, cb) {
-
+        /*
         //returns a parsed object of the products
         //will filter the id interested in
         getProductsFromFile((products) => {
@@ -189,6 +154,10 @@ module.exports = class Product {
             cb(product);
 
         });
+        */
+        //using "?" make it secure to get/send values
+        //selects the whole row of this id
+        return db.execute("SELECT * FROM products WHERE products.id = ?", [id]);
 
 
     };
