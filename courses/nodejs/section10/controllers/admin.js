@@ -73,6 +73,8 @@ exports.getEditProduct = (req, res, next) => {
     //get the product id from the url
     const prodId = req.params.productId;
     //use the product model to find this product
+
+    /*
     ProductClassModel.findMyId(prodId, product => {
         if (!product) {
             console.log("product does not exist to be edited");
@@ -87,6 +89,28 @@ exports.getEditProduct = (req, res, next) => {
             
         });    
     });
+    */
+
+
+    ProductClassModel.findByPk(prodId)
+        .then((product) => {
+            if (!product) {
+                console.log("product does not exist to be edited");
+                res.redirect("/");
+            }
+            res.render("admin/edit-product", 
+            {
+                product: product,
+                myTitle: "edit-Product page", 
+                path: "/admin/add-product", 
+                editing: editMode
+                
+            });        
+        })
+        .catch((err) => {
+
+        });
+
 
 
 };
@@ -106,19 +130,68 @@ exports.postEditProduct = (req,res, next) => {
     const updatedPrice = req.body.price;
     const updatedDescription = req.body.description;
 
+    //express
+    /*
     const updatedProduct = new ProductClassModel(prodId, updatedTitle, updatedImageUrl, updatedPrice, updatedDescription);
 
     updatedProduct.save();
     res.redirect("/admin/products");
+    */
+
+    ProductClassModel.findByPk(prodId)
+        .then((product) => {
+
+            //this will not change the data in our db, but will change them locally
+            product.title = updatedTitle;   
+            product.imageUrl = updatedImageUrl;
+            product.price = updatedPrice;            
+            product.description = updatedDescription;            
+
+            //takes the product as we edited it
+            //and saves it back to the database
+            //either update values or create a new one if it does not exist yet
+            //can return this, which returns a promise
+            //
+            return product.save();
+         
+
+        })
+        .then(()=> {
+            //handles any success responses from the (save) promise
+            console.log("updated product");
+            res.redirect("/admin/products");
+
+        })
+        .catch((err) => {
+            //this catch will catch errors for the first promise (findByPk) 
+            //and second promise (save)
+            console.log(err);
+        });
+     //});
+
 
 }
 
 exports.getProducts = (req, res, next) => {
 
+    //express
+    /*
     ProductClassModel.fetchAll(products => {
         res.render("admin/products.ejs", {prods: products, myTitle: "Admin Products", path:"/admin/products"});
 
     });
+    */
+
+    //Sequelize
+    ProductClassModel.findAll()
+    .then((products)=>{
+        res.render("admin/products.ejs", {prods: products, myTitle: "Admin Products", path:"/admin/products"});
+    })
+    .catch((err) => {
+        console.log(err);
+    });
+
+
 };
 
 exports.postDeleteProduct = (req, res, next) => {

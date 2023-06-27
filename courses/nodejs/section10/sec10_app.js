@@ -559,7 +559,7 @@ You use it in the same way, so you can simply replace all occurrences
 of findById() with findByPk()
 
 
-//working on the fetchAll for ctr shop getIndex
+// (e) working on the fetchAll for ctr shop getIndex
 >>    ProductClassModel.findAll().then(products into render)
 
 //findAll gets all the records for this data
@@ -575,10 +575,52 @@ of findById() with findByPk()
 
 
 
-ctr shop getProduct
+(f) ctr shop getProduct
 >>ProductClassModel.findByPk(prodId)
 //findAll always gives multiple items in an array even if it is only one element
 >>ProductClassModel.findAll({where: {id: prodId}})
+both are the same but will use findByPk
+
+
+
+(15)////////////////////////////////////////////////
+//fetching admin products
+
+admin controller >  getProducts > add findAll().then()
+
+//updating products - edit products
+
+admin controller > getEditProduct > 
+    ProductClassModel.findByPk(prodId)
+        .then((product) => {
+
+
+//posting an edited product
+add the filled values to the returned product from find
+product.save();    //by seqeulize
+then redirect
+
+
+JS Skill:
+    ProductClassModel.findByPk(prodId)
+        .then((product) => {
+            //can return this, which returns a promise
+            return product.save();
+         
+
+        })
+        .then(()=> {
+            //handles any success responses from the (save) promise
+            console.log("updated product");
+            res.redirect("/admin/products");
+
+        })
+        .catch((err) => {
+            //this catch will catch errors for the first promise (findByPk) 
+            //and second promise (save)
+            console.log(err);
+        });
+
 
 
 
