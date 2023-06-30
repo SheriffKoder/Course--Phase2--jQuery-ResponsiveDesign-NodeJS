@@ -1,3 +1,4 @@
+
 /*
 Databases introduction
 
@@ -383,6 +384,9 @@ const path = require("path");
 //the pool which allows us to use a connection in it
 const sequelize = require("./util/database.js");
 
+//(17)
+const Product = require("./models/product");
+const User = require("./models/user");
 
 app.set("view engine", "ejs");
 app.set("views", "views");
@@ -398,6 +402,27 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(express.static(path.join(__dirname, "public")));
 
 
+
+
+//(18)
+//this middleware will be executed even though the sync is below
+//but this has to be called before using the routes using it
+app.use((req, res, next) => {
+    User.findByPk(1).then(user => {
+        //returns a sqlz object not just the value
+        //an object we can use sqlz methods on
+        req.user = user;
+        console.log("user is", req.user);
+        next();
+        //this user will be stored in req.user
+        //which will be used in "next" middleware
+        //which is postAddProduct
+    })
+    .catch(err => {
+        console.log(err);
+    })
+});
+
 //app.use(adminJsRoutes.routes); //replaced code
 //app.use(adminJsRoutes); //replaced code
 app.use(shopJsRoutes); //replaced code
@@ -405,6 +430,7 @@ app.use(shopJsRoutes); //replaced code
 ////filtering mechanism
 //not put /admin/.. in the routes links but put in the navigation/form etc.
 app.use("/admin", adminJsRoutes);
+
 
 //used the __dirname directly here because we are in a root file
 
@@ -418,17 +444,47 @@ const errorController = require("./controllers/errorController.js");
 app.use(errorController.get404);
 
 
+
+//(17)
+//can learn about more association usage in the documentation/association
+//configure some options, onDelete: on delete, the relation should be also deleted for "Product"
+//so if we delete a user, all products related to the user would also be gone
+Product.belongsTo(User, {constraints: true, onDelete: "CASCADE"});
+User.hasMany(Product);
+
+//sync will now also define the defined relations
+//setting sync({force:true}) will allow the already created products table 
+//to be overwrite by the new relation information 
+
+
 //has a look at all the models you defined and sync them to the db and if you have relations
 //and start our server if we made it into then
 //when running the app.js, will find the SQL syntax used in the console result
 //the product model is not linked anywhere in code, did it auto check the models folder ?
-sequelize.sync()
+sequelize.sync( )
     .then((result) => {
         //console.log(result);
+        return User.findByPk(1);
+    })
+    .then((user) => {
+        //this will listen to the returned
+        if (!user) {
+            return User.create({name: "max", "email": "test@email.com"});
+        }
+        //a promise that instantly resolve the user
+        //to keep the returns in this block consistent
+        //however if you returned a value in a then block
+        //it automatically returns a new promise
+        //return Promise.resolve(user);
+        return user;
+    })
+    .then(user => {
+        //listens to the above .then return
+        //console.log(user);
         app.listen(3000);
     })
     .catch((err) => {
-        //console.log(err);
+        console.log(err);
     });
 
 
@@ -620,6 +676,71 @@ JS Skill:
             //and second promise (save)
             console.log(err);
         });
+
+//
+(16)////////////////////////////////////////////////
+//Deleting Products
+
+
+admin.js > postDeleteProducts
+    ProductClassModel.findByPk(prodId)
+        .then((product) => {
+            return product.destroy();
+        })
+
+
+(17)////////////////////////////////////////////////
+//Creating a user model - Relations
+
+
+//1. define a user model like the product model models/user.js
+//create an association
+
+
+association / relation
+defining how models work together
+multiple users, multiple carts
+
+product/user relation to cart;
+a product can belong to many carts
+each user has only one cart
+
+product/user relation to order;
+a product belongs to multiple orders
+a user has many orders
+
+a user can own multiple products (created)
+
+2. add to app.js
+Product.belongsTo(User, {constraints: true, onDelete: "CASCADE"});
+User.hasMany(Product);
+
+as we put force in sync
+the created products will be deleted for a new relational-products table
+will populate products that ARE related to a user*
+
+remove the force: true
+
+
+(18)////////////////////////////////////////////////
+//Creating a user
+
+in the app.js sync
+use the create method to create a user
+
+
+//retrieve (store) the user in the request so can use it in the app
+
+
+(19)////////////////////////////////////////////////
+//use the user to create associated products
+
+using next in the user middleware in app.js
+allows to use req.user in the next middlewares
+like postAddProduct
+to add to the created product, a userid
+to associate that product to this user of id 1 for example
+
 
 
 

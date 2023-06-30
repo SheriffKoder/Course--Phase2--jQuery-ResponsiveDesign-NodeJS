@@ -42,22 +42,49 @@ exports.postAddProduct = (req, res, next) => {
     });
     */
 
+
    //Sequelize
    //create; creates a new element based on that models + saves it to the db
    //build; creates a new element but in js and have to save it manually
    //object model name: js name
    //sqlz works with promises
+   /*
    ProductClassModel.create({
     title: title,
     price: price,
     imageUrl: imageUrl,
-    description: description
+    description: description,
+    userId: req.user.id //(19)
+
    }).then((result) => {
         console.log("created product");
+        res.redirect("/admin/products");
+
    }).catch((err) => {
     console.log("error" + err);
 
    });
+   */
+
+    //(19)
+    //as we already defined a relation between user and product in app.js
+    //sqlz creates a custom method named createProduct to the user
+
+    req.user.createProduct({
+        title: title,
+        price: price,
+        imageUrl: imageUrl,
+        description: description,
+        userId: req.user.id //(19)
+    
+       }).then((result) => {
+            console.log("created product");
+            res.redirect("/admin/products");
+    
+       }).catch((err) => {
+        console.log("error" + err);
+    
+       });
 
 
 };
@@ -196,7 +223,27 @@ exports.getProducts = (req, res, next) => {
 
 exports.postDeleteProduct = (req, res, next) => {
     const prodId = req.body.productId;
-    ProductClassModel.deleteById(prodId);
-    res.redirect("/admin/products");
+
+    //express
+    //ProductClassModel.deleteById(prodId);
+
+    //sequelize, using destroy directly and adding a condition about which product to destroy
+    //ProductClassModel.destroy({WHERE})
+
+    ProductClassModel.findByPk(prodId)
+        .then((product) => {
+            return product.destroy();
+        })
+        .then((result) => {
+            //.then on the destroy promise
+            console.log("removed product");
+            res.redirect("/admin/products");
+        })
+        .catch((err) => {
+            console.log(err);
+        });
+    
+
+    //res.redirect("/admin/products");
 
 };
