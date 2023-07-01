@@ -118,9 +118,14 @@ exports.getEditProduct = (req, res, next) => {
     });
     */
 
+    //    ProductClassModel.findByPk(prodId)
+        //.then((product) => {
 
-    ProductClassModel.findByPk(prodId)
-        .then((product) => {
+    //(20)
+    //getProducts given by sqlz
+    req.user.getProducts({ where: { id:prodId} })
+        .then((products) => {
+            const product = products[0]; //(20)
             if (!product) {
                 console.log("product does not exist to be edited");
                 res.redirect("/");
@@ -210,7 +215,8 @@ exports.getProducts = (req, res, next) => {
     */
 
     //Sequelize
-    ProductClassModel.findAll()
+    //ProductClassModel.findAll()
+    req.user.getProducts()  //(20) //will return all products
     .then((products)=>{
         res.render("admin/products.ejs", {prods: products, myTitle: "Admin Products", path:"/admin/products"});
     })

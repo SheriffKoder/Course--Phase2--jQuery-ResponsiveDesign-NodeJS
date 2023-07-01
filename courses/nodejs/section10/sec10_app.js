@@ -387,6 +387,8 @@ const sequelize = require("./util/database.js");
 //(17)
 const Product = require("./models/product");
 const User = require("./models/user");
+const Cart = require("./models/cart.js");
+const CartItem = require("./models/cart-item.js");
 
 app.set("view engine", "ejs");
 app.set("views", "views");
@@ -451,6 +453,13 @@ app.use(errorController.get404);
 //so if we delete a user, all products related to the user would also be gone
 Product.belongsTo(User, {constraints: true, onDelete: "CASCADE"});
 User.hasMany(Product);
+//(21)
+User.hasOne(Cart);
+Cart.belongsTo(User); //inverse to the above, thus two directions, one direction is enough
+//many-to-many relation
+Cart.belongsToMany(Product, {through: CartItem });    //the through key, telling where these connections should be stored
+Product.belongsToMany(Cart, {through: CartItem });
+
 
 //sync will now also define the defined relations
 //setting sync({force:true}) will allow the already created products table 
@@ -461,6 +470,7 @@ User.hasMany(Product);
 //and start our server if we made it into then
 //when running the app.js, will find the SQL syntax used in the console result
 //the product model is not linked anywhere in code, did it auto check the models folder ?
+//sequelize.sync({force: true} )
 sequelize.sync( )
     .then((result) => {
         //console.log(result);
@@ -477,6 +487,10 @@ sequelize.sync( )
         //it automatically returns a new promise
         //return Promise.resolve(user);
         return user;
+    })
+    .then(user => {
+        //listens to the above .then return
+        user.createCart();  //(21)
     })
     .then(user => {
         //listens to the above .then return
@@ -742,9 +756,59 @@ to add to the created product, a userid
 to associate that product to this user of id 1 for example
 
 
+//162
+(20)////////////////////////////////////////////////
+//Fetching related products
+
+in getEditProduct
+    req.user.getProducts({ where { id:prodId }})
+    ProductClassModel.findByPk(prodId)
+
+in getProducts
+use     res.user.getProducts()  <<given by sqlz relation hasMany
+instead of ProductClassModel.findAll()
+
+getProducts given by sqlz
 
 
+(21)////////////////////////////////////////////////
+//one-to-many, many-to-many relations
+//working on the cart
 
+
+a cart should be related to the user
+with a product or many products
+with quantity associated to them
+
+delete everything in cart
+define a cart using sqlz
+
+we will also need a new cart-item.js file
+because a user can have many carts
+define a cart-item using sqlz
+
+>> set relations in app.js
+
+
+(21)////////////////////////////////////////////////
+//creating and fetching a cart
+
+//disable sync force here
+go to shop controller > getCart
+
+
+>> when creating a user in app.js, also use
+>>user.createCart in another then
+req.user.getCart().then().catch()   <<given by sqlz relation
+
+in user getCart()
+return cart.getProducts()   << as cart has many products relation
+
+(22)////////////////////////////////////////////////
+//adding products to cart
+
+shop.js controller > postCart
+..
 
 
 
@@ -756,7 +820,7 @@ sql-skill:
 db.execute("..");
 SELECT * FROM products
 
-insert these valuses in db:
+insert these values in db:
 "INSERT INTO table (field1, field2,..) VALUES (?, ?, ..)", [value1, value2, ..]
 
 selects the whole row of this id

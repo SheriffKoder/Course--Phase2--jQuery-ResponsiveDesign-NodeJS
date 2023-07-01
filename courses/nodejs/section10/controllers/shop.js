@@ -157,17 +157,87 @@ exports.postCart = (req, res, next) => {
     //add to our cart
     //productId is the name used in the view file form on hidden input
     const prodId = req.body.productId;
+    let fetchedCart;
     //console.log(prodId);
 
+    req.user.getCart()  //(22)
+    .then((cart)=> {
+        fetchedCart = cart;
+        //find if the product im trying to add is already part of the cart
+        //if it is, increase quantity, if its not add it with quantity 1
+        return cart.getProducts({ where: {id: prodId}});
+    })
+    .then(products => {
+        let product;
+        if (products.length > 0) {
+            product = products[0];
+        }
+        let newQuantity = 1;
+        if (product) {
+
+        }
+        //adding a new product for the first time
+        //new quantity =1 and storing the product with that quantity
+        return ProductClassModel.findByPk(prodId)
+            .then(product => {
+                return fetchedCart.addProduct(product, {through: {quantity: newQuantity}});    //sqlz method for many-to-many relationship
+            })
+            .catch(err => {
+                console.log(err);
+            })
+    })
+    .then(() => {
+        res.redirect("/cart");
+    })
+    .catch((err)=> {
+        console.log(err)
+    });
+
+
+    /*
+    //express
     ProductClassModel.findMyId(prodId, (product) => {
         Cart.addProduct(prodId, product.price);
     });
 
     res.redirect("/cart");
+    */
 
 };
 
+
+//sqlz, 
+//want to use the cart
+//associate it with an existing user
+//to get all products in it and render to stream
+
 exports.getCart = (req, res, next) => {             //router
+
+    //console.log("req.user.cart 1" + req.user.cart); //(21)
+
+    req.user.getCart()
+    .then((cart)=> {
+        console.log(cart)
+        return cart.getProducts()
+            .then(products => {
+                res.render("shop/cart", {
+                    path: "/cart",
+                    myTitle: "Your Cart",
+                    products: products
+                });    
+            })
+            .catch(err => {
+                console.log(err);
+            })
+
+    })
+    .catch((err)=> {
+        console.log(err)
+    });
+
+
+    /*
+    //express
     Cart.getCart(cart => {                          //returns cart to use in render
         
         ProductClassModel.fetchAll(products => {    //returns all my products
@@ -188,6 +258,7 @@ exports.getCart = (req, res, next) => {             //router
         });   
 
     });
+    */
 };
 
 
