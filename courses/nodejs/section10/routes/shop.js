@@ -42,7 +42,7 @@ router.post("/cart", shopController.postCart);
 
 router.get("/orders", shopController.getOrders);
 
-
+router.post("/create-order", shopController.postOrder);
 
 module.exports = router;
 

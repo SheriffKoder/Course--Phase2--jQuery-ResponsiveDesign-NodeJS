@@ -389,6 +389,10 @@ const Product = require("./models/product");
 const User = require("./models/user");
 const Cart = require("./models/cart.js");
 const CartItem = require("./models/cart-item.js");
+const Order = require("./models/order.js");
+const OrderItem = require("./models/order-item.js");
+
+
 
 app.set("view engine", "ejs");
 app.set("views", "views");
@@ -459,6 +463,10 @@ Cart.belongsTo(User); //inverse to the above, thus two directions, one direction
 //many-to-many relation
 Cart.belongsToMany(Product, {through: CartItem });    //the through key, telling where these connections should be stored
 Product.belongsToMany(Cart, {through: CartItem });
+Order.belongsTo(User);
+User.hasMany(Order);
+Order.belongsToMany(Product, {through: OrderItem});
+//can include the reverse that a product belongs to many orders
 
 
 //sync will now also define the defined relations
@@ -804,11 +812,123 @@ req.user.getCart().then().catch()   <<given by sqlz relation
 in user getCart()
 return cart.getProducts()   << as cart has many products relation
 
+//169
 (22)////////////////////////////////////////////////
 //adding products to cart
 
 shop.js controller > postCart
 ..
+
+in cart.ejs 
+adjust p.productData.title to p.title
+
+p.qty to p.cartItem.quantity
+as products have in between relation by cartItem
+and quantity named quantity
+
+//adding existing products in the cart to the cart
+
+
+
+
+(23)////////////////////////////////////////////////
+//delete from cart
+
+    req.user.getCart().then(cart => {
+        return cart.getProducts({where: {id: prodId}});
+                        product.cartItem.destroy();
+
+
+
+
+(24)////////////////////////////////////////////////
+//adding an order model
+
+put a checkout button
+to be able to take all elements of this cart
+out of this cart and create a new order 
+that is related to a couple of products and a user
+
+create a new order.js model
+move cartItem code there
+
+an order in the end is just an in between table
+between a user to which the order belongs
+and then multiple products that are part of the order
+
+and that products then do have quantity attached to them
+
+just as we have cart-items for the cart
+we have order-items for the order
+copy code from cart-items to order-items
+
+import the cart and order-items into app.js
+
+set the relations between orders, users, products through order item
+force sync
+
+
+(25)////////////////////////////////////////////////
+//Sorting cart items as OrderItems
+
+//adding the checkout button
+>> in cart.ejs
+<form action="/create-order" method="POST" >
+    <button type="submit" class="btn">Order Now!</button>
+
+//want to move the cart items to order items
+to create an order with all the elements in there
+and clear the cart (26)
+
+1) create a middle ware in the shop controller and export to the shop routes
+
+work on postOrders in shop.js controller
+
+
+(26)////////////////////////////////////////////////
+//resetting the cart and fetching outputting orders
+
+
+fetchedCart.setProducts(null); //(26)
+
+
+(27)////////////////////////////////////////////////
+//show orders
+
+//after items been added to cart and on "order now" the items moved to order-items
+and its cleared
+
+shop.js controller > getOrders
+
+also include the products in the order sent to the ejs
+
+
+
+
+////////////////////////////////////////////////
+
+SQL
+uses strict data schemas and relations
+can connect your Node.js app via packages like mysql2
+writing SQL queries is not directly related to nodejs and something to learn separately
+
+Sequelize
+instead of writing SQL queries manually
+can use packages (ORMs) like sqlz to focus on the Nodejs and work with native js objects
+sqlz allows you define models and interact with the database through them
+can also easily setup relations (associations) and interact with your related models through them
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
