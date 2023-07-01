@@ -308,7 +308,7 @@ $(function() {
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 
-  //filter, not, first/last, eq(equals)
+  //filter, not, first/last, eq(index equals)
 
   //filter the elements you have selected by some criteria
   //selects every second list item
@@ -588,6 +588,8 @@ setInterval(()=> {
 //appearance, contents, data associated with elements
 
 
+//.css to add, read multiple, .width()/.height()
+
 //output the value of the css property
 //var redBox = $(".red-box");
 //console.log(redBox.css("width"));
@@ -630,6 +632,8 @@ setInterval(()=> {
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 //Add and remove multiple css classes
+
+//.addClass("one two"), using index/currentClass in cb function 
 
 //add an already defined css class to an element
 //do not put a dot "." before
@@ -676,6 +680,8 @@ $("div").addClass((index, currentClass) => {
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 //changing the data attr of an element
+
+//element.data("name", "value"), element.removeData("name")
 
 //reference that data later on and retrieve back from that object
 //uses capacity from memory
@@ -743,14 +749,139 @@ let images = [
 //firstP.html(text1 + " <button> appended button !!!</button>"); //displays text
 
 
+
+
+
+
+
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+//Part3
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 //What are Events and event handles
 
+//signals that something has happened on the page, 
+//emitted when user performs some kind of action
+//click event
+//hover item on the page
+//press a key on the keyboard
+//move mouse around the page
+//submit a form to register or login
+
+//with js you can react to those events
+//reactive to the user behavior, greatly enhance user experience
+
+
+//////////////////////////////////////////////////////////////////////////
+//click event
+ 
+$("#btn-click").click((event) => {
+  alert("button clicked");
+  console.log(event);
+});
+
+//reading the event will display data can use like clientX,Y etc.
+
+$(".red-box").click(e => {
+  $(".red-box").fadeTo(500, 0.5);
+})
+
+//auto-click an element
+$(".red-box").click();
+
+
+//////////////////////////////////////////////////////////////////////////
+//hover event
+//hover(handlerInFn, handlerOutFn)
+
+/*
+let i = 0;
+
+//activates when enter and leave the element
+$("#btn-hover").hover((event) => {
+  if (i===0) {
+    $("#btn-hover").fadeTo(500, 0.5);
+    i=1;
+  }
+  else if (i===1) {
+    $("#btn-hover").fadeTo(500, 1);
+    i=0;
+  }
+});
+
+
+$(".green-box").hover(e => {
+  $(".green-box").text("i was hovered");
+});
+
+
+//hover(handlerInFn, handlerOutFn)
+//blueBox.hover((handlerIn) => {}, (handlerOut => {}))
+let blueBox = $(".blue-box");
+/*
+blueBox.hover((handlerIn) => {
+  blueBox.stop().fadeTo(500, 0.7);
+
+}, (handlerOut) => {
+  blueBox.stop().fadeTo(500, 1);
+
+});
+*/
+
+
+//////////////////////////////////////////////////////////////////////////
+//mouseenter, mouseleave events, stop()
+
+//stop the animation running on the element, 
+//so then can be able to run/start any animation (then change the opacity)
+/*
+let blueBox = $(".blue-box");
+blueBox.mouseenter(()=> {
+  blueBox.stop().fadeTo(500, 0.7);
+});
+
+blueBox.mouseleave(()=> {
+  blueBox.stop().fadeTo(500, 1);
+});
+*/
 
 
 
 
+//////////////////////////////////////////////////////////////////////////
+//adding the same handler for multiple events
+
+//.on("click", functionRelatedToClick)
+
+//$("html").on("click keydown", ()=> {
+  //console.log("on event handled");
+//})
+
+//switch the image on the gallery once clicked using on function
+/*
+let images = [
+  "images/laptop-mobile_small.jpg",
+  "images/laptop-on-table_small.jpg",
+  "images/people-office-group-team_small.jpg"
+  
+];
+
+let j=0;
+$(".gallery").on("click", () => {
+  j = (j + 1) % images.length;
+  $(".gallery img").fadeOut(500, ()=>{
+    $(".gallery img").attr("src", images[j]).fadeIn(500);
+  });
+
+})
+*/
+
+//////////////////////////////////////////////////////////////////////////
+//Modularizing event handler functions 
+
+//defining functions elsewhere then using their variable name
+//functions can be defined with a meaningful name outside of the jq function
 
 
 
