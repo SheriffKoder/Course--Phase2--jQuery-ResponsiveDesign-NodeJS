@@ -759,7 +759,7 @@ let images = [
 //Part3
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
-//What are Events and event handles
+//What are Events and event handlers
 
 //signals that something has happened on the page, 
 //emitted when user performs some kind of action
@@ -882,6 +882,166 @@ $(".gallery").on("click", () => {
 
 //defining functions elsewhere then using their variable name
 //functions can be defined with a meaningful name outside of the jq function
+
+
+
+//////////////////////////////////////////////////////////////////////////
+//Delegated events
+
+//event handlers are attached to elements that are already present on the page
+//if added events dynamically to the page 
+//by a prepend/append, after/before then those will not have any event handlers
+
+/*
+$("p").on("click", () => {
+  $("p").slideUp();
+})
+$("#content").append("<p> dynamic paragraph </p>");
+*/
+
+//solution to this
+//add event handler to a parent which gives event to its children
+
+//this event will be delegated to all "p" descendants of content separately
+//this selector works with function not arrow functions
+//this does not rerun the dom to look for the element instead it saves it
+/*
+$("#content").on("click", "p", function() {
+  $(this).slideUp();
+});
+$("#content").append("<p> dynamic paragraph </p>");
+
+
+//event handler for mouseenter events on the body tag
+//then delegates to all li tags to change their font color 
+$("body").on("mouseenter", "li ul li", function () {
+  $(this).css("color", "red");
+});
+
+$("body").on("mouseleave", "li ul li", function () {
+  $(this).css("color", "black");
+});
+*/
+//use: todo app that has dynamic added/deleted elements
+
+//delegated elements can also improve the performance of the site
+
+
+//////////////////////////////////////////////////////////////////////////
+//passing additional information/data to events
+
+//add data to the event, then access using functions e.data
+/*
+$("#btn-click").click({ user: "Peter", email: "email@test.com" }, function(event) {
+  greetUser(event.data);
+});
+
+function greetUser(eventData) {
+  username = eventData.user || "anonymous";    // || "default-value"
+  email = eventData.email || "example.com";    // || "default-value"
+
+  alert("Welcome Back " + username + " your contact is " + email);
+
+}
+*/
+
+//////////////////////////////////////////////////////////////////////////
+//ex image gallery exercise
+
+var galleryItems = $(".gallery").find("img");
+galleryItems.css("width", "30%").css("opacity", "0.7");
+
+galleryItems.mouseenter(function() {
+  $(this).stop().fadeTo(500, 1);
+})
+
+galleryItems.mouseleave(function() {
+  $(this).stop().fadeTo(500, 0.7);
+})
+
+galleryItems.click(function() {
+  var source = $(this).attr("src");
+  var image = $("<img>").attr("src", source).css("width", "100%");
+  $(".lightbox").empty().append(image).fadeIn(1000);
+})
+
+//stop here is useful so when user click when the fade in animation is running
+//it can stop it and fade out
+$(".lightbox").on("click", function () {
+  $(this).stop().fadeOut(1000);
+})
+
+
+//////////////////////////////////////////////////////////////////////////
+//ex handling keyboard events
+
+
+//keydown is used to allow the event to operate once the key is pressed
+//keyup (like mouseup) will wait for the user to release the button
+//better not use the keypress event, but use the keydown event
+
+//event handler that logs all the key codes 
+//which; offered by jq - cross browser compatible
+/*
+$("html").keydown(function (event) {
+  console.log(event.which)
+});
+
+
+//when pressing the right arrow key, the blue box moves to right by 10px
+//39
+//if event.which == ARROW_RIGHT
+//67 (c)
+
+const ARROW_RIGHT = "39";
+const ARROW_LEFT = "37";
+
+$("html").keydown(function(event) {
+  if(event.which == ARROW_RIGHT) {
+    $(".blue-box").stop().animate({
+      marginLeft: "+=10px"
+    }, 1000);
+  }
+  else if(event.which == ARROW_LEFT) {
+    $(".blue-box").stop().animate({
+      marginLeft: "-=10px"
+    }, 1000);
+  }
+  else if(event.ctrlKey && event.which == 67) {
+      $(".blue-box").stop().animate({
+        marginLeft: "0px"
+      }, 1000);
+  }
+
+});
+*/
+
+//////////////////////////////////////////////////////////////////////////
+//focus and blur events
+
+/*
+//adds to input a grey shadow on selection and remove shadow on select outside
+$(".gallery, ul ,p").hide();
+var inputFields = $("input:text, input:password, textarea");
+
+inputFields.focus(function() {
+  $(this).css("box-shadow", "0 0 4px #666");
+});
+
+inputFields.blur(function() {
+  $(this).css("box-shadow", "none");
+});
+
+//if name input has less than three characters, make font color red
+let name = $("#name")
+name.blur(function () {
+  if ((name.val().length) < 3) {
+    name.css("color", "red");
+  }
+})
+
+*/
+
 
 
 
