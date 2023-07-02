@@ -1,0 +1,26 @@
+{
+  "name": "section4",
+  "version": "1.0.0",
+  "description": "",
+  "main": "s4_app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start-s4-nodemon": "nodemon s4_app.js",
+    "start-myServer4": "node s4_app.js"
+  },
+  "author": "Sheriff Koder",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^1.14.9"
+  },
+  "dependencies": {
+    "body-parser": "^1.20.2",
+    "ejs": "^3.1.9",
+    "express": "^4.18.2",
+    "express-handlebars": "^7.0.7",
+    "mongodb": "^5.6.0",
+    "mysql2": "^3.4.0",
+    "pug": "^3.0.2",
+    "sequelize": "^6.32.1"
+  }
+}
