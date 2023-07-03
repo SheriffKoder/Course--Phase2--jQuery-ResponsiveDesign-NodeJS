@@ -11,7 +11,7 @@ const path = require("path");
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: false}));
 
-const mongoConnect = require("./util/database");
+const mongoConnect = require("./util/database").mongoConnect;
 
 app.use(express.static(path.join(__dirname, "public")));
 
@@ -22,11 +22,11 @@ app.set("views", "views");
 
 
 const adminJsRoutes = require("./routes/admin.js");
-//const shopJsRoutes = require("./routes/shop.js");
+const shopJsRoutes = require("./routes/shop.js");
 
 //app.use(adminJsRoutes.routes); //replaced code
 //app.use(adminJsRoutes); //replaced code
-//app.use(shopJsRoutes); //replaced code
+app.use(shopJsRoutes);
 
 ////filtering mechanism
 //not put /admin/.. in the routes links but put in the navigation/form etc.
@@ -49,8 +49,7 @@ app.use(errorController.get404);
 
 //connect to the node server once connected to the database
 //(1)
-mongoConnect((client) => {
-    console.log(client);
+mongoConnect(() => {
     app.listen(3000);
 });
 
@@ -181,33 +180,79 @@ however
 //from the one or two different places that need access
 // to do that we need to tune the mongoConnect
 
+so create a function that returns a connection to the database
+
+from
+MongoClient.connect
+.then(client)
+client.db
 
 
+(3)///////////////////////////////////////////////////////////////////
+//using the db
+
+work on the save method on product.js model
+db.collection("products").insertOne(this)
 
 
+//start working on the admin.js controller
+to create a new product from the postAddProduct and save it
+
+//viewing the added product
+download compass from mongoDB
+
+connect using the url provided from the mongo site and put the password
+click databases, should find the shop (configured in database.js)
+
+then products collection open will see then the documents (products added)
+
+learn about all the features of compass
+can edit the documents using compass
 
 
+(4)///////////////////////////////////////////////////////////////////
+//using the product data on the shop page
 
 
+besides being able to save data
+want to get the products
+
+add a static method in products.js model named fetchAll
+return db.collection("products").find().toArray()
+.then products
+
+then in the shop controller
+product model . fetchAll then render products
+
+disable all routes except getindex and getproducts
+
+comment in the shop routes in app.js
 
 
+(5)///////////////////////////////////////////////////////////////////
+//fetching a single product
 
 
+getProduct in shop controller
+
+first work on a static findById 
+that takes the prodId and find with filter prodId
+then returns the product in the .then
+
+uncomment the route
+
+note: in mongoDB we use _id
+so adjust that in the details link in ejs
+
+note: the id in mongoDB database is an object of BSON
+so import mongoDB and use it on the prodId in the product model
+_id: new mongodb.ObjectId(prodId)
+
+allows to pass an id object to the comparison with _id instead of just a string
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+(6)///////////////////////////////////////////////////////////////////
+//the edit and delete buttons
 
 
 

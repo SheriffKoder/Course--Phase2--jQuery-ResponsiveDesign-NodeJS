@@ -31,6 +31,7 @@ exports.getProducts = (req, res, next) => {
 
 
     //Sequelize
+    /*
     ProductClassModel.findAll()
     .then((products)=>{
         res.render("shop/product-list.ejs", {prods: products, myTitle: "All products page", path:"/products"});
@@ -38,7 +39,17 @@ exports.getProducts = (req, res, next) => {
     .catch((err) => {
         console.log(err);
     });
+    */
 
+    //mongoDB //(4)
+    ProductClassModel.fetchAll()
+    .then((products)=>{
+        res.render("shop/product-list.ejs", {prods: products, myTitle: "All products page", path:"/products"});
+    })
+    .catch((err) => {
+        console.log(err);
+    });
+   
 
 
 
@@ -90,7 +101,8 @@ exports.getProduct = (req, res, next) => {
         });
     */
 
-    
+    //Sequelize
+    /*
     ProductClassModel.findByPk(prodId)
     .then((product)=> {
         //console.log(product[0].title);
@@ -100,7 +112,21 @@ exports.getProduct = (req, res, next) => {
     .catch((err) => {
         console.log(err);
     });
-    
+    */
+
+
+    //mongoDB //(5)
+    ProductClassModel.findById(prodId)
+    .then((product)=> {
+        //console.log(product[0].title);
+        res.render("shop/product-details", {product: product, myTitle: product.title, path: "/products"});
+
+    })
+    .catch((err) => {
+        console.log(err);
+    });
+
+
 
 
 }
@@ -133,9 +159,7 @@ exports.getIndex = (req, res, next) => {
     //can pass an object with some options
     //like where to restrict the kind of data we retrieve (more in the official docs)
     //ProductClassModel.findAll({where:..}).then().catch();
-
-
-
+    /*
     ProductClassModel.findAll()
     .then((products)=>{
         res.render("shop/index.ejs", {prods: products, myTitle: "Shop page", path:"/"});
@@ -143,7 +167,17 @@ exports.getIndex = (req, res, next) => {
     .catch((err) => {
         console.log(err);
     });
+    */
 
+    //mongoDB //(4)
+    ProductClassModel.fetchAll()
+    .then((products)=>{
+        res.render("shop/index.ejs", {prods: products, myTitle: "Shop page", path:"/"});
+    })
+    .catch((err) => {
+        console.log(err);
+    });
+    
 
 
 

@@ -28,6 +28,21 @@ exports.postAddProduct = (req, res, next) => {
     const price = req.body.price;
     const description = req.body.description;
 
+
+
+    //mongoDB
+    //add a product into the db (3)
+    const product = new ProductClassModel(title, price, description, imageUrl);
+    product.save()
+        .then((result) => {
+            console.log("created product");
+            res.redirect("/admin/products");
+
+        }).catch((err) => {
+        console.log("error" + err);
+        });
+
+
     //const product = new ProductClassModel(null, title, imageUrl, price, description);
 
     //mySQL
@@ -69,7 +84,7 @@ exports.postAddProduct = (req, res, next) => {
     //(19)
     //as we already defined a relation between user and product in app.js
     //sqlz creates a custom method named createProduct to the user
-
+   /*
     req.user.createProduct({
         title: title,
         price: price,
@@ -85,171 +100,172 @@ exports.postAddProduct = (req, res, next) => {
         console.log("error" + err);
     
        });
-
+    */
 
 };
 
 
-exports.getEditProduct = (req, res, next) => {
-    const editMode = req.query.edit;
-    //console.log(editMode); //true or false
-    if (!editMode || editMode === "false") {
-        return res.redirect("/");
-    }
 
-    //get the product id from the url
-    const prodId = req.params.productId;
-    //use the product model to find this product
+// exports.getEditProduct = (req, res, next) => {
+//     const editMode = req.query.edit;
+//     //console.log(editMode); //true or false
+//     if (!editMode || editMode === "false") {
+//         return res.redirect("/");
+//     }
 
-    /*
-    ProductClassModel.findMyId(prodId, product => {
-        if (!product) {
-            console.log("product does not exist to be edited");
-            res.redirect("/");
-        }
-        res.render("admin/edit-product", 
-        {
-            product: product,
-            myTitle: "edit-Product page", 
-            path: "/admin/add-product", 
-            editing: editMode
+//     //get the product id from the url
+//     const prodId = req.params.productId;
+//     //use the product model to find this product
+
+//     /*
+//     ProductClassModel.findMyId(prodId, product => {
+//         if (!product) {
+//             console.log("product does not exist to be edited");
+//             res.redirect("/");
+//         }
+//         res.render("admin/edit-product", 
+//         {
+//             product: product,
+//             myTitle: "edit-Product page", 
+//             path: "/admin/add-product", 
+//             editing: editMode
             
-        });    
-    });
-    */
+//         });    
+//     });
+//     */
 
-    //    ProductClassModel.findByPk(prodId)
-        //.then((product) => {
+//     //    ProductClassModel.findByPk(prodId)
+//         //.then((product) => {
 
-    //(20)
-    //getProducts given by sqlz
-    req.user.getProducts({ where: { id:prodId} })
-        .then((products) => {
-            const product = products[0]; //(20)
-            if (!product) {
-                console.log("product does not exist to be edited");
-                res.redirect("/");
-            }
-            res.render("admin/edit-product", 
-            {
-                product: product,
-                myTitle: "edit-Product page", 
-                path: "/admin/add-product", 
-                editing: editMode
+//     //(20)
+//     //getProducts given by sqlz
+//     req.user.getProducts({ where: { id:prodId} })
+//         .then((products) => {
+//             const product = products[0]; //(20)
+//             if (!product) {
+//                 console.log("product does not exist to be edited");
+//                 res.redirect("/");
+//             }
+//             res.render("admin/edit-product", 
+//             {
+//                 product: product,
+//                 myTitle: "edit-Product page", 
+//                 path: "/admin/add-product", 
+//                 editing: editMode
                 
-            });        
-        })
-        .catch((err) => {
+//             });        
+//         })
+//         .catch((err) => {
 
-        });
-
-
-
-};
+//         });
 
 
-exports.postEditProduct = (req,res, next) => {
-    //construct a new product
-    //replace the existing product
 
-    //fetch info for the product
-    //new product instance and populate it with that information
-    //call save
+// };
 
-    const prodId = req.body.productId;
-    const updatedTitle = req.body.productAdded;
-    const updatedImageUrl = req.body.imageUrl;
-    const updatedPrice = req.body.price;
-    const updatedDescription = req.body.description;
 
-    //express
-    /*
-    const updatedProduct = new ProductClassModel(prodId, updatedTitle, updatedImageUrl, updatedPrice, updatedDescription);
+// exports.postEditProduct = (req,res, next) => {
+//     //construct a new product
+//     //replace the existing product
 
-    updatedProduct.save();
-    res.redirect("/admin/products");
-    */
+//     //fetch info for the product
+//     //new product instance and populate it with that information
+//     //call save
 
-    ProductClassModel.findByPk(prodId)
-        .then((product) => {
+//     const prodId = req.body.productId;
+//     const updatedTitle = req.body.productAdded;
+//     const updatedImageUrl = req.body.imageUrl;
+//     const updatedPrice = req.body.price;
+//     const updatedDescription = req.body.description;
 
-            //this will not change the data in our db, but will change them locally
-            product.title = updatedTitle;   
-            product.imageUrl = updatedImageUrl;
-            product.price = updatedPrice;            
-            product.description = updatedDescription;            
+//     //express
+//     /*
+//     const updatedProduct = new ProductClassModel(prodId, updatedTitle, updatedImageUrl, updatedPrice, updatedDescription);
 
-            //takes the product as we edited it
-            //and saves it back to the database
-            //either update values or create a new one if it does not exist yet
-            //can return this, which returns a promise
-            //
-            return product.save();
+//     updatedProduct.save();
+//     res.redirect("/admin/products");
+//     */
+
+//     ProductClassModel.findByPk(prodId)
+//         .then((product) => {
+
+//             //this will not change the data in our db, but will change them locally
+//             product.title = updatedTitle;   
+//             product.imageUrl = updatedImageUrl;
+//             product.price = updatedPrice;            
+//             product.description = updatedDescription;            
+
+//             //takes the product as we edited it
+//             //and saves it back to the database
+//             //either update values or create a new one if it does not exist yet
+//             //can return this, which returns a promise
+//             //
+//             return product.save();
          
 
-        })
-        .then(()=> {
-            //handles any success responses from the (save) promise
-            console.log("updated product");
-            res.redirect("/admin/products");
+//         })
+//         .then(()=> {
+//             //handles any success responses from the (save) promise
+//             console.log("updated product");
+//             res.redirect("/admin/products");
 
-        })
-        .catch((err) => {
-            //this catch will catch errors for the first promise (findByPk) 
-            //and second promise (save)
-            console.log(err);
-        });
-     //});
-
-
-}
-
-exports.getProducts = (req, res, next) => {
-
-    //express
-    /*
-    ProductClassModel.fetchAll(products => {
-        res.render("admin/products.ejs", {prods: products, myTitle: "Admin Products", path:"/admin/products"});
-
-    });
-    */
-
-    //Sequelize
-    //ProductClassModel.findAll()
-    req.user.getProducts()  //(20) //will return all products
-    .then((products)=>{
-        res.render("admin/products.ejs", {prods: products, myTitle: "Admin Products", path:"/admin/products"});
-    })
-    .catch((err) => {
-        console.log(err);
-    });
+//         })
+//         .catch((err) => {
+//             //this catch will catch errors for the first promise (findByPk) 
+//             //and second promise (save)
+//             console.log(err);
+//         });
+//      //});
 
 
-};
+// }
 
-exports.postDeleteProduct = (req, res, next) => {
-    const prodId = req.body.productId;
+// exports.getProducts = (req, res, next) => {
 
-    //express
-    //ProductClassModel.deleteById(prodId);
+//     //express
+//     /*
+//     ProductClassModel.fetchAll(products => {
+//         res.render("admin/products.ejs", {prods: products, myTitle: "Admin Products", path:"/admin/products"});
 
-    //sequelize, using destroy directly and adding a condition about which product to destroy
-    //ProductClassModel.destroy({WHERE})
+//     });
+//     */
 
-    ProductClassModel.findByPk(prodId)
-        .then((product) => {
-            return product.destroy();
-        })
-        .then((result) => {
-            //.then on the destroy promise
-            console.log("removed product");
-            res.redirect("/admin/products");
-        })
-        .catch((err) => {
-            console.log(err);
-        });
+//     //Sequelize
+//     //ProductClassModel.findAll()
+//     req.user.getProducts()  //(20) //will return all products
+//     .then((products)=>{
+//         res.render("admin/products.ejs", {prods: products, myTitle: "Admin Products", path:"/admin/products"});
+//     })
+//     .catch((err) => {
+//         console.log(err);
+//     });
+
+
+// };
+
+// exports.postDeleteProduct = (req, res, next) => {
+//     const prodId = req.body.productId;
+
+//     //express
+//     //ProductClassModel.deleteById(prodId);
+
+//     //sequelize, using destroy directly and adding a condition about which product to destroy
+//     //ProductClassModel.destroy({WHERE})
+
+//     ProductClassModel.findByPk(prodId)
+//         .then((product) => {
+//             return product.destroy();
+//         })
+//         .then((result) => {
+//             //.then on the destroy promise
+//             console.log("removed product");
+//             res.redirect("/admin/products");
+//         })
+//         .catch((err) => {
+//             console.log(err);
+//         });
     
 
-    //res.redirect("/admin/products");
+//     //res.redirect("/admin/products");
 
-};
+// };
