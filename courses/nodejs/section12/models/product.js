@@ -3,11 +3,15 @@ const mongodb = require("mongodb");
 const getDb = require("../util/database").getDb;
 
 class Product {
-    constructor(title, price, description, imageUrl) {
+    constructor(title, price, description, imageUrl, id) {
         this.title = title;
         this.price = price;
         this.description = description;
         this.imageUrl = imageUrl;
+        this._id = id ? new mongodb.ObjectId(id) : null;
+        
+        //allows to pass an id object to the comparison with _id instead of just a string
+        //if there is no id, store it as null, otherwise new products wont be added
 
     }
 
@@ -15,6 +19,24 @@ class Product {
     save() {
         //get access to the database by calling get db
         const db = getDb(); //database level
+        let dbOp;
+
+        //if there is an id to the product (exists) update
+        //updateOne, updateMany
+        //takes two arguments
+        //what and how
+        // $set (mdb) command
+        //this (replaces all key fields) or can write an object {title = this.title, .. }
+
+        //(6)
+        if (this._id) {
+            dbOp = db.collection("products").updateOne({_id: this._id}, { $set: this });
+        }
+        //else insert
+        else {
+            dbOp = db.collection("products").insertOne(this);
+        }
+
         //collection level,specify - if not exist will be created the first time data entered
         //can execute a couple of mdb commands/operations
         //more about these in the official docs or mdb course
@@ -27,7 +49,8 @@ class Product {
         //return this collection and the entire command chain
         //because returning will allow to use .then on the save() in other files
         //(3)
-        return db.collection("products").insertOne(this)
+        //return db.collection("products").insertOne(this)
+        return dbOp
             .then((result) => {
                 console.log("model result: ");
                 console.log(result);
@@ -72,12 +95,13 @@ class Product {
         const db = getDb();
         //find will still give a cursor not a promise
         //even its one product - because mdb does not know its one
-        //.next() returns the next document , in our case the last document
-        //returned by find
 
         //allows to pass an id object to the comparison with _id instead of just a string
         let newProdId = new mongodb.ObjectId(prodId);
         //console.log(newProdId);
+        //.next() returns the next document , in our case the last document
+        //returned by find
+        //however if used findOne it will not return a cursor and can return without next
         return db.collection("products").find({_id: newProdId }).next()
         .then((product) => {
             //console.log(product);
@@ -88,6 +112,24 @@ class Product {
         })
     
 
+    }
+
+    static deleteById(prodId) { //(7)
+        const db = getDb();
+
+        //can check more about methods on the official docs
+        //we also have deleteOne, deleteMany
+        //as id is an arguments, need to convert it manually
+        let newProdId = new mongodb.ObjectId(prodId);
+
+        return db.collection("products").deleteOne({ _id: newProdId })
+            .then((result) => {
+                console.log("Deleted");
+            })
+            .catch((err) => {
+                console.log(err);
+            })
+    
     }
 
 

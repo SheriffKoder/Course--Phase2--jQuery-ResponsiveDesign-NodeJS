@@ -12,11 +12,28 @@ const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: false}));
 
 const mongoConnect = require("./util/database").mongoConnect;
+const User = require("./models/user");
+
 
 app.use(express.static(path.join(__dirname, "public")));
 
 app.set("view engine", "ejs");
 app.set("views", "views");
+
+//(8)
+app.use((req, res, next) => {
+    User.findById("64a338c94e1411fabef7003f")
+        .then(user => {
+            req.user = user;
+            next();
+        })
+        .catch(err => {
+            console.log(err);
+        })
+    next();
+});
+
+
 
 
 
@@ -50,6 +67,7 @@ app.use(errorController.get404);
 //connect to the node server once connected to the database
 //(1)
 mongoConnect(() => {
+
     app.listen(3000);
 });
 
@@ -157,7 +175,7 @@ mongodb+srv://sheriffkoder:<password>@cluster0.jgxkgch.mongodb.net/?retryWrites=
 (1)///////////////////////////////////////////////////////////////////
 //using
 
-code the database.js file
+>> code the database.js file
 so it can connect
 and export that connection
 to use in app.js
@@ -180,7 +198,7 @@ however
 //from the one or two different places that need access
 // to do that we need to tune the mongoConnect
 
-so create a function that returns a connection to the database
+>> so create a function that returns a connection to the database
 
 from
 MongoClient.connect
@@ -191,7 +209,7 @@ client.db
 (3)///////////////////////////////////////////////////////////////////
 //using the db
 
-work on the save method on product.js model
+>> work on the save method on product.js model
 db.collection("products").insertOne(this)
 
 
@@ -250,9 +268,57 @@ _id: new mongodb.ObjectId(prodId)
 
 allows to pass an id object to the comparison with _id instead of just a string
 
-
+//188
 (6)///////////////////////////////////////////////////////////////////
-//the edit and delete buttons
+//the edit button
+
+
+//view the products in admin page by working on the getProducts
+
+//editing
+work on the save method in the product model to
+update if exists (by id) or save normally (insert)
+
+controller admin > postEditProduct
+create a new product with the prodId converted by mongodb
+then save it (save method will work on existing/new products)
+
+
+(7)///////////////////////////////////////////////////////////////////
+//the delete button
+
+//add a static method deleteById in the product model
+by using deleteOne with a converted passed prodId
+
+
+(8)///////////////////////////////////////////////////////////////////
+//creating new users
+
+how to work with relations
+with working with users
+
+
+working on the user.js model like the product model
+add a save and findById methods
+
+then go to app.js and add the middleware that use User.findById(id)
+
+go to the compass application and create new collection (users) in the shop (database)
+then add a document with user details like described in your model
+take the number id and place in the middleware's findById
+
+
+
+(9)///////////////////////////////////////////////////////////////////
+//use the user object and store that reference in the database
+
+
+
+
+
+
+
+
 
 
 

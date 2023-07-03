@@ -1,4 +1,5 @@
 
+
 const ProductClassModel = require("../models/product.js");
 
 exports.getAddProduct = (req, res, next) => {
@@ -106,166 +107,241 @@ exports.postAddProduct = (req, res, next) => {
 
 
 
-// exports.getEditProduct = (req, res, next) => {
-//     const editMode = req.query.edit;
-//     //console.log(editMode); //true or false
-//     if (!editMode || editMode === "false") {
-//         return res.redirect("/");
-//     }
+exports.getEditProduct = (req, res, next) => {
+    const editMode = req.query.edit;
+    //console.log(editMode); //true or false
+    if (!editMode || editMode === "false") {
+        return res.redirect("/");
+    }
 
-//     //get the product id from the url
-//     const prodId = req.params.productId;
-//     //use the product model to find this product
+    //get the product id from the url
+    const prodId = req.params.productId;
+    //use the product model to find this product
 
-//     /*
-//     ProductClassModel.findMyId(prodId, product => {
-//         if (!product) {
-//             console.log("product does not exist to be edited");
-//             res.redirect("/");
-//         }
-//         res.render("admin/edit-product", 
-//         {
-//             product: product,
-//             myTitle: "edit-Product page", 
-//             path: "/admin/add-product", 
-//             editing: editMode
+    /*
+    ProductClassModel.findMyId(prodId, product => {
+        if (!product) {
+            console.log("product does not exist to be edited");
+            res.redirect("/");
+        }
+        res.render("admin/edit-product", 
+        {
+            product: product,
+            myTitle: "edit-Product page", 
+            path: "/admin/add-product", 
+            editing: editMode
             
-//         });    
-//     });
-//     */
+        });    
+    });
+    */
 
-//     //    ProductClassModel.findByPk(prodId)
-//         //.then((product) => {
+    //    ProductClassModel.findByPk(prodId)
+        //.then((product) => {
 
-//     //(20)
-//     //getProducts given by sqlz
-//     req.user.getProducts({ where: { id:prodId} })
-//         .then((products) => {
-//             const product = products[0]; //(20)
-//             if (!product) {
-//                 console.log("product does not exist to be edited");
-//                 res.redirect("/");
-//             }
-//             res.render("admin/edit-product", 
-//             {
-//                 product: product,
-//                 myTitle: "edit-Product page", 
-//                 path: "/admin/add-product", 
-//                 editing: editMode
+    //(20)
+    //getProducts given by sqlz
+    //Sequelize
+    /*
+    req.user.getProducts({ where: { id:prodId} })
+        .then((products) => {
+            const product = products[0]; //(20)
+            if (!product) {
+                console.log("product does not exist to be edited");
+                res.redirect("/");
+            }
+            res.render("admin/edit-product", 
+            {
+                product: product,
+                myTitle: "edit-Product page", 
+                path: "/admin/add-product", 
+                editing: editMode
                 
-//             });        
-//         })
-//         .catch((err) => {
+            });        
+        })
+        .catch((err) => {
 
-//         });
+        });
+    */
+
+      ProductClassModel.findById(prodId)
+      .then((product) => {
+            if (!product) {
+                console.log("product does not exist to be edited");
+                res.redirect("/");
+            }
+            res.render("admin/edit-product", 
+            {
+                product: product,
+                myTitle: "edit-Product page", 
+                path: "/admin/add-product", 
+                editing: editMode
+                
+            });        
+            })
+        .catch((err) => {
+            console.log(err);
+        })
 
 
+};
 
-// };
 
+exports.postEditProduct = (req,res, next) => {
+    //construct a new product
+    //replace the existing product
 
-// exports.postEditProduct = (req,res, next) => {
-//     //construct a new product
-//     //replace the existing product
+    //fetch info for the product
+    //new product instance and populate it with that information
+    //call save
 
-//     //fetch info for the product
-//     //new product instance and populate it with that information
-//     //call save
+    const prodId = req.body.productId;
+    const updatedTitle = req.body.productAdded;
+    const updatedImageUrl = req.body.imageUrl;
+    const updatedPrice = req.body.price;
+    const updatedDescription = req.body.description;
 
-//     const prodId = req.body.productId;
-//     const updatedTitle = req.body.productAdded;
-//     const updatedImageUrl = req.body.imageUrl;
-//     const updatedPrice = req.body.price;
-//     const updatedDescription = req.body.description;
+    //express
+    /*
+    const updatedProduct = new ProductClassModel(prodId, updatedTitle, updatedImageUrl, updatedPrice, updatedDescription);
 
-//     //express
-//     /*
-//     const updatedProduct = new ProductClassModel(prodId, updatedTitle, updatedImageUrl, updatedPrice, updatedDescription);
+    updatedProduct.save();
+    res.redirect("/admin/products");
+    */
 
-//     updatedProduct.save();
-//     res.redirect("/admin/products");
-//     */
+    //sequelize
+    /*
+    ProductClassModel.findByPk(prodId)
+        .then((product) => {
 
-//     ProductClassModel.findByPk(prodId)
-//         .then((product) => {
+            //this will not change the data in our db, but will change them locally
+            product.title = updatedTitle;   
+            product.imageUrl = updatedImageUrl;
+            product.price = updatedPrice;            
+            product.description = updatedDescription;            
 
-//             //this will not change the data in our db, but will change them locally
-//             product.title = updatedTitle;   
-//             product.imageUrl = updatedImageUrl;
-//             product.price = updatedPrice;            
-//             product.description = updatedDescription;            
-
-//             //takes the product as we edited it
-//             //and saves it back to the database
-//             //either update values or create a new one if it does not exist yet
-//             //can return this, which returns a promise
-//             //
-//             return product.save();
+            //takes the product as we edited it
+            //and saves it back to the database
+            //either update values or create a new one if it does not exist yet
+            //can return this, which returns a promise
+            //
+            return product.save();
          
 
-//         })
-//         .then(()=> {
-//             //handles any success responses from the (save) promise
-//             console.log("updated product");
-//             res.redirect("/admin/products");
+        })
+        .then(()=> {
+            //handles any success responses from the (save) promise
+            console.log("updated product");
+            res.redirect("/admin/products");
 
-//         })
-//         .catch((err) => {
-//             //this catch will catch errors for the first promise (findByPk) 
-//             //and second promise (save)
-//             console.log(err);
-//         });
-//      //});
+        })
+        .catch((err) => {
+            //this catch will catch errors for the first promise (findByPk) 
+            //and second promise (save)
+            console.log(err);
+        });
+     //});
+     */
+
+    //mongoDB
+    //create a new product
+    //and pass in the id
+    //but to pass the id has to convert it
+    //so import mongodb 
+
+    //(6)
+
+    const product = new ProductClassModel(
+        updatedTitle, 
+        updatedPrice, 
+        updatedDescription, 
+        updatedImageUrl, 
+        prodId );
+
+    //as the save method in the model supports existing/new creations just call save
+    product.save()
+    .then(()=> {
+        //handles any success responses from the (save) promise
+        console.log("updated product");
+        res.redirect("/admin/products");
+
+    })
+    .catch((err) => {
+        console.log(err);
+    });
 
 
-// }
 
-// exports.getProducts = (req, res, next) => {
+}
 
-//     //express
-//     /*
-//     ProductClassModel.fetchAll(products => {
-//         res.render("admin/products.ejs", {prods: products, myTitle: "Admin Products", path:"/admin/products"});
+exports.getProducts = (req, res, next) => {
 
-//     });
-//     */
+    //express
+    /*
+    ProductClassModel.fetchAll(products => {
+        res.render("admin/products.ejs", {prods: products, myTitle: "Admin Products", path:"/admin/products"});
 
-//     //Sequelize
-//     //ProductClassModel.findAll()
-//     req.user.getProducts()  //(20) //will return all products
-//     .then((products)=>{
-//         res.render("admin/products.ejs", {prods: products, myTitle: "Admin Products", path:"/admin/products"});
-//     })
-//     .catch((err) => {
-//         console.log(err);
-//     });
+    });
+    */
+
+    //Sequelize
+    /*
+    //ProductClassModel.findAll()
+    req.user.getProducts()  //(20) //will return all products
+    .then((products)=>{
+        res.render("admin/products.ejs", {prods: products, myTitle: "Admin Products", path:"/admin/products"});
+    })
+    .catch((err) => {
+        console.log(err);
+    });
+    */
+
+    //mongoDB
+    ProductClassModel.fetchAll()
+    .then((products) => {
+        res.render("admin/products.ejs", {prods: products, myTitle: "Admin Products", path:"/admin/products"});
+	})
+	.catch((err) => {
+		console.log(err);
+	})
 
 
-// };
+ };
 
-// exports.postDeleteProduct = (req, res, next) => {
-//     const prodId = req.body.productId;
+exports.postDeleteProduct = (req, res, next) => {
+    const prodId = req.body.productId;
 
-//     //express
-//     //ProductClassModel.deleteById(prodId);
+    //express
+    //ProductClassModel.deleteById(prodId);
 
-//     //sequelize, using destroy directly and adding a condition about which product to destroy
-//     //ProductClassModel.destroy({WHERE})
+    //sequelize, using destroy directly and adding a condition about which product to destroy
+    //ProductClassModel.destroy({WHERE})
+    /*
+    ProductClassModel.findByPk(prodId)
+        .then((product) => {
+            return product.destroy();
+        })
+        .then((result) => {
+            //.then on the destroy promise
+            console.log("removed product");
+            res.redirect("/admin/products");
+        })
+        .catch((err) => {
+            console.log(err);
+        });
+    */
 
-//     ProductClassModel.findByPk(prodId)
-//         .then((product) => {
-//             return product.destroy();
-//         })
-//         .then((result) => {
-//             //.then on the destroy promise
-//             console.log("removed product");
-//             res.redirect("/admin/products");
-//         })
-//         .catch((err) => {
-//             console.log(err);
-//         });
-    
+    //mongoDB   //(7)
+    ProductClassModel.deleteById(prodId)
+	.then((result) => {
+        console.log("removed product");
+        res.redirect("/admin/products");
+    })
+    .catch((err) => {
+        console.log(err);
+    });
 
-//     //res.redirect("/admin/products");
 
-// };
+
+    //res.redirect("/admin/products");
+
+};
