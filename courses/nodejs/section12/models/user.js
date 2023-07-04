@@ -77,10 +77,144 @@ class User {
         let newUserId = new mongodb.ObjectId(this._id);
 
         //over write the old cart with the new cart
+        //updateOne where, how
         return db.collection("users").updateOne({ _id: newUserId }, { $set: {cart: updatedCart} });
 
 
     }
+
+    //////////////////////////////////////////////
+    //this function is useful because when the cart is fetched
+    //we can have the product items as in the product class and same updated
+    getCart() {
+        //we can use this to return the users cart
+        //however we also need to return the full details of the product not just the id
+        //return this.cart;
+
+        const db = getDb();
+        //find all products that are in the cart
+        //return the result of the db operation
+        //find all products that are in my cart
+        //find all products where _id equals
+        //will not pass an id because not looking for a single id
+        //an object of special mdb query operators
+        // $in operator, takes an array of id's
+        //every id in the array will get back a cursor
+        //with all products mentioned with the id's in the array
+        //mapping an array of items where each item is a js object
+        //into an array of just strings of just the productId's
+        //then stored in the productIds constant
+
+        const productIds = this.cart.items.map(i => {
+            return i.productId
+        })
+        //give me all elements where the id is one of the id's mentioned in this array
+        return db.collection("products").find({ _id: {$in: productIds} }).toArray()
+            .then(products => {
+                console.log(products);
+                //need to return the products found + the quantity we know
+                //arrow functions ensure that "this" still refers to the user class
+                //return each product with its respective quantity in an object
+                //cat items find(js) returns the product object
+                //then we can access its property
+                return products.map(p => {
+                    return {...p, quantity: this.cart.items.find(i => {
+                        return i.productId.toString() === p._id.toString();
+                            }).quantity
+                    };
+                })
+            });
+    }
+
+
+    //returns a new cart items without the product with the id passed it
+    deleteItemFromCart(productId) {
+        //copy all existing cart items
+       //const updatedCartItems = [...this.cart.items];
+
+        //filter by js allows to define a criteria  
+        //about how we want to filter the elements in that array (items)
+        //then it will return an array with all the items that make it through the filter
+
+        //return true if want to keep the item in the array
+        //or false if want to get rid of it
+        //want to keep all items except for the item i am deleting
+
+       const updatedCartItems = this.cart.items.filter(item => {
+            return item.productId.toString() !== productId.toString();
+       })
+
+               
+       const db = getDb();
+       let newUserId = new mongodb.ObjectId(this._id);
+
+       //over write the old cart.items with the new cart.items
+       //updateOne where, how
+       return db.collection("users").updateOne(
+            { _id: newUserId }, 
+            { $set: {cart: {items: updatedCartItems}} }
+        );
+
+    }
+
+    //////////////////////////////////////////////
+    addOrder() {
+        //can have a separate order collection
+        //order details is already in this user's cart
+        //but will use the orders as a method on the user
+
+        const db = getDb();
+
+        //items with the product information and the quantity and user data
+        //create a new collection
+        //insert the cart the user have
+        //return on this.getCart allows in the controller to call then
+        return this.getCart()
+            .then(products => {
+                const order = {
+                    item: products,
+                    user: {
+                        _id: new mongodb.ObjectId(this._id),
+                        name: this.name,
+                    }
+                };
+                return db.collection("orders").insertOne(order);
+
+            })
+            //then empty the cart
+            .then(result => {
+                //empty the cart
+                this.cart = {items: []};
+
+                //also clear the cart in the database
+                let newUserId = new mongodb.ObjectId(this._id);
+                //over write the old cart.items with an empty array
+                //updateOne where, how
+                return db.collection("users").updateOne(
+                    { _id: newUserId }, 
+                    { $set: {cart: {items: []}} }
+                );
+            })
+
+    }
+
+
+
+
+    //////////////////////////////////////////////
+    getOrders() {
+        const db = getDb();
+        let newUserId = new mongodb.ObjectId(userId);
+
+        return db.collection("orders").find
+
+    }
+
+
+
+
+
+
 
     //////////////////////////////////////////////
     static findById(userId) {

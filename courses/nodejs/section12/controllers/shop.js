@@ -187,7 +187,7 @@ exports.getIndex = (req, res, next) => {
 //relevant to add-to-cart button on ejs which passes productId
 exports.postCart = (req, res, next) => {
 
-    const prodId = req.body.productId;
+    const prodId = req.body.productId;  //ejs hidden input has id
     ProductClassModel.findById(prodId)
     .then(product => {
         return req.user.addToCart(product)
@@ -195,6 +195,8 @@ exports.postCart = (req, res, next) => {
     .then(result => {
         //as addToCart returns a promise we can chain another then here
         console.log(result);
+        res.redirect("/cart");
+
     })
 
 
@@ -268,6 +270,22 @@ exports.getCart = (req, res, next) => {             //router
     //console.log("req.user.cart 1" + req.user.cart); //(21)
 
     req.user.getCart()
+        .then(products => {
+            console.log(products);
+            res.render("shop/cart", {
+                path: "/cart",
+                myTitle: "Your Cart",
+                products: products
+            });    
+
+        })
+        .catch(err => {
+            console.log(err);
+        })
+
+
+    /*
+    req.user.getCart()
     .then((cart)=> {
         console.log(cart)
         return cart.getProducts()
@@ -286,7 +304,7 @@ exports.getCart = (req, res, next) => {             //router
     .catch((err)=> {
         console.log(err)
     });
-
+    */
 
     /*
     //express
@@ -318,6 +336,15 @@ exports.postCartDeleteProduct = (req, res, next) => {
     //need to remove product from the cart not the product it self
     const prodId = req.body.productId;
 
+    req.user.deleteItemFromCart(prodId)
+        .then (result => {
+            res.redirect("/cart");
+        })
+        .catch(err => console.log(err));
+
+
+    //sequelize
+    /*
     req.user.getCart().then(cart => {
         return cart.getProducts({where: {id: prodId}});
     })
@@ -349,6 +376,17 @@ exports.getCheckout = (req, res, next) => {
 
 exports.postOrder = (req, res, next) => {   //(25)
 
+    //mongoDB
+    req.user.addOrder()
+        .then(result => {
+            res.redirect("/orders");
+        })
+        .catch( (err) => {
+            console.log(err);
+        })
+
+    //sequelize
+    /*
     let fetchedCart //(26)
 
     req.user.getCart()
@@ -379,6 +417,9 @@ exports.postOrder = (req, res, next) => {   //(25)
         .catch( (err) => {
             console.log(err);
         })
+        */
+
+
     };
 
 

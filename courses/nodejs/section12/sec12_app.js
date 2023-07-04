@@ -370,6 +370,43 @@ if the product exist, increase its quantity after finding its index in the cart
 if not exist push the product id and quantity 1 to cart
 
 
+199
+(12)///////////////////////////////////////////////////////////////////
+//Displaying the cart items
+
+>>work on the getCart in the user model
+to return the products from the products model with the id in the cart property in user
+and also amend to each product by using js map method and {..., } constructor
+to return an array of objects each of product-details plus its quantity in the same object
+
+look into the cart ejs to adjust the values properly
+
+
+(13)///////////////////////////////////////////////////////////////////
+//deleting from the cart
+
+filter cart items where prodId = passed in prod id
+and update the user's cart items with the filtered array 
+
+
+(14)///////////////////////////////////////////////////////////////////
+//adding an order
+
+using another way of relating data
+
+want to store orders on users
+>>work on addOrder in the user model
+
+insert the user's cart to a new orders collection
+then empty the user's cart in code and in the database
+
+>>postOrder controller
+just call the model's method
+
+//seeing the order's page
+>>work on the getOrders method in the user model
+
+
 
 */
 
