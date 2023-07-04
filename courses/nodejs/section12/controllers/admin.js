@@ -1,4 +1,5 @@
 
+const mongodb = require("mongodb");
 
 const ProductClassModel = require("../models/product.js");
 
@@ -30,17 +31,18 @@ exports.postAddProduct = (req, res, next) => {
     const description = req.body.description;
 
 
-
     //mongoDB
-    //add a product into the db (3)
-    const product = new ProductClassModel(title, price, description, imageUrl);
+    //add a product into the db //(3)
+    //the user id is a string //(9)
+    //the user _id object is a reference pointing at the user who did create that product
+    const product = new ProductClassModel(title, price, description, imageUrl, null, req.user._id);
     product.save()
         .then((result) => {
             console.log("created product");
             res.redirect("/admin/products");
 
         }).catch((err) => {
-        console.log("error" + err);
+        console.log("postAddProduct error" + err);
         });
 
 

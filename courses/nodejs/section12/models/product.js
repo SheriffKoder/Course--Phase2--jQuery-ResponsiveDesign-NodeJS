@@ -3,13 +3,13 @@ const mongodb = require("mongodb");
 const getDb = require("../util/database").getDb;
 
 class Product {
-    constructor(title, price, description, imageUrl, id) {
+    constructor(title, price, description, imageUrl, id, userId) {
         this.title = title;
         this.price = price;
         this.description = description;
         this.imageUrl = imageUrl;
         this._id = id ? new mongodb.ObjectId(id) : null;
-        
+        this.userId = userId; //(9)
         //allows to pass an id object to the comparison with _id instead of just a string
         //if there is no id, store it as null, otherwise new products wont be added
 
@@ -52,12 +52,12 @@ class Product {
         //return db.collection("products").insertOne(this)
         return dbOp
             .then((result) => {
-                console.log("model result: ");
-                console.log(result);
+                //console.log("model result: ");
+                //console.log(result);
 
             })
             .catch((err) => {
-                console.log(err);
+                console.log("save error" + err);
             })  
 
     }

@@ -20,17 +20,24 @@ app.use(express.static(path.join(__dirname, "public")));
 app.set("view engine", "ejs");
 app.set("views", "views");
 
+const adminJsRoutes = require("./routes/admin.js");
+const shopJsRoutes = require("./routes/shop.js");
+
+
 //(8)
 app.use((req, res, next) => {
-    User.findById("64a338c94e1411fabef7003f")
+    User.findById("64a37b774e1411fabef70045")
         .then(user => {
-            req.user = user;
+            //req.user = user;
+            //create a new user in order to be able to call its methods //(10)
+            req.user = new User(user.name, user.email, user.cart, user._id);
             next();
+
         })
         .catch(err => {
             console.log(err);
         })
-    next();
+
 });
 
 
@@ -38,8 +45,6 @@ app.use((req, res, next) => {
 
 
 
-const adminJsRoutes = require("./routes/admin.js");
-const shopJsRoutes = require("./routes/shop.js");
 
 //app.use(adminJsRoutes.routes); //replaced code
 //app.use(adminJsRoutes); //replaced code
@@ -308,19 +313,61 @@ then add a document with user details like described in your model
 take the number id and place in the middleware's findById
 
 
-
+//195
 (9)///////////////////////////////////////////////////////////////////
 //use the user object and store that reference in the database
 
 
+//want to store a reference to user when storing a product
+//by embedding the user data
+this of course mean that we will have to update the user data
+manually in every place it is used
+
+. go to the product model and make the class have the property of userId
+. then in postAddProduct in admin controller add the id to the new created product
+using the passed req.user._id from the app.js middleware
 
 
+(10)///////////////////////////////////////////////////////////////////
+//working on cart items and orders
+
+what is the purpose of the cart ?
+//for every user we have we want to store a cart
+//this user will have a cart and that cart will hold the products
+
+so it is a strict one-to-one relation between the user and the cart
+
+so will not work with a cart model,
+will store the cart items in the user model
+
+>> in the user model add method addToCart
+to add product to the user
+the passed in product will be merged with quantity 1 to a updatedCart
+then update the user with this id, to hold the new cart
 
 
+>>wire the cart in app.js
+//create a new user in order to be able to call its methods //(10)
 
 
+>> in shop controller work on the postCart method
+to find the product in the product model then use the getToCart on the req.user
+
+now the user will have a product "collection"
+
+but the product if updated, this update wont show in the cart
+we will store only the product id not the whole product data in the addToCart
+
+as the id is sufficient for fetching information when needed
 
 
+(11)///////////////////////////////////////////////////////////////////
+//storing multiple data in the cart and increase the quantity if product exists
+
+
+>>tune the addToCart user's method
+if the product exist, increase its quantity after finding its index in the cart
+if not exist push the product id and quantity 1 to cart
 
 
 

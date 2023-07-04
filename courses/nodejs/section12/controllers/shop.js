@@ -186,6 +186,20 @@ exports.getIndex = (req, res, next) => {
 
 //relevant to add-to-cart button on ejs which passes productId
 exports.postCart = (req, res, next) => {
+
+    const prodId = req.body.productId;
+    ProductClassModel.findById(prodId)
+    .then(product => {
+        return req.user.addToCart(product)
+    })
+    .then(result => {
+        //as addToCart returns a promise we can chain another then here
+        console.log(result);
+    })
+
+
+    /*
+    //sequelize
     //retrieve the product id from the incoming request
     //then fetch our product in the database/file
     //add to our cart
@@ -230,7 +244,7 @@ exports.postCart = (req, res, next) => {
     .catch((err)=> {
         console.log(err)
     });
-
+    */
 
     /*
     //express
