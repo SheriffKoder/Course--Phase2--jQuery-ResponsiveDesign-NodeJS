@@ -200,13 +200,16 @@ class User {
 
 
 
-
+    //(14)
     //////////////////////////////////////////////
     getOrders() {
         const db = getDb();
-        let newUserId = new mongodb.ObjectId(userId);
+        let newUserId = new mongodb.ObjectId(this._id);
 
-        return db.collection("orders").find
+        //find all orders for that user
+        //compare the user._id to this._id
+        //as the orders can be more than one, can use the toArray to put into an array
+        return db.collection("orders").find({"user._id": newUserId}).toArray();
 
     }
 

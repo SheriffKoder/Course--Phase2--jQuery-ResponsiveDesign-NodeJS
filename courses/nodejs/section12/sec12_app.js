@@ -389,6 +389,7 @@ filter cart items where prodId = passed in prod id
 and update the user's cart items with the filtered array 
 
 
+//203
 (14)///////////////////////////////////////////////////////////////////
 //adding an order
 
@@ -405,6 +406,54 @@ just call the model's method
 
 //seeing the order's page
 >>work on the getOrders method in the user model
+to find by comparing id's in the orders with this user's id
+
+fix the orders ejs values against the database, enable the route
+
+
+
+(15)///////////////////////////////////////////////////////////////////
+//removing deleted items from the cart
+
+
+deleting a product that was in the cart of the user
+
+cleanup-script
+running a script every 24h that scans the users/carts
+and looks for products which are not in the products collection anymore
+and then you clean up these carts
+
+or compare in the getCart
+what you have in this.cart
+and in the products collection in the database
+
+
+///////////////////////////////////////////////////////////////////
+//wrap up
+
+CRUD - create read update delete
+
+NoSQL/MongoDB
+alternative to SQL databases
+no strict schemas, fewer relations
+can use schemas and reference-based relations but you have more flexibility
+often, relations are also created by embedding other documents/data
+
+Working with MongoDB
+use the official MongoDB driver
+has commands like insertOne, find, updateOne and deleteOne 
+    which make CRUD operations very simple
+check the official docs to learn about all available operations, configurations/operators
+all operations are promise based, hence you can easily chain them for more complex flows
+
+
+
+
+
+
+
+
+
 
 
 

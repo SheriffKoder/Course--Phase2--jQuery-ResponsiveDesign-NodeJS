@@ -424,7 +424,23 @@ exports.postOrder = (req, res, next) => {   //(25)
 
 
 
-exports.getOrders = (req, res, next) => { //(27)
+exports.getOrders = (req, res, next) => { 
+    
+    //(14)
+    req.user.getOrders()
+        .then(orders => {
+            res.render("shop/orders", {
+                path: "/orders",
+                myTitle: "Your Orders",
+                orders: orders
+            });        
+        })
+        .catch(err => console.log(err));
+
+
+    /*
+    //sequelize
+    //(27)
     //eger loading concept: if you are fetching all the orders 
     //also fetch all related products already
     //and give back one array of orders
@@ -441,6 +457,7 @@ exports.getOrders = (req, res, next) => { //(27)
     .catch(err => {
         console.log(err);
     })
+    */
 
     //express
     /*
