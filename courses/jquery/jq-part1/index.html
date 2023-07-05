@@ -85,14 +85,28 @@
     </ul>
 
     <form action="" id="form1">
-      <input type="text" name="" id="name" value="peter"><br>
-      <input type="text" name="" id="" value="meter"><br>
-      <input type="email" name="" id="" placeholder="email"><br>
-      <input type="checkbox" checked id="check1"> <label for="check1">check me</label><br>
+      <input type="text" name="" id="name" value="peter" placeholder="Enter your name">
+      <span id="name-feedback"> </span><br>
 
-      <input type="range" min="1" max="10" value="7">
+      <input type="text" name="" id="" value="meter" placeholder="Enter a password">
+      <span id="password-feedback"> </span><br>
+
+      <input id="amount" type="range" min="1" max="9" value="5"><br>
+
+      <textarea cols="30" rows="10" id="message"></textarea>
+      <span id="message-feedback"> </span><br>
+
+      <input type="checkbox" checked id="check1"> <label for="check1">check me</label><br>
       
-      <textarea cols="30" rows="10"></textarea><br>
+      <!--
+      <select name="" id="">
+        <option value="">option 1</option>
+        <option value="">option 2</option>
+        <option value="">option 3</option>
+        <option value="">option 4</option>
+      </select><br>
+      -->
+
       <input type="submit" value="Submit">
     </form>
 

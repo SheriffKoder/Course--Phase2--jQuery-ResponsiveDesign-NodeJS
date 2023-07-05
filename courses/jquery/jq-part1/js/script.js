@@ -496,8 +496,8 @@ for (myColor in color) {
 //manipulate the attributes and properties of such elements
 //id, class, type, value, src etc.
 //attr(targetAttr, giveValue) > attribute
-//prop() > properties
-//val() > values of input elements
+//prop() > properties, live
+//val() > value att of input elements
 
 //store element in a variable
 //var specialLink = $("#mylink");
@@ -775,7 +775,8 @@ let images = [
 
 //////////////////////////////////////////////////////////////////////////
 //click event
- 
+
+/*
 $("#btn-click").click((event) => {
   alert("button clicked");
   console.log(event);
@@ -789,7 +790,7 @@ $(".red-box").click(e => {
 
 //auto-click an element
 $(".red-box").click();
-
+*/
 
 //////////////////////////////////////////////////////////////////////////
 //hover event
@@ -850,7 +851,7 @@ blueBox.mouseleave(()=> {
 
 
 //////////////////////////////////////////////////////////////////////////
-//adding the same handler for multiple events
+//adding the on handler for multiple events
 
 //.on("click", functionRelatedToClick)
 
@@ -900,6 +901,7 @@ $("#content").append("<p> dynamic paragraph </p>");
 */
 
 //solution to this
+//add in the on parameters a child
 //add event handler to a parent which gives event to its children
 
 //this event will be delegated to all "p" descendants of content separately
@@ -974,7 +976,7 @@ $(".lightbox").on("click", function () {
 
 //////////////////////////////////////////////////////////////////////////
 //ex handling keyboard events
-
+//keydown with event.ctrlKey && event.which
 
 //keydown is used to allow the event to operate once the key is pressed
 //keyup (like mouseup) will wait for the user to release the button
@@ -1041,6 +1043,84 @@ name.blur(function () {
 })
 
 */
+
+//////////////////////////////////////////////////////////////////////////
+//change event
+
+//useful for checkbox, radio buttons, select elements
+//for text inputs/areas that event will fire when the focus is lost
+
+
+//use the change event to
+//notify the user when the check is not checked or if he un checks it
+/*
+$("#check1").change(function() {
+  let isChecked = $(this).is(":checked"); //can use .prop("checked")
+  if (isChecked) {
+    $(this).add("label[for='check1'").css("box-shadow", "0 0 4px #181");
+
+  } else {
+    $(this).add("label[for='check1'").css("box-shadow", "0 0 4px #811");
+
+  }
+})
+*/
+
+
+//.change
+//.is
+//.add ; adds some elements to the current selection
+//so we selected the checkbox and the label
+
+//select element for the html options
+//alert the currently selected option
+// select>option*4>{Option $}
+/*
+$("select").change(function () {
+  isSelected = $(this).find(":selected").text();  //will give all the selected options
+  if (isSelected) {
+    //let innerText = $(this).text();
+    //alert(innerText);
+    console.log("selected " + isSelected);
+  }
+});
+*/
+
+
+//////////////////////////////////////////////////////////////////////////
+//submit event
+
+//useful for providing fast feedback for the user 
+//and avoiding page reload in case the validation is not right
+/*
+$("form").submit(function(event) {
+  let textarea = $("#message");
+  if (textarea.val().trim() == "") {  //if no content in the textarea
+    textarea.css("box-shadow", "0 0 4px #811"); //display red shadow
+    
+    //prevent the form from submitting
+    //will prevent any default actions that will happen 
+    //when click that event or it happens
+    event.preventDefault();
+  } else {
+    //form will be submitted
+
+  }
+});
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
