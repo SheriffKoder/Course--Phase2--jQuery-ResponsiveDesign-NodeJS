@@ -358,8 +358,25 @@ exports.getProducts = (req, res, next) => {
     */
 
     //mongoose
+    //find for all products
     ProductClassModel.find()
+    //(10)
+    //can select the kind of data should be received, in find
+    //select after find, defines which fields you want to select/un-select(- sign)
+    //which fields want to be retrieved from the database
+    //.select("title")    //this will output the product with title only no price etc
+
+    //output instead of userId, all the user related data
+    //utility method we can add after find
+    //populate a certain field with all the detailed information
+    //and not just the id
+    //want to populate the userId
+    //(10)
+    //can add a second argument to populate if want to select specific properties only
+    //.populate("userId", "name")
+    //.populate("userId", "name") //this will output the user with id,name only no email etc
     .then((products) => {
+        console.log(products);
         res.render("admin/products.ejs", {prods: products, myTitle: "Admin Products", path:"/admin/products"});
 	})
 	.catch((err) => {

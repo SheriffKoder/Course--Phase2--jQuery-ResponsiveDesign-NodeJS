@@ -278,15 +278,106 @@ when creating a new product in "postAddProduct" it should also have a userId
 now a created product will have a userId
 
 
+//220
 ///////////////////////////////////////////////////////////////////
 //(10) fetching relations
 
+want to get all the user data for the related user and not just the id
+
+using find().populate(userId)
+will replace userId with "all" the user's data (object)
+
+ProductClassModel.find()
+.select("title")    //this will output the "product" with title only no price etc
+.populate("userId", "name") //this will output the "userid" with id,name only no email etc
+
+
+///////////////////////////////////////////////////////////////////
+//(11) working on the shopping cart
+
+//using the addToCart method defined in mongoDB example
+can add methods to the mongoose model by
+the .methods method
+
+postCart in shop controller should be the same
+
+
+when adding a product the object of the product id and quantity will have an automatically generated id
+mongoose adds id's for sub documents
+
+//check the official docs for more info about schema methods
+
+///////////////////////////////////////////////////////////////////
+//(12)
+
+basically in mongoDB
+getCart did
+-output the cart items id's
+return 
+in products, find all products by ids of cart's ids
+return an array of the with their quantity from the cart
+
+now we need to populate the product id with all the data we are interested in
+
+populate does not return a promise
+so have to chain with execPopulate() so can chain .then
+
+adjust the ejs based on the middleware product output
+
+
+///////////////////////////////////////////////////////////////////
+//(13) Deleting cart items
+
+postCartDeleteProduct in the shop controller
+
+>> add remove from cart method inspired from the mongoDB's method
+
+
+///////////////////////////////////////////////////////////////////
+//(14) creating and getting orders
+
+in mongoDB we did in the user model a method that
+took cart's products,
+created an order object 
+with the items and data about the user
+then inserted this into a order collection
+then we cleared the cart
+
+>> create order.js in models folder
+
+define an order model
+import into the shop controller
+
+in the shop controller
+take from the user cart items with the product data and quantity
+create a new order with schema like the model
+order.save
+
+
+///////////////////////////////////////////////////////////////////
+//(15)
+//working on clearing the cart after making an order
+user method to clear cart which adds an empty array to cart items
+in the controller        req.user.clearCart();
+
+
+///////////////////////////////////////////////////////////////////
+//(16) getting and displaying the orders
+
+shop controllers getOrders
+uses getOrders in the user model
+im mongoDB
+it goes to the orders collection and find all orders for that user
 
 
 
 
+///////////////////////////////////////////////////////////////////
+//Wrap up
 
-
+dive into the official docs on the website
+try playing around with the application
+try adding sub totals to the orders
 
 
 

@@ -228,6 +228,7 @@ exports.getIndex = (req, res, next) => {
 //relevant to add-to-cart button on ejs which passes productId
 exports.postCart = (req, res, next) => {
 
+    //mongoDB and mongoose - findById is default in mgs and we edited addToCart
     const prodId = req.body.productId;  //ejs hidden input has id
     ProductClassModel.findById(prodId)
     .then(product => {
@@ -308,8 +309,31 @@ exports.postCart = (req, res, next) => {
 
 exports.getCart = (req, res, next) => {             //router
 
+
+    //populate does not return a promise
+    //so have to chain with execPopulate() so can chain .then
+    //(12)
+    req.user
+    .populate("cart.items.productId")
+    .then(user => { //still working with the req.user
+        const products = user.cart.items;
+        console.log(products);  //to be able to see it and adjust the values in the ejs file
+        res.render("shop/cart", {
+            path: "/cart",
+            myTitle: "Your Cart",
+            products: products
+        });    
+
+    })
+    .catch(err => {
+        console.log(err);
+    })
+
     //console.log("req.user.cart 1" + req.user.cart); //(21)
 
+    
+    //mongoDB
+    /*
     req.user.getCart()
         .then(products => {
             console.log(products);
@@ -323,7 +347,7 @@ exports.getCart = (req, res, next) => {             //router
         .catch(err => {
             console.log(err);
         })
-
+    */
 
     /*
     req.user.getCart()
@@ -377,12 +401,22 @@ exports.postCartDeleteProduct = (req, res, next) => {
     //need to remove product from the cart not the product it self
     const prodId = req.body.productId;
 
+    //(13)
+    req.user.removeFromCart(prodId)
+    .then (result => {
+        res.redirect("/cart");
+    })
+    .catch(err => console.log(err));
+
+
+    //mongoDB
+    /*
     req.user.deleteItemFromCart(prodId)
         .then (result => {
             res.redirect("/cart");
         })
         .catch(err => console.log(err));
-
+    */
 
     //sequelize
     /*
@@ -415,9 +449,50 @@ exports.getCheckout = (req, res, next) => {
     });
 };
 
-exports.postOrder = (req, res, next) => {   //(25)
+const Order = require("../models/order.js");
+//(14)
+exports.postOrder = (req, res, next) => { 
+
+    req.user
+    .populate("cart.items.productId")
+    .then(user => { //still working with the req.user
+
+        const products = user.cart.items.map(item => {
+            //returning the same structure as the order model
+            //return {quantity: item.quantity, product: item.productId};    //this will return the product id only
+            
+            //using the spread operator and a special function ._doc to access just the data without meta data and pull out all the product data into a new object
+            //otherwise the order will not populate correctly and no product data but the id is stored
+            return {quantity: item.quantity, product: {...item.productId._doc}};
+
+        });
+
+        const order = new Order({
+            user: {
+                name: req.user.name,        //a full user object fetched from the db, so will be a name property
+                userId: req.user            //mongoose will pick the id
+            },
+            products: products
+        });
+        return order.save();
+    })
+    .then(result => {
+        //(15)
+        req.user.clearCart();
+    })
+    .then(() => {   //clearCart is returned in the model so can add .then
+        //redirect after the cart is cleared
+        res.redirect("/orders");
+    })
+    .catch( (err) => {
+        console.log(err);
+    })
+
+
+
 
     //mongoDB
+    /*
     req.user.addOrder()
         .then(result => {
             res.redirect("/orders");
@@ -425,6 +500,8 @@ exports.postOrder = (req, res, next) => {   //(25)
         .catch( (err) => {
             console.log(err);
         })
+    */
+
 
     //sequelize
     /*
@@ -467,7 +544,23 @@ exports.postOrder = (req, res, next) => {   //(25)
 
 exports.getOrders = (req, res, next) => { 
     
+    //mongoose
+    //(16)
+    //get all orders that belong to that user
+    Order.find({"user.userId": req.user._id})
+    .then(orders => {
+        res.render("shop/orders", {
+            path: "/orders",
+            myTitle: "Your Orders",
+            orders: orders
+        });        
+    })
+    .catch(err => console.log(err));
+
+
     //(14)
+    //mongoDB
+    /*
     req.user.getOrders()
         .then(orders => {
             res.render("shop/orders", {
@@ -477,7 +570,7 @@ exports.getOrders = (req, res, next) => {
             });        
         })
         .catch(err => console.log(err));
-
+    */
 
     /*
     //sequelize
