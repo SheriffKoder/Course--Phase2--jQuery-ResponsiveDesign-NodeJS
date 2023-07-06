@@ -42,6 +42,7 @@ exports.getProducts = (req, res, next) => {
     */
 
     //mongoDB //(4)
+    /*
     ProductClassModel.fetchAll()
     .then((products)=>{
         res.render("shop/product-list.ejs", {prods: products, myTitle: "All products page", path:"/products"});
@@ -49,7 +50,18 @@ exports.getProducts = (req, res, next) => {
     .catch((err) => {
         console.log(err);
     });
-   
+    */
+
+    //(4)
+    //mongoose
+   ProductClassModel.find()
+    .then((products)=>{
+        res.render("shop/product-list.ejs", {prods: products, myTitle: "All products page", path:"/products"});
+    })
+    .catch((err) => {
+        console.log(err);
+    });
+
 
 
 
@@ -116,6 +128,7 @@ exports.getProduct = (req, res, next) => {
 
 
     //mongoDB //(5)
+    /*
     ProductClassModel.findById(prodId)
     .then((product)=> {
         //console.log(product[0].title);
@@ -125,7 +138,19 @@ exports.getProduct = (req, res, next) => {
     .catch((err) => {
         console.log(err);
     });
+    */
 
+    //(5)
+    //mongoose has a findById method
+    //we can pass it a string and it will convert to an object id (like the mongoDB product model we defined)
+    ProductClassModel.findById(prodId)
+    .then((product)=> {
+        res.render("shop/product-details", {product: product, myTitle: product.title, path: "/products"});
+
+    })
+    .catch((err) => {
+        console.log(err);
+    });
 
 
 
@@ -170,6 +195,7 @@ exports.getIndex = (req, res, next) => {
     */
 
     //mongoDB //(4)
+    /*
     ProductClassModel.fetchAll()
     .then((products)=>{
         res.render("shop/index.ejs", {prods: products, myTitle: "Shop page", path:"/"});
@@ -177,7 +203,22 @@ exports.getIndex = (req, res, next) => {
     .catch((err) => {
         console.log(err);
     });
-    
+    */
+
+    //mongoose
+    //find will get all products, into an array
+    //when working with large amounts of data
+    //can work with a cursor or manipulate find to limit the set of data that is retrieved (pagination)
+    //can chain with cursor() to get access to cursor
+    //then .next() to get the next element or each async to allow to loop through them
+    ProductClassModel.find()
+        .then((products)=>{
+            res.render("shop/index.ejs", {prods: products, myTitle: "Shop page", path:"/"});
+        })
+        .catch((err) => {
+            console.log(err);
+        });
+
 
 
 

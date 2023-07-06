@@ -28,7 +28,16 @@ const productSchema = new Schema({
     imageUrl: {
         type: String,
         required: true
+    },
+    userId: {
+        //as it is a reference to the user (_id) //(9)
+        type: Schema.Types.ObjectId,
+        //ref takes a string, which other mongoose model is related to the data in this field
+        //the "User model" as written in mongoose.model("User"..
+        ref: "User",
+        required: true
     }
+
 });
 
 
@@ -36,9 +45,10 @@ const productSchema = new Schema({
 //mongoose also works with so-called models
 //and the models are also what we will export (what we will work with in our code)
 //model is a function that connects a name "Product" to a schema
+//mongoose will take the "Product" turns into lower-case and make plural
+//this is how the "products" collection name came from
 
-
-module.exports = mongoose.model("Product", productSchema)
+module.exports = mongoose.model("Product", productSchema);
 
 
 

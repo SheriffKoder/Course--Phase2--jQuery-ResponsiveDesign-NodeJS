@@ -12,7 +12,7 @@ const router = express.Router();
 const shopController = require("../controllers/shop.js")
 
 
-// router.get("/", shopController.getIndex);
+router.get("/", shopController.getIndex);
 
 /*
 router.get("/", (req, res, next) => {
@@ -25,12 +25,12 @@ router.get("/", (req, res, next) => {
 */
 
 
-// router.get("/products", shopController.getProducts);
+router.get("/products", shopController.getProducts);
 
 // //tell express router that there will be some variable segment
 // //by adding a : then any name of our choice, that we will use to extract that information
 // //router.get("/products/delete",...);
-// router.get("/products/:productId", shopController.getProduct);
+router.get("/products/:productId", shopController.getProduct);
 
 // router.get("/checkout", shopController.getCheckout);
 

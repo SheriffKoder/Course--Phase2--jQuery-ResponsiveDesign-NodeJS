@@ -34,7 +34,15 @@ exports.postAddProduct = (req, res, next) => {
     //a new product based on our mongoose model
     //right side > schema keys
     //left side > received properties
-    const product = new ProductClassModel({ title: title, price: price, description: description, imageUrl: imageUrl });
+    //(9) userId
+    const product = new ProductClassModel(
+        { 
+            title: title, 
+            price: price, 
+            description: description, 
+            imageUrl: imageUrl,
+            userId: req.user //however can just use req.user and mongoose will pick the id from that object
+        });
 
     product.save()
         .then((result) => {
@@ -181,6 +189,8 @@ exports.getEditProduct = (req, res, next) => {
         });
     */
 
+    //mongoDB
+    //also mongoose (as findById is a default method in mgs)
       ProductClassModel.findById(prodId)
       .then((product) => {
             if (!product) {
@@ -265,9 +275,8 @@ exports.postEditProduct = (req,res, next) => {
     //and pass in the id
     //but to pass the id has to convert it
     //so import mongodb 
-
     //(6)
-
+    /*
     const product = new ProductClassModel(
         updatedTitle, 
         updatedPrice, 
@@ -286,6 +295,30 @@ exports.postEditProduct = (req,res, next) => {
     .catch((err) => {
         console.log(err);
     });
+    */
+
+
+    //mongoose
+    //(6)
+    //find byId returns a mongoose object with all the mongoose methods
+    //like save, if there is an existing object, will not save a new one, but the existing updates
+    //but have to set our properties
+    ProductClassModel.findById(prodId)
+    .then((product) => {
+        product.title = updatedTitle;   
+        product.price = updatedPrice;  
+        product.description = updatedDescription;                      
+        product.imageUrl = updatedImageUrl;
+        return product.save();      //return to chain another then
+    })
+    .then(() => {
+        //handles any success responses from the (save) promise
+        console.log("updated product");
+        res.redirect("/admin/products");
+    })
+	.catch((err) => {
+		console.log(err);
+	})
 
 
 
@@ -314,13 +347,25 @@ exports.getProducts = (req, res, next) => {
     */
 
     //mongoDB
+    /*
     ProductClassModel.fetchAll()
     .then((products) => {
         res.render("admin/products.ejs", {prods: products, myTitle: "Admin Products", path:"/admin/products"});
 	})
 	.catch((err) => {
 		console.log(err);
+	});
+    */
+
+    //mongoose
+    ProductClassModel.find()
+    .then((products) => {
+        res.render("admin/products.ejs", {prods: products, myTitle: "Admin Products", path:"/admin/products"});
 	})
+	.catch((err) => {
+		console.log(err);
+	});
+
 
 
  };
@@ -349,7 +394,20 @@ exports.postDeleteProduct = (req, res, next) => {
     */
 
     //mongoDB   //(7)
+    /*
     ProductClassModel.deleteById(prodId)
+	.then((result) => {
+        console.log("removed product");
+        res.redirect("/admin/products");
+    })
+    .catch((err) => {
+        console.log(err);
+    });
+    */
+
+    //mongoose
+    //(7)
+    ProductClassModel.findByIdAndRemove(prodId)
 	.then((result) => {
         console.log("removed product");
         res.redirect("/admin/products");

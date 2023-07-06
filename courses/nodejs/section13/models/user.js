@@ -1,4 +1,50 @@
 
+//(8)
+const mongoose = require("mongoose");
+
+//allows to create new schemas
+const Schema = mongoose.Schema;
+//pass in a js object and define how the product should look like
+//keys and type
+//we still have to tell mongoose how our product should look like
+//however we still have the flexibility to deviate from that and not use all keys
+//or can use the required key and give up this flexibility
+//no need to put _id as it will be added automatically as an object it
+//user id will be added later
+//Schema/blueprint define
+const userSchema = new Schema({
+    name: {
+        type: String,
+        required: true
+    },
+    email: {
+        type: String,
+        required: true
+    },
+    //a cart with the items as an embedded document
+    //define as an array by using []
+    //[String] and array of strings, numbers, boolean
+    //an array of documents [{}]
+    //an array of documents with documents inside [{productId: {}}]
+    //objectId because it will store a reference to a product
+    //(8)
+    //(9) refer to the product model
+    //will store products that refers to some id and that id refers to a product stored
+    //however embedded documents like cart may not need references
+    cart: { 
+        items: [
+            {
+                productId: { type: Schema.Types.ObjectId, ref: "Product", required: true }, 
+                quantity: { type: Number, required: true}
+            }
+        ]
+    }
+});
+
+//mongoose will take the "User" turns into plural lower-case for the collection name
+module.exports = mongoose.model("User", userSchema);
+
+
 // //(8)
 // const mongodb = require("mongodb");
 
