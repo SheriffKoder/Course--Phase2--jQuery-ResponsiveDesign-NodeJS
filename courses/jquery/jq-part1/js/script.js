@@ -1110,6 +1110,161 @@ $("form").submit(function(event) {
 */
 
 
+//////////////////////////////////////////////////////////////////////////
+//ex: complete form validation when submitting the form
+
+
+//1: validate all the inputs where we have some kind of requirements
+//2: add fast feedback
+
+var form = $("#form1");
+
+
+form.submit(function(event) {
+  var name = $("#name").val();
+  var password = $("#password").val();
+  var message = $("#message").val();
+  var checkbox = $("#checkbox"); //.is(":checked");
+
+  validateNameField(name, event);
+  validatePassword(password, event);
+  validateMessage(message, event);
+  validateCheck(checkbox, event);
+
+})
+
+////////////
+//the event is for using the preventDefault
+function validateNameField(name, event) {
+  if(!isValidName(name)) {
+    //place this text if not valid
+    $("#name-feedback").text("Please enter at least two characters");
+    event.preventDefault();
+  } else {
+    //remove text if is valid
+    $("#name-feedback").text("");
+  }
+}
+
+//can improve it to check if not number or just spaces
+function isValidName(name) {
+  return name.length >= 2;
+}
+
+
+////////////
+function validatePassword (password, event) {
+  if(!ValidPassword(password)) {
+    $("#password-feedback").text("Please enter at least four characters and a number");
+    event.preventDefault();
+  } else {
+    //remove text if is valid
+    $("#password-feedback").text("");
+  }
+}
+
+function ValidPassword (password) {
+  return password.length >=4 && /.*[0-9].*/.test(password);
+}
+
+////////////
+function validateMessage (text, event) {
+  if(!ValidMessage(text)) {
+    $("#message-feedback").text("Please enter a text comment");
+    event.preventDefault();
+  } else {
+    //remove text if is valid
+    $("#message-feedback").text("");
+  }
+}
+
+function ValidMessage (text) {
+
+  return (text.trim() == "" || text.length < 4) ? false : true;
+}
+
+
+////////////
+function validateCheck (check, event) {
+  if(!ValidCheck(check)) {
+    //$("#form1").find('label[for="check1"]').text("Please agree to this");
+    $("#message-feedback").text("Please agree to this");
+
+    event.preventDefault();
+  } else {
+    //remove text if is valid
+    //$("#form1").find('label[for="check1"]').text("");
+    $("#checkbox-feedback").text("");
+
+  }
+}
+
+function ValidCheck (check) {
+  return check.prop("checked");
+}
+
+
+//////////////////////////////////////////////////////////////////////////
+
+//form visual feedback
+enableFastFeedback(form);
+
+function enableFastFeedback(formElement) {
+  var nameInput = formElement.find("#name");
+  var passwordInput = formElement.find("#password");
+  var messageInput = formElement.find("#message");
+  var checkboxInput = formElement.find("#checkbox");
+
+  nameInput.blur(function (event) {
+    var name = $(this).val();
+    validateNameField(name, event);
+
+    if(!isValidName(name)) {
+      $(this).css({"box-shadow": "0 0 4px #811", "border": "1px solid #600"});
+    } else {
+      $(this).css({"box-shadow": "0 0 4px #181", "border": "1px solid #060"});
+    }
+  });
+
+
+  passwordInput.blur(function (event) {
+    var password = $(this).val();
+    validatePassword(password, event);
+
+    if(!ValidPassword(password)) {
+      $(this).css({"box-shadow": "0 0 4px #811", "border": "1px solid #600"});
+    } else {
+      $(this).css({"box-shadow": "0 0 4px #181", "border": "1px solid #060"});
+    }
+  });
+
+  messageInput.blur(function (event) {
+    var message = $(this).val();
+    validateMessage(message, event);
+
+    if(!ValidMessage(message)) {
+      $(this).css({"box-shadow": "0 0 4px #811", "border": "1px solid #600"});
+    } else {
+      $(this).css({"box-shadow": "0 0 4px #181", "border": "1px solid #060"});
+    }
+  });
+
+
+  checkboxInput.blur(function(event) {
+    var check = $(this);
+    validateCheck(check, event);
+
+    if(!ValidCheck(check)) {
+      $(this).css({"box-shadow": "0 0 4px #811", "border": "1px solid #600"});
+    } else {
+      $(this).css({"box-shadow": "0 0 4px #181", "border": "1px solid #060"});
+    }
+  });
+
+
+
+}
+
 
 
 
