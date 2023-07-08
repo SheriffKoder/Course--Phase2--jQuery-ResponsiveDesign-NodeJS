@@ -6,10 +6,10 @@ const pathJSrootDir = require("../util/path.js");
 
 const authController = require("../controllers/auth.js")
 
-//(1)
+//(2.1)
 router.get("/login", authController.getLogin);
 
-//(2)
+//(2.2)
 router.post("/login", authController.postLogin);
 
 

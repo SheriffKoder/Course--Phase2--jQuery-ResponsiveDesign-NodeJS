@@ -13,6 +13,44 @@ app.use(bodyParser.urlencoded({extended: false}));
 const mongoose = require("mongoose");   //(2)
 const User = require("./models/user"); //(8)
 
+const session = require("express-session"); //(2.6)
+
+
+//(2.8)
+//gives an exe function which you can pass the session
+const mongoDBStore = require("connect-mongodb-session")(session);
+const MongoDbUri = "mongodb+srv://sheriffkoder:Blackvulture_92@cluster0.jgxkgch.mongodb.net/shop"; // mongoDB web app connect url //shop?retryWrites=true&w=majority
+const store = new mongoDBStore({
+    //requires a connection string - same as mongoose.connect - saved in a varaiable
+    uri: MongoDbUri,
+    //define a collection where your sessions will be stored
+    collection: "sessions"
+    //can also add when it should expire - and that can be cleaned automatically by mongoDB
+
+});
+
+
+//(2.6)
+//session core configurations
+//pass a js object where we configure the session setup
+//secret; for signing the hash secretly storing the id in the cookie
+    //in production should be a long string value
+//resave; the session will not be saved on every request that is done
+    //on every response that is sent, only if something is changed in the session
+    //will improve performance
+//saveUninitialized; no session will be saved for a request
+    //that does not need to be saved, bec nothing was changed about it
+//can configure the session cookie for maxAge, expires
+app.use(session(
+    {
+        secret: "my secret", 
+        resave: false, 
+        saveUninitialized: false,
+        //(2.8)
+        store: store
+
+    }
+));
 
 app.use(express.static(path.join(__dirname, "public")));
 
@@ -86,7 +124,7 @@ mongoConnect(() => {
 //(2)
 //enter the mongoDB connect url
 //make sure to enter mongodb.net/shop for the shop database
-mongoose.connect("mongodb+srv://sheriffkoder:Blackvulture_92@cluster0.jgxkgch.mongodb.net/shop?retryWrites=true&w=majority")
+mongoose.connect(MongoDbUri)
     .then(result => {
 
         //always gives back the first user it finds
@@ -405,7 +443,7 @@ cookies are stored on the client side
 
 
 ///////////////////////////////////////////////////////////////////
-//(1) creating a login page and connecting to the project
+//(2.1) creating a login page and connecting to the project
 
 added a login button in the header ejs with link to "/login"
 
@@ -422,7 +460,7 @@ with importing and creating an auth.css public file
 
 
 ///////////////////////////////////////////////////////////////////
-//(2) use a cookie to save the information that this user is logged in
+//(2.2) use a cookie to save the information that this user is logged in
 
 add in auth controller
 a postLogin to redirect to "/" when user click login button
@@ -443,7 +481,7 @@ between different users or same ip
 
 
 ///////////////////////////////////////////////////////////////////
-//(3)
+//(2.3)
 
 using a global variable in an external file can help 
 but it is accessible for different users
@@ -495,7 +533,7 @@ also there are third party packages that can help with extracting cookies
 
 
 ///////////////////////////////////////////////////////////////////
-//(4) More about cookies
+//(2.4) More about cookies
 
 there is a disadvantage
 as we can change the value through dev > application > cookies
@@ -554,17 +592,167 @@ can use some packages for: authentication
 that will manage setting the cookies for you
 
 
+//238
+///////////////////////////////////////////////////////////////////
+//(2.5) What is a Session
+
+what sessions are
+how they can help us store sensitive information across requests
+how cookies still are important when using sessions
 
 
+storing information about user authentication (logged in)
+in the front end is a bad practice
+
+we can store it in the back end with a session
+(not stored in the request, or variable)
+we want to share the information across "all requests of the same user"
+and that is really important
+
+for that
+we need to store it on the server
+we will start by storing it in memory (similar to storing in a variable)
+then will move to a different session storage (the database)
+and we will need a special piece of information
+a client needs to tell the server to which session he belongs
+because the session will then be an entry stored in memory
+or stored in a database
+
+we will not match this by an ip address, 
+because its a bit hard to maintain and can be faked etc
+
+instead we will use a cookie that will store the id of the session
+
+the value we store will not be the id but the hashed id
+hashed with a certain algorithm, where only the server
+can confirm that it has not been played with or create a different one
+
+a secure way, will store the id in an encrypted way
+where only the server will be able to confirm
+that the stored cookie value is related to a certain id
+in the database, thus we got a safe value stored in the cookie
+where you cannot change it and store a different session
+
+a session can be matched and that session
+can then contain the confidential data
+which you cant change from inside the browser
+that is the idea, 
+
+user
+v
+frontend (views) > cookie
+|
+|                   (associated with user/client via cookie)
+server (node app)
+v
+Database        > session (Session storeage)
 
 
+*/
+
+/*
+//239
+///////////////////////////////////////////////////////////////////
+//(2.6) initializing the session middleware
 
 
+third party package to use sessions
+part of the official express js suite
+but not in the express itself by default
+
+# nom install --save express-session
 
 
+///////////////////////////////////////////////////////////////////
+//(2.7) using the session middleware
+
+//store data that persists across requests but not across users
 
 
+req.session.isLoggedIn = true;
+will give in the dev > app a connectsid (connect session id cookie)
+with an encrypted value
+session cookie by default
 
+session cookie will define 
+this user here
+your running instance of this website
+this will identify you to the server
+
+req.session
+contains a cookie
+
+setting
+req.session.isLoggedIn = true;
+in the post
+
+then console
+req.session.isLoggedIn
+will display true
+
+even though these are separate requests from each other
+because it is stored in the session on the server side
+by default just in the memory
+not in the database yet
+the session is identified to the browser by the session cookie
+req.session.isLoggedIn will display false 
+
+first browser, login button clicked > req.session.isLoggedIn true
+second browser, login button not clicked > req.session.isLoggedIn false
+
+
+>> so using a different browser
+will be treated as a different user
+and will not have the same cookie set
+
+
+it still needs a cookie to identify the user
+but the sensitive information is stored on the server
+and we cannot modify it
+and that will be important for authentication
+
+this is the core mechanism for authenticating users on the web
+along with other techniques too like the REST API
+
+will use in validating credentials, logging users out etc.
+
+///////////////////////////////////////////////////////////////////
+//(2.8) Storing sessions in the database
+
+the problem is that this session is stored in memory
+which is not an infinite resource
+
+for development this is fine by for production server 
+this is not good for performance and security
+memory will quickly overflow when store large amount of data
+
+//checking the github page of the session package
+open the mongoDB session
+and register this as a store with which we can work
+
+lets the express-install package store data in the mongoDB database
+# npm install --save connect-mongodb-session
+
+>> configure our store in the app.use session object in app.js
+
+in app.js
+require mongoDB-session of session
+new instance
+the new instance in the app.use session as the store
+
+a new collection will be added to the database
+with a session having an id
+
+there will find information like
+our isLoggedin
+and other information about the cookie
+
+
+use the session to store data that belongs to a user
+that not want to lose
+after every response you send
+and should not be visible to other users
+for example the user's cart
 
 
 */
