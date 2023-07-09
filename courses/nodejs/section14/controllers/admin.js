@@ -17,7 +17,8 @@ exports.getAddProduct = (req, res, next) => {
         path: "/admin/add-product", 
         editing: false, //to enable add product text on the button of edit-product.ejs
         productCSS: true, formsCSS: true, activeProductAdd: true,
-        isAuthenticated: req.isLoggedIn
+        //isAuthenticated: req.isLoggedIn
+        isAuthenticated: req.session.isLoggedIn //(2.9)
     });
 
 };
@@ -27,7 +28,7 @@ exports.getAddProduct = (req, res, next) => {
 
 exports.postAddProduct = (req, res, next) => {
     //pass the form title and push the title to the products array in product.js using save
-    const title = req.body.productAdded;
+    const title = req.body.title;
     const imageUrl = req.body.imageUrl;
     const price = req.body.price;
     const description = req.body.description;
@@ -43,13 +44,17 @@ exports.postAddProduct = (req, res, next) => {
             price: price, 
             description: description, 
             imageUrl: imageUrl,
-            userId: req.user //however can just use req.user and mongoose will pick the id from that object
+            //userId: req.user //however can just use req.user and mongoose will pick the id from that object
+            userId: req.user //(2.9) using sessions
         });
 
     product.save()
         .then((result) => {
             console.log("product created");
             console.log(result);
+        })
+        .then(()=> {
+            res.redirect("/admin/products");
         })
         .catch((err) => {
             console.log(err);
@@ -205,7 +210,9 @@ exports.getEditProduct = (req, res, next) => {
                 myTitle: "edit-Product page", 
                 path: "/admin/add-product", 
                 editing: editMode,
-                isAuthenticated: req.isLoggedIn
+                        //isAuthenticated: req.isLoggedIn
+        isAuthenticated: req.session.isLoggedIn //(2.9)
+
                 
             });        
             })
@@ -226,7 +233,7 @@ exports.postEditProduct = (req,res, next) => {
     //call save
 
     const prodId = req.body.productId;
-    const updatedTitle = req.body.productAdded;
+    const updatedTitle = req.body.title;
     const updatedImageUrl = req.body.imageUrl;
     const updatedPrice = req.body.price;
     const updatedDescription = req.body.description;
@@ -384,7 +391,9 @@ exports.getProducts = (req, res, next) => {
             prods: products, 
             myTitle: "Admin Products", 
             path:"/admin/products",
-            isAuthenticated: req.isLoggedIn
+                    //isAuthenticated: req.isLoggedIn
+        isAuthenticated: req.session.isLoggedIn //(2.9)
+
         });
 	})
 	.catch((err) => {

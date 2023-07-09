@@ -60,7 +60,9 @@ exports.getProducts = (req, res, next) => {
             prods: products, 
             myTitle: "All products page", 
             path:"/products",
-            isAuthenticated: req.isLoggedIn
+                    //isAuthenticated: req.isLoggedIn
+        isAuthenticated: req.session.isLoggedIn //(2.9)
+
         });
     })
     .catch((err) => {
@@ -150,11 +152,13 @@ exports.getProduct = (req, res, next) => {
     //we can pass it a string and it will convert to an object id (like the mongoDB product model we defined)
     ProductClassModel.findById(prodId)
     .then((product)=> {
-        res.render("shop/product-details", {
+        res.render("shop/product-detail", {
             product: product, 
             myTitle: product.title, 
             path: "/products",
-            isAuthenticated: req.isLoggedIn
+                    //isAuthenticated: req.isLoggedIn
+        isAuthenticated: req.session.isLoggedIn //(2.9)
+
         });
 
     })
@@ -227,7 +231,9 @@ exports.getIndex = (req, res, next) => {
                 prods: products, 
                 myTitle: "Shop page", 
                 path:"/",
-                isAuthenticated: req.isLoggedIn
+                        //isAuthenticated: req.isLoggedIn
+        isAuthenticated: req.session.isLoggedIn //(2.9)
+
             });
         })
         .catch((err) => {
@@ -247,7 +253,9 @@ exports.postCart = (req, res, next) => {
     const prodId = req.body.productId;  //ejs hidden input has id
     ProductClassModel.findById(prodId)
     .then(product => {
+        //return req.user.addToCart(product)
         return req.user.addToCart(product)
+
     })
     .then(result => {
         //as addToCart returns a promise we can chain another then here
@@ -328,7 +336,8 @@ exports.getCart = (req, res, next) => {             //router
     //populate does not return a promise
     //so have to chain with execPopulate() so can chain .then
     //(12)
-    req.user
+    //req.user
+    req.user    //(2.9)
     .populate("cart.items.productId")
     .then(user => { //still working with the req.user
         const products = user.cart.items;
@@ -337,7 +346,9 @@ exports.getCart = (req, res, next) => {             //router
             path: "/cart",
             myTitle: "Your Cart",
             products: products,
-            isAuthenticated: req.isLoggedIn
+                    //isAuthenticated: req.isLoggedIn
+        isAuthenticated: req.session.isLoggedIn //(2.9)
+
         });    
 
     })
@@ -418,7 +429,9 @@ exports.postCartDeleteProduct = (req, res, next) => {
     const prodId = req.body.productId;
 
     //(13)
-    req.user.removeFromCart(prodId)
+    // req.user.removeFromCart(prodId)
+    req.user.removeFromCart(prodId) //(2.9)
+
     .then (result => {
         res.redirect("/cart");
     })
@@ -462,7 +475,9 @@ exports.getCheckout = (req, res, next) => {
     res.render("shop/checkout", {
         path: "/checkout",
         myTitle: "Checkout",
-        isAuthenticated: req.isLoggedIn
+                //isAuthenticated: req.isLoggedIn
+        isAuthenticated: req.session.isLoggedIn //(2.9)
+
     });
 };
 
@@ -470,7 +485,8 @@ const Order = require("../models/order.js");
 //(14)
 exports.postOrder = (req, res, next) => { 
 
-    req.user
+    //req.user
+    req.user //(2.9)
     .populate("cart.items.productId")
     .then(user => { //still working with the req.user
 
@@ -570,7 +586,9 @@ exports.getOrders = (req, res, next) => {
             path: "/orders",
             myTitle: "Your Orders",
             orders: orders,
-            isAuthenticated: req.isLoggedIn
+                    //isAuthenticated: req.isLoggedIn
+        isAuthenticated: req.session.isLoggedIn //(2.9)
+
         });        
     })
     .catch(err => console.log(err));

@@ -53,7 +53,7 @@ router.get("/add-product", (req, res, next) => {
 //output the added input
 
 // /admin/product => POST
-router.post("/product", adminController.postAddProduct);
+router.post("/add-product", adminController.postAddProduct);
 /*
 router.post("/product", (req, res, next) => {
     //console.log(req.body);    

@@ -2,6 +2,9 @@
 ///////////////////////////////////////////////////////////////////
 //using ejs
 
+//# nom install --save express-session  //use sessions
+//# npm install --save connect-mongodb-session //store session in MDB
+
 const http = require("http");
 const express = require("express");
 const app = express();
@@ -41,6 +44,8 @@ const store = new mongoDBStore({
 //saveUninitialized; no session will be saved for a request
     //that does not need to be saved, bec nothing was changed about it
 //can configure the session cookie for maxAge, expires
+//can add cookie related configuration ,cookie {..}
+//this middleware automatically sets/reads a cookie for the application
 app.use(session(
     {
         secret: "my secret", 
@@ -61,9 +66,17 @@ const adminJsRoutes = require("./routes/admin.js");
 const shopJsRoutes = require("./routes/shop.js");
 const authRoutes = require("./routes/auth.js");
 
+//this middleware execute first then next to the next app.uses
 
 app.use((req, res, next) => {
-    User.findById("64a6f2a6c017acc261356a8c")
+    
+    //to allow the middleware below to only run if there is a session.user
+    if (!req.session.user) {
+        return next();
+    }
+    //User.findById("64a6f2a6c017acc261356a8c")
+    //User is a mongoose model with method findById
+    User.findById(req.session.user._id) //(2.10)
         .then(user => {
             //req.user = user;
             //create a new user in order to be able to call its methods 
@@ -72,6 +85,15 @@ app.use((req, res, next) => {
 
             //mongoose //(8)
             //user here is a full mongoose model, can call methods on the req.user object
+            //req.user = user;
+
+            //(2.10)
+            //session/mongoose
+            //use our session data to load a real user
+            //mongoose user model
+            //to allow all mongoose methods to work again
+            //user that only lives for that request
+            //retrieves data from the session
             req.user = user;
 
             next();
@@ -80,7 +102,7 @@ app.use((req, res, next) => {
         .catch(err => {
             console.log(err);
         })
-
+    
 });
 
 
@@ -427,6 +449,7 @@ try adding sub totals to the orders
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
+//Part2
 //Section14
 
 storing data in memory or even on the client side (in the browser)
@@ -645,7 +668,7 @@ frontend (views) > cookie
 |                   (associated with user/client via cookie)
 server (node app)
 v
-Database        > session (Session storeage)
+Database        > session (Session storage)
 
 
 */
@@ -753,6 +776,115 @@ that not want to lose
 after every response you send
 and should not be visible to other users
 for example the user's cart
+
+
+*/
+
+
+/*
+//242-248
+///////////////////////////////////////////////////////////////////
+//(2.9) working with a user stored in the session not app.js
+
+make sure when we do login
+we do actually fetch user data
+the app.use for user should not be done with every middleware
+don't want to store the user on the request object
+store the user in session and 
+only after the user logged in
+
+
+import the user model in auth controller
+copy the app.js user middleware contents to the postLogin in the auth controller
+and comment out what is in the app.js
+
+in the admin/shop/error controllers
+change
+//isAuthenticated: req.isLoggedIn
+isAuthenticated: req.session.isLoggedIn //(2.9)
+alternatively can check just for the user if true
+req.session.user
+which is set from the loginPost in auth controller
+
+
+change in all controllers
+req.user
+to req.session.user
+CMD + D to mark them all and edit
+
+
+we will have many sessions stored in the database
+but will require a session cookie in the browser
+to map a session to a specific user
+so by deleting the session cookie from the browser
+the session will still be available in the database
+but the removing the cookie will not allow cookie related actions
+like here
+adding a product is related to the session.user
+which cannot be accessed because there is no information
+about the session from a cookie
+
+
+///////////////////////////////////////////////////////////////////
+//(2.10) clearing the session from the database
+
+
+to emulate a logout we deleted the session cookie from the browser
+
+deleting the cookie is not the best way
+as the session data is still in the database
+there is a cleaner way
+
+method provided by the session middleware
+
+
+>> 
+add to the navigation
+a list item with a post form redirecting to /logout
+with a submit button logout
+
+use this post to clear any session we have
+add the auth.js routes, auth.js controller
+req.session.destroy(()=>{
+
+will remove the "session" from the "database"
+and the cookie will still be on the browser
+
+the cookie will not refer to any session
+will be overwritten with a new login
+and be deleted when the browser is closed
+
+it is not a permanent cookie
+its a session related cookie
+it does not have expiry data or max age
+it will simply be deleted when the browser is closed
+
+
+// some user.session fixes
+as there is no session.user when we logout
+adjust the links in the navigation ejs
+to show/not show based on isAuthenticated or !isAuthenticated
+
+
+the user retrieved in postLogin
+is a mongoDB object as we stated in the app.js store method
+>> edit the user middleware to retrieve a mongoose user object
+>> change in all controllers req.user.session 
+to the req.user retrieved in app.js
+
+///////////////////////////////////////////////////////////////////
+//wrap up
+
+Permanent cookie; does not necessarily go away
+when you close the browser
+as it has been given max-age or expire
+
+
+
+
+
+
+
 
 
 */
