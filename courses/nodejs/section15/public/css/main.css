@@ -240,4 +240,25 @@ form {
   #side-menu-toggle {
     display: none;
   }
+
+  .user-message {
+    width: 30rem;
+  }  
+}
+
+
+.user-message {
+  margin: 1rem auto;
+  width: 50%;
+  border: 1px solid rgb(110, 110, 230);
+  background: rgb(198, 198, 255);
+  padding: 0.5rem;
+  border-radius: 3px;
+  text-align:  center;
+}
+
+.user-message--error {
+  border-color: rgb(182, 3, 3);
+  background: rgb(251, 183, 183);
+  color: rgb(182, 3, 3);
 }

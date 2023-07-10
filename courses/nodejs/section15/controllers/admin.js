@@ -18,7 +18,7 @@ exports.getAddProduct = (req, res, next) => {
         editing: false, //to enable add product text on the button of edit-product.ejs
         productCSS: true, formsCSS: true, activeProductAdd: true,
         //isAuthenticated: req.isLoggedIn
-        isAuthenticated: req.session.isLoggedIn //(2.9)
+        //isAuthenticated: req.session.isLoggedIn //(2.9) //-(3.8)
     });
 
 };
@@ -211,7 +211,7 @@ exports.getEditProduct = (req, res, next) => {
                 path: "/admin/add-product", 
                 editing: editMode,
                         //isAuthenticated: req.isLoggedIn
-        isAuthenticated: req.session.isLoggedIn //(2.9)
+        //isAuthenticated: req.session.isLoggedIn //(2.9) //-(3.8)
 
                 
             });        
@@ -392,7 +392,7 @@ exports.getProducts = (req, res, next) => {
             myTitle: "Admin Products", 
             path:"/admin/products",
                     //isAuthenticated: req.isLoggedIn
-        isAuthenticated: req.session.isLoggedIn //(2.9)
+        //isAuthenticated: req.session.isLoggedIn //(2.9) //-(3.8)
 
         });
 	})

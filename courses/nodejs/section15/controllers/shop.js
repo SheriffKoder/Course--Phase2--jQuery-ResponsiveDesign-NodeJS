@@ -61,7 +61,7 @@ exports.getProducts = (req, res, next) => {
             myTitle: "All products page", 
             path:"/products",
                     //isAuthenticated: req.isLoggedIn
-        isAuthenticated: req.session.isLoggedIn //(2.9)
+        //isAuthenticated: req.session.isLoggedIn //(2.9) //-(3.8)
 
         });
     })
@@ -157,7 +157,7 @@ exports.getProduct = (req, res, next) => {
             myTitle: product.title, 
             path: "/products",
                     //isAuthenticated: req.isLoggedIn
-        isAuthenticated: req.session.isLoggedIn //(2.9)
+        //isAuthenticated: req.session.isLoggedIn //(2.9) //-(3.8)
 
         });
 
@@ -348,7 +348,7 @@ exports.getCart = (req, res, next) => {             //router
             myTitle: "Your Cart",
             products: products,
                     //isAuthenticated: req.isLoggedIn
-        isAuthenticated: req.session.isLoggedIn //(2.9)
+        //isAuthenticated: req.session.isLoggedIn //(2.9) //-(3.8)
 
         });    
 
@@ -477,7 +477,7 @@ exports.getCheckout = (req, res, next) => {
         path: "/checkout",
         myTitle: "Checkout",
                 //isAuthenticated: req.isLoggedIn
-        isAuthenticated: req.session.isLoggedIn //(2.9)
+        //isAuthenticated: req.session.isLoggedIn //(2.9) //-(3.8)
 
     });
 };
@@ -589,7 +589,7 @@ exports.getOrders = (req, res, next) => {
             myTitle: "Your Orders",
             orders: orders,
                     //isAuthenticated: req.isLoggedIn
-        isAuthenticated: req.session.isLoggedIn //(2.9)
+        //isAuthenticated: req.session.isLoggedIn //(2.9) //-(3.8)
 
         });        
     })

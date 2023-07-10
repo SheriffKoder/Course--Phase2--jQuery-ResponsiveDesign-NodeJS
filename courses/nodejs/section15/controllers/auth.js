@@ -23,15 +23,26 @@ exports.getLogin = (req, res, next) => {
     //console.log(req.session); //(2.7)
     //console.log(req.session.isLoggedIn); //true //(2.7)
 
+    //(3.10)
+    //console.log(req.flash("error")); //[]
+    let message = req.flash("error");
+    if (message !== [] ) {
+        message = message[0]
+    } else {
+        message = null;
+    }
+
     //(2.1)
     res.render("auth/login", {
         path: "/login",
         myTitle: "Login Page",
         //helps with <% if (isAuthenticated) { %> in the head ejs file
         //isAuthenticated: isLoggedIn //(2.3)
-        //isAuthenticated: req.session.isLoggedIn //(2.7)
-        isAuthenticated: false //(2.7)
-
+        //isAuthenticated: req.session.isLoggedIn //(2.9) //-(3.8)
+        //isAuthenticated: false, //(2.7)
+        //just access the key for the message
+        //errorMessage: req.flash("error") //-(3.10)
+        errorMessage: message
     });        
 }
 
@@ -45,6 +56,11 @@ exports.postLogin = (req, res, next) => {
     User.findOne({email: email})
     .then(user => {
         if (!user) {
+            //(3.9)
+            //if user does not exist, want to flash an error message on to the session
+            //takes a name key, the message
+            //its in the session until we use it
+            req.flash("error", "Invalid Email or password.");
            return res.redirect("/login"); 
         }
 
@@ -65,6 +81,7 @@ exports.postLogin = (req, res, next) => {
                 })
             }
 
+            req.flash("error", "Invalid Email or password.");
             return res.redirect("/login"); 
 
         })
@@ -154,10 +171,21 @@ exports.postLogout = (req, res, next) => {
 
 //(3.1)
 exports.getSignup = (req, res, next) => {
+
+    //(3.10)
+    //console.log(req.flash("error")); //[]
+    let message = req.flash("error");
+    if (message !== [] ) {
+        message = message[0]
+    } else {
+        message = null;
+    }
+
     res.render('auth/signup', {
       path: '/signup',
       myTitle: 'Signup',
-      isAuthenticated: false
+      //isAuthenticated: false,
+      errorMessage: message //(3.10)
     });
   };
   
@@ -180,6 +208,7 @@ exports.postSignup = (req, res, next) => {
     .then((userDoc) => {
         //if user exists
         if (userDoc) {
+            req.flash("error", "Email exists already, please pick a different email");
             return res.redirect("/signup");
         }
 

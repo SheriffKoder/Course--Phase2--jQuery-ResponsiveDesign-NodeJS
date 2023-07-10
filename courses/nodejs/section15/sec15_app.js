@@ -6,6 +6,7 @@
 //# npm install --save connect-mongodb-session //s14: store session in MDB
 //# npm install --save bcryptjs  //s15: password hashing
 //# npm install --save csurf    //s15: protecting against CSRF
+//# npm install --save connect-flash    //s15:3.9 wrong credentials 
 
 const http = require("http");
 const express = require("express");
@@ -20,6 +21,8 @@ const User = require("./models/user"); //(8)
 
 const session = require("express-session"); //(2.6)
 const csrf = require("csurf");  //(3.7)
+const flash = require("connect-flash");   //(3.9)
+
 
 const mongoDBStore = require("connect-mongodb-session")(session);
 const MongoDbUri = "mongodb+srv://sheriffkoder:Blackvulture_92@cluster0.jgxkgch.mongodb.net/shop"; // mongoDB web app connect url //shop?retryWrites=true&w=majority
@@ -39,6 +42,9 @@ const store = new mongoDBStore({
 //const holds a middleware
 const csrfProtection = csrf();
 
+//(3.9)
+//flash needs to be initialized, after the session
+app.use(flash());
 
 
 //(2.6)
@@ -464,6 +470,110 @@ as we are using users with email/password
 with no names
 changed user.name to user.email 
 in the postOrder controller and order model
+
+
+///////////////////////////////////////////////////////////////////
+//(3.9) using flash to store error messages in the session
+
+now we have all the core features related to authentication implemented
+
+until now when we enter wrong credentials we do not display any error
+we just redirect
+
+
+its easy to pass data to views but
+it is a huge problem when passing data to the rendered view 
+when we are redirecting
+because on redirecting technically a new request is started
+to the redirect-to path
+
+and on that request we do not know if the user entered invalid credentials
+
+to solve this
+and store some data before we redirect
+which we then use in a brand new request
+that is triggered by the redirect
+we can use a session for that
+but do not want to store it permanently
+want to store it and once the error message is used
+can be pulled out of the session
+and did something with it
+i want to remove it from the session
+
+so for subsequent requests
+this error is not part of the session anymore
+
+there is a package that makes that really easy
+
+# npm install --save connect-flash
+
+import and app.use in app.js
+
+>>req.flash("error", "message") 
+in the auth controller without import
+as it has been initialized in app.js ?
+
+in the getLogin controller render parameters
+>>errorMessage: req.flash("error")
+
+then this error message will be removed from the session 
+on rendering the page
+
+on the login.ejs
+>>    <div><%=errorMessage=></div>
+
+//this is working for any wrong emails
+
+
+
+///////////////////////////////////////////////////////////////////
+//(3.10)
+
+//adding styling to the login.ejs div and css properties in main.css
+
+however the div stays
+because in the getLogin controller
+the req.flash("error") on no error will output an empty array
+
+so will set the message array if its not an empty array
+to be the first element of the array
+otherwise message be null
+
+>>add to the password section also
+req.flash("error", "Invalid Email or password.");
+
+>>add to the sign up in case email exists
+>>add the errorMessage div to the signup ejs
+>>add the div logic to the getSignup in auth.js controller
+
+
+///////////////////////////////////////////////////////////////////
+//wrap up
+
+Authentication
+authentication means that not every visitor of the page can view 
+and interact with everything
+
+authentication has to happen on the server-side and builds up
+on sessions
+
+you can protect routes by checking the session-controlled
+login status right before you access a controller action
+
+Security & UX
+Passwords should be stored in a hashed form
+CSRF attacks are a real issue and you should therefore
+include CSRF protection in ANY application you build
+
+for a better user experience, you can flash data/messages
+into the session which you then an display in your views
+
+
+
+
+
+
+
 
 
 
