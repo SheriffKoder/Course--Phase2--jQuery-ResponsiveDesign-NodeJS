@@ -1265,14 +1265,311 @@ function enableFastFeedback(formElement) {
 
 }
 
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+//AJAX
+/*
+
+Ajax: asynchronous javascript and xml
+
+Client
+Web-browser
+user interacts with page > request / sent from js > web-server server side script > database
+js manipulates page with data returned < data (xml/text) < web-server server side script < database
+
+user should be able to still interact with your page
+while the request is being processed
+
+can access sites like flikr, youtube (api key), google services, movie db
+
+sending a get request to a server to retrieve data from a specific url
+but you can also do post requests
+
+jq provides different convenience functions
+to make it easier to handle these different use cases
+so you do not have to go through all the configurations
+
+
+$.get() //GET ajax request
+$.post() //POST ajax request
+$.ajax()  //advanced, where can set all the basic configurations yourself
+$.getJSON() //GET request to retrieve json data
+
+when you perform a get request
+generally you need to perform the same origin policy
+means you can only perform get requests to your own server
+but some of the other servers like public apis/feeds
+allow users to access them without any login or authentication
+
+but if it happens you want to access an api that requires an API key
+otherwise you wont be able to actually retrieve your data
+it will give an error because the request is not coming from the same domain
+like youtube, when you are accessing their API
+then you are doing this request from a different server than from the youtube server
+
+advantage of AJAX calls, good for user experience
+is that you do not have to actually reload the page
+to be able to change its contents
+dynamically fetch data from the server
+
+*/
+
+
+
+
+////////////////////////////////////////////////////////////////////////
+//the load method has a CORS error and needs files to be 
+//hosted on an http server/http protocol
+//not a local file protocol
+
+//$.load()
+//jquery function to retrieve any type of file from your own server very easily
+//for example script or html files
+
+//retrieve all content on the file
+//show it on the code element
+//.load(path-to-file)
+//$("#code").load("js/script.js");
+
+// $("#code").load("js/unExistingFile.js", function(response, statusCode) {
+//     if (statusCode === "error") {
+//       console.log(statusCode)
+//       alert("file does not exist");
+//     }
+//     console.log(response);  //undefined
+// });
 
 
 
 
 
+////////////////////////////////////////////////////////////////////////
+// how to retrieve data the public feed of flickr API 
+
+//enter flickr, find feeds link, public feed, find the url
+//https://www.flickr.com/services/feeds/
+
+//json data format will be used to exchange data between our script and the server
+//JSON: javascript object notation
+
+//make calls for JSON APIs
+//instead of using the $.ajax function directly
+//$.getJSON
+
+
+//constructing the link
+//the link "https://www.flickr.com/services/feeds/photos_public.gne"
+//add to it ?jsoncallback=?
+//to be able to make the request to the flickr domain server (other server than yours)
+//will make it a JSON P request instead of a JSON request
+//which is necessary
+//which actually allow you to retrieve data from that different server
+
+//it is not your server, you are not making that request from flickr.com
+//but you are accessing flickr.com
+//this means its on a different domain
+//and to be able to do that you have to use the JSON P format
+//and the "?jsoncallback=?" part will tell the api to do that
+//read more about JSON vs JSON P
+
+
+/*
+let flickrApiUrl = "https://www.flickr.com/services/feeds/photos_public.gne?jsoncallback=?"
+
+//second parameter, object defines the configuration options
+//you can also know what options are available on the flickr api site
+//getJSON is async, so will need an event handler that will be called
+//once this event is finished
+//once the request is handled by flickr.com and comes back with all the data requested
+//you can then handle that event and work with that data
+//.done() where you define the function that will execute after the request is finished
+
+//will find in the console an array of 20 items
+//find the media key to find the url
+//data.items.media.m
+
+
+$.getJSON(flickrApiUrl, { 
+  tags: "sun, beach",
+  tagmode: "any",   //image should have sun or beach not must both of them otherwise "all"
+  format: "json"    //to retrieve json data also can use xml
+
+}).done(function (data) {
+    //runs on success
+    console.log(data);
+    //jq function to iterate over arrays/objects
+    //function will exe on each iteration of items
+    //this function will get the index(0,1,2..) and value(each of the items)
+    //if its an object to find in, index will be the keys
+    $.each(data.items, function (index, value) {
+      //console.log(value);
+      //console.log(value.media.m);
+      $("<img>").attr("src", value.media.m).appendTo("#flickr");
+
+      //output only 3 images  - terminate the each function
+      if (index == 2) {
+        return false;
+      } 
+
+
+    })
+
+}).fail(function () {
+  //runs in case something went wrong like wrong url, not authorized to access the api etc
+  alert("AJAX call failed");
+
+}).always(function () {
+  //executes in either case done/fail
+
+});
+*/
+
+
+//statwars: https://pipedream.com/apps/swapi
+//free apis: https://github.com/toddmotto/public-apis
+
+////////////////////////////////////////////////////////////////////////
+//Pokemon API
+//https://pokeapi.co/
+
+//link https://pokeapi.co/api/v2/pokemon/1
+//link https://pokeapi.co/api/v2/generation/1
+//?jsoncallback=? was not used here it gives an error
+
+/*
+let pokeapiUrl = "https://pokeapi.co/api/v2/generation/1";
+
+
+$.getJSON(pokeapiUrl)
+.done(function (data) {
+    //runs on success
+    console.log(data);
+    //jq function to iterate over arrays/objects
+    //function will exe on each iteration of items
+    //this function will get the index(0,1,2..) and value(each of the items)
+    //if its an object to find in, index will be the keys
+    $.each(data.pokemon_species, function (index, pokemon) {
+      
+      //capitalize the first letter and amend to
+      //the rest of the stirng without the first letter
+      var name = pokemon.name.charAt(0).toUpperCase() + pokemon.name.slice(1);
+      var par = $("<p>").html("Pokemon species no. " + (index+1) + " is " + name);
+      par.appendTo("#pokemon")
+
+      //output only 3 images  - terminate the each function
+      if (index == 2) {
+        return false;
+      } 
+
+
+    })
+
+}).fail(function () {
+  //runs in case something went wrong like wrong url, not authorized to access the api etc
+  alert("AJAX call failed");
+
+}).always(function () {
+  //executes in either case done/fail
+  
+});
+*/
 
 
 
+////////////////////////////////////////////////////////////////////////
+//pokemon api cont.
+//using the url given, so can click on the pokemon name
+//and it displays more info about that particular pokemon
+
+
+let pokeapiUrl = "https://pokeapi.co/api/v2/generation/1";
+let pokemonByName = "https://pokeapi.co/api/v2/pokemon/";
+
+
+$.getJSON(pokeapiUrl)
+.done(function (data) {
+
+    $.each(data.pokemon_species, function (index, pokemon) {
+      
+      //capitalize the first letter and amend to
+      //the rest of the stirng without the first letter
+      var name = pokemon.name.charAt(0).toUpperCase() + pokemon.name.slice(1);
+      
+      var link = $("<a>")
+                .attr("id", pokemon.name)
+                .attr("href", "#")
+                .append($("<strong>").text(name));
+                
+
+      var par = $("<p>")
+                .html("Pokemon species no. " + (index+1) + " is ")
+                .append(link);
+      
+
+      link.click(function (event) {
+        //construct another link fo another json get 
+        //v2/pokemon/bulbasaur etc
+        $.getJSON(pokemonByName + pokemon.name)
+        //details because data has been already declared above
+        .done(function(details) {
+          console.log(details);
+          //sprites property in details include the images
+
+          let pokemonDiv = $("#pokemon-details");
+          //to clear any previous entries
+          pokemonDiv.empty();
+          pokemonDiv.append("<h2>" + name + "</h2>");
+          pokemonDiv.append("<img src='" + details.sprites.front_default +"'>");
+          pokemonDiv.append("<img src='" + details.sprites.front_shiny +"'>");
+          pokemonDiv.append("<img src='" + details.sprites.back_default +"'>");
+          pokemonDiv.append("<img src='" + details.sprites.back_shiny +"'>");
+        })
+
+
+      event.preventDefault();
+    });
+
+
+
+      //the browser url ending with .html#
+      //means the link where all the links point to when clicked
+      //so all links will be visited
+      //so use preventDefault
+
+      /*
+      //creating a dom element
+        var link = $("<a>").attr("id", pokemon.name).attr("href", "#").append($("<strong>").text(name));
+      or
+        pokemonDiv.append("<img src='" + details.sprites.front_default +"'");
+      */
+
+      par.appendTo("#pokemon");
+
+      //output only 3 images  - terminate the each function
+      if (index == 2) {
+        return false;
+      } 
+
+
+    })
+
+}).fail(function () {
+  //runs in case something went wrong like wrong url, 
+  //not authorized to access the api etc
+  alert("AJAX call failed");
+
+}).always(function () {
+  //executes in either case done/fail
+  
+});
+
+
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
 
 
 
