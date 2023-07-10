@@ -5,6 +5,7 @@
 //# nom install --save express-session  //s14: use sessions
 //# npm install --save connect-mongodb-session //s14: store session in MDB
 //# npm install --save bcryptjs  //s15: password hashing
+//# npm install --save csurf    //s15: protecting against CSRF
 
 const http = require("http");
 const express = require("express");
@@ -18,7 +19,7 @@ const mongoose = require("mongoose");   //(2)
 const User = require("./models/user"); //(8)
 
 const session = require("express-session"); //(2.6)
-
+const csrf = require("csurf");  //(3.7)
 
 const mongoDBStore = require("connect-mongodb-session")(session);
 const MongoDbUri = "mongodb+srv://sheriffkoder:Blackvulture_92@cluster0.jgxkgch.mongodb.net/shop"; // mongoDB web app connect url //shop?retryWrites=true&w=majority
@@ -29,6 +30,15 @@ const store = new mongoDBStore({
     //can also add when it should expire - and that can be cleaned automatically by mongoDB
 
 });
+
+//(3.7)
+//executing the imported csrf as a function
+//object to configure some things
+//for example want to store the secret that is used for hashing your tokens
+//the default settings should work fine, can dive into the official docs of the package to learn more
+//const holds a middleware
+const csrfProtection = csrf();
+
 
 
 //(2.6)
@@ -55,7 +65,22 @@ app.use(session(
     }
 ));
 
+//(3.7)
+//csrfProtection is enabled but need to add something to our views to use it
+//for any non get requests (post etc.)
+//this package will look for the existence of a csrf token in your views/request body
+//to make sure such a token is there, make sure we have it available in our views
+//to do that we have to pass data into our view
+//go to the controllers
+app.use(csrfProtection);
+
+
+
+
+
 app.use(express.static(path.join(__dirname, "public")));
+
+
 
 app.set("view engine", "ejs");
 app.set("views", "views");
@@ -103,8 +128,20 @@ app.use((req, res, next) => {
 });
 
 
-
-
+//(3.8)
+//after the middleware that extracts our user
+//but before our routes
+////for every request that will be executed
+//these two fields will be set for the views that are rendered
+app.use((req, res, next) => {
+    //a special feature/field provided by express js
+    //locals allows to set local variables that are passed 
+    //into the views which are rendered
+    res.locals.isAuthenticated = req.session.isLoggedIn;
+    res.locals.csrfToken = req.csrfToken();
+    //call next so we are able to continue
+    next();
+});
 
 
 
@@ -194,25 +231,25 @@ protecting routes / locking access
 How is authentication implemented ?
 a user will send a login request with an email and password
 a user need to have signed up before 
-on the server we check if this user's email/password combination is valid
+> on the server we check if this user's email/password combination is valid
 
-if that is the case, we create a session for that user
+> if that is the case, we create a session for that user
 (stores info that user is authenticated)
 
 this session then identifies this user
 that connects requests otherwise a user will be logged out
 
 then a 200 response is returned
-then we store the cookie belonging to that session on the client
+> then we store the cookie belonging to that session on the client
 returning with that response
 
 now the user is able to visit our restricted routes
 because a cookie is sent with every request
 
-on the server we can connect this cookie to a session
+> on the server we can connect this cookie to a session
 and in the session we have information wether the user is signed in or not
 
-and if the user is signed in we can grant access to certain resources
+> and if the user is signed in we can grant access to certain resources
 
 we will learn other ways of adding authentication
 with rest and graphQL apis
@@ -263,12 +300,170 @@ and people cannot construct the password from
 in auth controller use bcrypt to hash passwords
 
 
+//256-262
+///////////////////////////////////////////////////////////////////
+//(3.4)
+
+//adding the sign in functionality
+//signing in by email/password
+
+User.findOne({email: email})
+bcrypt.compare(password, user.password)
+if do match set/save session
+
+will find in the database sessions
+a session with a user object containing all user's properties
 
 
 
+///////////////////////////////////////////////////////////////////
+//(3.5)
+
+//we can still enter the url in the browser for the
+urls offered to the logged in users only even though we are not logged in
+
+//protect routes
+check if the user is authenticated before returning
+back the add-product-page
+
+getAddProduct controller by putting
+    if (!req.session.isLoggedIn) {
+        return res.redirect("/login");
+    }
+before the render
+
+but this is not a scalable way (to add to all controllers)
+add a middleware that should be added for every route that
+should be protected 
+
+create in the project's folder
+middleware folder with is-auth.js file
+and write an exported middle function
+
+to be imported and used in the routes files
+the middleware added in the router get/post lines
+where the router executes handlers from left to right
+
+so we will either redirect
+or on the next() proceed to the next handler in the route
+
+
+///////////////////////////////////////////////////////////////////
+//(3.6)
+
+//understanding CSRF Attacks
+
+cross site request forgery
+
+people can abuse your sessions
+and trick users of your application
+to execute malicious code
+
+where users can access websites look like your site
+fake sites that have a link leading to your real page
+and execute some request there
+which could include a form that sends a post request
+to your own node server
+where there is some fields to send money to another person
+
+why does this work ?
+since you got a valid session for that user
+if you sent something to your site/servers
+that session is used for that user
+in this case that behind the scenes data
+that the user never sees
+that configures the money/order transferral
+in a way that is not ok with the user
+is invisible to the user
+but the valid session is used for it
+and therefore it is accepted
+thus the session is stolen
+
+how can we protect against this pattern ?
+ensure that people can only use your session
+if they are working with your views
+so the session is not available on any fake pages
+
+and we can use this feature with a CSRF token
+
+
+///////////////////////////////////////////////////////////////////
+//(3.7)
+
+
+# npm install --save csurf
+
+a token, string value we can embed into our forms, pages
+for every request that does something on the backend
+that changes the user state
+anything that does something sensitive
+that we want to protect against
+
+we can include this token in our views
+and on the server this package will check
+if the incoming request does have this valid token
+
+the fake sites might send a request to your backend
+and they could then use your session
+but the request would be missing the token
+
+and they cannot have the token because its a random hashed value
+and only one value is accepted
+and the package which runs on the server 
+determines if the token is valid
+
+so they cant guess it
+or steal it because a new token is generated for every page you render
+
+
+steps:
+import and define the csrf middleware
+(the logout button has a csrf undefined error so..)
+add a csrf property to the render of getIndex controller
+the navigation ejs use the csrf property
+<input type="hidden" name="_csrf" value="<%=csrfToken%>"
+the package that we added will look for the name
+
+now the package is able to extract the csrf token
+it also finds out that the token is valid
+and thus it allows us to proceed
 
 
 
+262-268
+///////////////////////////////////////////////////////////////////
+//(3.8)
+
+//another way of adding the csrf token to every page we render
+tell express js that we have some data should be included
+in every rendered view
+
+>> in app.js add a middleware to pass token to all renders
+//locals allows to set local variables that are passed 
+//into the views which are rendered
+res.locals.isAuthenticated = req.session.isLoggedIn;
+res.locals.csrfToken = req.csrfToken();
+
+>> copy the input csrf to all the post forms in the ejs files  
+even the forms for buttons
+
+you can see in the dev tools form element the input csrf value
+is a hashed string
+
+a crucial thing that you have to add to any production ready application
+
+however csrf is no longer maintained
+so can use other packages 
+https://www.npmjs.com/search?q=express%20csrf
+https://www.npmjs.com/package/csrf-csrf
+
+
+
+//fix
+as we are using users with email/password
+with no names
+changed user.name to user.email 
+in the postOrder controller and order model
 
 
 

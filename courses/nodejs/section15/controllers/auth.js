@@ -38,6 +38,47 @@ exports.getLogin = (req, res, next) => {
 //(2.2)
 exports.postLogin = (req, res, next) => {
 
+    //(3.4)
+    const email = req.body.email;
+    const password = req.body.password;
+
+    User.findOne({email: email})
+    .then(user => {
+        if (!user) {
+           return res.redirect("/login"); 
+        }
+
+        //compare the entered password with the hashed password value
+        //returns a promise with matching value true/false
+        bcrypt.compare(password, user.password)
+        .then((doMatch) => {
+            if (doMatch) {
+
+                req.session.isLoggedIn = true; //(2.9)
+                req.session.user = user;
+
+                //return to avoid redirecting to /login below
+                return req.session.save((err) => {
+
+                    console.log(err);
+                    res.redirect("/"); 
+                })
+            }
+
+            return res.redirect("/login"); 
+
+        })
+        .catch((err) => {
+            //error when something goes wrong not if not match
+            console.log(err);
+            return res.redirect("/login"); 
+
+        })
+    })
+    .catch(err => {
+        console.log(err);
+    })
+
     //in the dummy user example we did save the user as logged in by req.user = user
     //saved the user in the request
     //req.isLoggedIn = true;
@@ -51,6 +92,7 @@ exports.postLogin = (req, res, next) => {
     //req.session.isLoggedIn = true;
 
     //(2.9)
+    /*
     User.findById("64a6f2a6c017acc261356a8c")
     .then(user => {
         //req.user = user;
@@ -79,13 +121,14 @@ exports.postLogin = (req, res, next) => {
             res.redirect("/");
 
         });
-
+    
 
    })
+   
    .catch(err => {
        console.log(err);
    })
-
+    */
 
     // res.redirect("/");
 
@@ -93,7 +136,7 @@ exports.postLogin = (req, res, next) => {
 
 
 
-//(2.10) //duplicated postLogin
+//(2.10)
 exports.postLogout = (req, res, next) => {
 
     //reach to the session object
@@ -146,21 +189,23 @@ exports.postSignup = (req, res, next) => {
             //the higher the value, the longer it takes and more secure it will be 
             //currently the value of 12 is accepted as highly secure
         //async task that gives back a promse
-        return bcrypt.hash(password, 12);
-    })
-    .then((hashedPassword) => {
-        //(3.2)
-        //no user with that email exists yet
-        //create a new user
-        const user = new User({
-            email: email,
-            password: hashedPassword,
-            cart: { items: [] }
-        })
-        return user.save();
-    })
-    .then ((result) => {
-        return res.redirect("/login");
+        return bcrypt
+        .hash(password, 12)
+        //these then blocks are only executed if we made it into the hashing mode
+        .then((hashedPassword) => {
+            //(3.2)
+            //no user with that email exists yet
+            //create a new user
+            const user = new User({
+                email: email,
+                password: hashedPassword,
+                cart: { items: [] }
+            })
+            return user.save();
+        })    
+        .then ((result) => {
+            return res.redirect("/login");
+        });
     })
 	.catch((err) => {
 		console.log(err);

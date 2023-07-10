@@ -232,8 +232,9 @@ exports.getIndex = (req, res, next) => {
                 myTitle: "Shop page", 
                 path:"/",
                         //isAuthenticated: req.isLoggedIn
-        isAuthenticated: req.session.isLoggedIn //(2.9)
-
+                //isAuthenticated: req.session.isLoggedIn, //(2.9) //-(3.8)
+                //method provided by the csrf middleware in app.js //(3.7)
+                //csrfToken: req.csrfToken()  //-(3.8)
             });
         })
         .catch((err) => {
@@ -502,7 +503,8 @@ exports.postOrder = (req, res, next) => {
 
         const order = new Order({
             user: {
-                name: req.user.name,        //a full user object fetched from the db, so will be a name property
+                email: req.user.email, 
+                //name: req.user.name,        //a full user object fetched from the db, so will be a name property //-(3.8)
                 userId: req.user            //mongoose will pick the id
             },
             products: products
