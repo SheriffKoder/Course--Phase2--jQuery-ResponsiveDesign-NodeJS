@@ -5,6 +5,35 @@ let User = require("../models/user");
 //(3.3)
 const bcrypt = require("bcryptjs");
 
+//(4.1)
+//nodejs has a built in crypto library
+//helps with creating secure/unique random values
+const crypto = require("crypto");
+
+
+
+//(3.11)
+const nodemailer = require("nodemailer");
+const providerTransport = require("nodemailer-mandrill-transport");
+
+//setup telling node mailer how your emails will be delivered
+//providerTransport function will then return a configuration
+//that nodemailer can use to use sendgrid/mailchimp
+//where you pass an object like this
+//the api values can be obtained from the api_keys from mailchimp 
+//can use your username/password api_user/api_key
+//but will use the api key
+// create a new api key node-shop
+//as we configured the transporter, we can use it to send an email
+const transporter = nodemailer.createTransport(providerTransport({
+    auth: {
+        //the api key is the pragmatic way to access an app's data instead a username/password
+        apiKey: "95edd8a909ccc47db33f7a508e4145f3-us21"
+    }  
+}));
+
+
+
 
 
 //(2.1) 
@@ -233,12 +262,149 @@ exports.postSignup = (req, res, next) => {
             return user.save();
         })    
         .then ((result) => {
-            return res.redirect("/login");
+            //(3.11)
+            //pass a js object where you configure the email want to send
+            //sendMail returns a promise so can add .then to it
+            //or simply return and put another .then after this then to redirect
+            //you can also redirect immediately and not wait for the email to be send
+            //for that put the redirect above it and return it so can catch any errors 
+            res.redirect("/login");
+
+            //(3.11)
+            return transporter.sendMail({
+                to: email,
+                from: "shop@node-complete.com",
+                subject: "Signup succeeded!",
+                //can put any complex html
+                html: "<h1> You successfully signed up!</h1>"
+            });
+            //
+        })
+        .catch((err) => {
+            console.log("transporter return ");
+            console.log(err);
+
         });
+    })
+	.catch((err) => {
+		console.log("userDoc" + err);
+	})
+
+
+};
+
+
+//(4.1)
+exports.getReset = (req, res, next) => {
+
+    let message = req.flash("error");
+    if (message !== [] ) {
+        message = message[0]
+    } else {
+        message = null;
+    }
+
+
+    res.render('auth/reset', {
+        path: '/reset',
+        myTitle: 'Reset Password',
+        errorMessage: message //(3.10)
+      });
+  
+}
+
+//(4.1)
+exports.postReset = (req, res, next) => {
+    
+    //use the imported crypto library
+    //32 random bytes, cb that will be called once its done 
+    crypto.randomBytes(32, (err, buffer) => {
+        if (err) {
+            //can also flash the message here if we wanted to
+            console.log(err);
+            return res.redirect("/reset");
+        }
+        //convert hex values to normal ASCII characters
+        const token = buffer.toString("hex");
+        //that token should be stored in the database user object
+
+        //find the user in the database
+        //use the mongoose user model
+        //find using the email we are trying to reset
+        //received from the ejs page
+        User.findOne({email: req.body.email})	
+        .then((user) => {
+            if (!user) {
+                req.flash("error", "no account with that email found");
+                return res.redirect("/reset");
+            }
+            user.resetToken = token;
+            //expiration data 1 hour from now
+            user.resetTokenExpiration = Date.now() + 360000;
+            //update the user
+            return user.save();
+        })
+        //now the user is saved in the database
+        //now want to send the token reset email
+        .then((result) => {
+            //send email then redirect
+            res.redirect("/");
+
+            return transporter.sendMail({
+                to: req.body.email,
+                from: "shop@node-complete.com",
+                subject: "Password Reset!",
+                //can put any complex html
+                html: `
+                    <p> You requested a password reset </p>
+                    <p> Click this 
+                        <a href="http://localhost:3000/reset/${token}"
+                        link to set a new password </p>
+                    `
+            });
+        })    
+        .catch((err) => {
+            console.log(err);
+        })
+    })
+
+}
+
+//(4.2)
+exports.getNewPassword = (req, res, next) => {
+
+    //want also to check wether i can find a user for that token
+    const token = req.params.token
+    //the user's resetToken property equals to the token in the link
+    //and still valid from a date perspective
+    //the expiration is still higher than the current date
+    //$gt special sign operator stands for greater than
+    //and compare with Date.now()
+    //if the expiration is still less than the added +1 hour
+    User.findOne({resetToken: token, resetTokenExpiration: {$gt: Date.now()}})
+	.then((user) => {
+        let message = req.flash("error");
+        if (message !== [] ) {
+            message = message[0]
+        } else {
+            message = null;
+        }
+    
+        res.render('auth/new-password', {
+            path: '/new-password',
+            myTitle: 'New Password',
+            errorMessage: message, //(3.10)
+            //pass also the user id so we can include it
+            //in the user request where we can update the password
+            //and add it as a hidden input in the new-p.ejs
+            userId: user._id.toString()
+          });
     })
 	.catch((err) => {
 		console.log(err);
 	})
 
 
-};
+
+
+}

@@ -576,6 +576,123 @@ into the session which you then an display in your views
 
 
 
+271-277
+//Section16
+///////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////
+//(3.11)
+//password resetting mechanism via email
+
+how we can send mails from inside our node application
+so then use that feature to enhance our authentication
+to add a password resetting mechanism 
+
+ 
+we could want to send an email confirming the user signed up for example
+
+sending emails via nodejs and express js
+
+node server (with your code) > user
+
+handling mails is a different technology from handling post/get requests
+and it is complex to setup, so we use a third-party
+like AWS for sending emails
+
+search for node mailing what services available and how to implement
+services like; SendGrid, mailchimp, aws, ses
+
+#npm install --save nodemailer nodemailer-sendgrid-transport
+
+#npm install --save nodemailer nodemailer-mandrill-transport
+
+node mailer makes sending emails from inside nodejs easier
+
+
+
+> import nodemailer and the mailchimp transporter in the auth controller
+
+> create transporter
+const transporter = nodemailer.createTransport(sendgridTransport({
+
+> before the signInPost redirection
+transporter.sendMail({configuration})
+
+
+//i cannot access sendgrid to use it as in the lecture due to authenticaions
+//and mailchimp gives a "you must specify a key value" or invalid
+    //probably needs domain register
+//AWS requires CC and i will need to secure the API if will use that and not post on github
+//will continue as is and just learn the way and use later
+
+on a large scale application
+can use server side scripts that run every x hours/minutes
+that sends emails to newly signed users
+
+
+275-281
+///////////////////////////////////////////////////////////////////
+//(4.1) resetting the password from the site thorugh an email
+
+improve authentication and security regarding authentication
+
+make sure that only users who created a post can edit it
+
+- resetting passwords
+- authorization
+
+//reset page
+create a reset.ejs in the auth views folder
+copy the login ejs there
+create a getReset in auth.js controller, routes
+add a link with href="/reset" in the login ejs
+
+//reset email
+create a unique token with an expiry date
+which will be stored in the database
+the link will include that token so we can verify that
+the user did get that link from us 
+users change the password only from the email that contains that token
+
+create a postReset in auth.js controller, routes
+import the nodejs crypto library
+convert crypto to string
+>> in the user model add resetToken, resetTokenExpiration of type Date
+store that token on the user we wish to reset
+then send email with that token embedded in a link
+
+>> now when we press the reset, we will receive a token
+in the reset link in the email and in the database's user
+
+
+///////////////////////////////////////////////////////////////////
+//(4.2) Creating a password form
+
+//add logic to add this route
+//extract that token
+//validate whether we have a user for that token
+//then offer a form that allows the user to set a new password
+
+
+
+create new-password.ejs, inspired from the login.ejs
+auth controller, getNewPassword
+
+where the url param token is taken
+and find the user with that token and date more than now still
+then can render the view with that userId
+
+as the route will be redirected again to /reset through the email
+the getNewPassword router url will be /reset/token
+
+
+
+
+
+
+
+
 
 
 
