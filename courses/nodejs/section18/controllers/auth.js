@@ -87,6 +87,22 @@ exports.postLogin = (req, res, next) => {
     const email = req.body.email;
     const password = req.body.password;
 
+
+    //(18.0.6)
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        //return so the code below not execute
+        return res.status(422).render("auth/login", {
+            path: "/login",
+            myTitle: "Login Page",
+            errorMessage: errors.array()[0].msg
+        });        
+    
+    }
+
+    //can put this part in a custom validator like     //(18.0.5)
+    //and return a rejected promise
+    //in the route middlewares themselves
     User.findOne({email: email})
     .then(user => {
         if (!user) {
@@ -219,7 +235,14 @@ exports.getSignup = (req, res, next) => {
       path: '/signup',
       myTitle: 'Signup',
       //isAuthenticated: false,
-      errorMessage: message //(3.10)
+      errorMessage: message, //(3.10)
+      //(18.1.0)
+      oldInput: {
+        email: "", 
+        password: "",
+        confirmPassword: ""
+    }
+
     });
   };
   
@@ -249,32 +272,25 @@ exports.postSignup = (req, res, next) => {
         return res.status(422).render('auth/signup', {
             path: '/signup',
             myTitle: 'Signup',
-            errorMessage: errors.array()[0] //this outputs [object object] so use [0]
-          });
+            errorMessage: errors.array()[0].msg, //this outputs [object object] so use [0]
+            //(18.1.0)
+            oldInput: {
+                email: email, 
+                password: password,
+                confirmPassword: confirmPassword
+            }
+        });
     }
 
-
-    //check if an email already exists
-        //in MDB you could create an index in the database
-        //on the email field and give that index a unique property
-    //alt. can try to find a user with that email
-    //find one user who already has this email    
-    //by passing a filter in {}
-    User.findOne({email: email})
-    .then((userDoc) => {
-        //if user exists
-        if (userDoc) {
-            req.flash("error", "Email exists already, please pick a different email");
-            return res.redirect("/signup");
-        }
 
         //(3.3)
         //1st, a string to hash
         //2nd, how many levels of hashing
             //the higher the value, the longer it takes and more secure it will be 
             //currently the value of 12 is accepted as highly secure
-        //async task that gives back a promse
-        return bcrypt
+        //async task that gives back a promise
+        //-(18.0.5) return bcrypt
+        bcrypt
         .hash(password, 12)
         //these then blocks are only executed if we made it into the hashing mode
         .then((hashedPassword) => {
@@ -312,11 +328,30 @@ exports.postSignup = (req, res, next) => {
             console.log(err);
 
         });
+
+
+    //check if an email already exists
+        //in MDB you could create an index in the database
+        //on the email field and give that index a unique property
+    //alt. can try to find a user with that email
+    //find one user who already has this email    
+    //by passing a filter in {} //-(18.0.5) used in auth.js router
+    /*
+    User.findOne({email: email})
+    .then((userDoc) => {
+        //if user exists
+        if (userDoc) {
+            req.flash("error", "Email exists already, please pick a different email");
+            return res.redirect("/signup");
+        }
+
+        //part (3.3) was here then placed at top when this was not used
+
     })
 	.catch((err) => {
 		console.log("userDoc" + err);
 	})
-
+    */
 
 };
 

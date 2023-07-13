@@ -334,6 +334,7 @@ and render with the flash the error
 ///////////////////////////////////////////////////////////////////
 //(18.0.2)
 //to edit the error message
+> in the postSignup route in auth.js
 has to be done in the middleware after the check in the route
 router.post('/signup', check("email").isEmail("Please enter a valid email") ,authController.postSignup);
 
@@ -341,13 +342,95 @@ router.post('/signup', check("email").isEmail("Please enter a valid email") ,aut
 ///////////////////////////////////////////////////////////////////
 //(18.0.2)
 
+> in the postSignup route in auth.js
 express-validator is a set of express.js middleware
 that wraps validator.js validator 
 which is another package that was implicitly installed with express validator
 
 and on the validator.js docs can find all the validator methods
 like isEmail, what they do and how you can configure them
-you can also add your own validator
+//you can also add your own validator
+
+
+//294-300
+///////////////////////////////////////////////////////////////////
+//(18.0.3)
+
+
+want to make sure that the password is at least 5 chars long
+> in the postSignup route in auth.js
+add an extension to the route middleware
+
+
+///////////////////////////////////////////////////////////////////
+//(18.0.4)
+checking for passwords equality
+
+in the signup view, name=confirmPassword
+> in the postSignup route in auth.js
+add an extension to the route middleware
+
+
+///////////////////////////////////////////////////////////////////
+//(18.0.5) Adding async Validation
+
+removed the user.findOne{email: email} 
+from the controller postSignup in auth.js
+
+added it to the custom method on email
+in the auth.js router postSignup
+to return a promise that has a reject message
+to be caught by the custom method
+
+we can rely on the user not exist already
+inside of the auth.js postSignup controller
+because i do check for its existence ahead of time
+in the auth.js route with the validation middleware
+
+
+///////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////
+//(18.0.6)
+
+add validation the same way we did before
+to the login route
+and make sure this email address is an email
+and the password is a valid password
+
+add validation to postLogin
+
+> edit the postLogin route
+> go to the postLogin controller
+and add validationResult(req) to gather all the errors passed from the route
+
+
+check for input errors during validation
+check for logical errors in the controller
+
+
+
+
+///////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////
+//(18.1.0) keeping the wrong credentials in the form
+
+working on the user experience
+to prevent inputs from being lost and keep them
+when a user submits wrong credentials during validation
+
+
+postSignUp controller
+where we return a page when wrong data is entered
+to return it with the already put in input
+in an oldInput object with these values to use in the ejs
+also add the oldInput object to the getSignup to avoid undefined errors
+
+
+
+
+
+
+
 
 
 
