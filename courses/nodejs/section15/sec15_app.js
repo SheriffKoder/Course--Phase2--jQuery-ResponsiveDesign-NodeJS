@@ -577,7 +577,7 @@ into the session which you then an display in your views
 
 
 271-277
-//Section16
+//Section16 & 17
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
@@ -633,7 +633,7 @@ that sends emails to newly signed users
 
 275-281
 ///////////////////////////////////////////////////////////////////
-//(4.1) resetting the password from the site thorugh an email
+//(4.1) resetting the password from the site thorough an email
 
 improve authentication and security regarding authentication
 
@@ -665,7 +665,7 @@ then send email with that token embedded in a link
 >> now when we press the reset, we will receive a token
 in the reset link in the email and in the database's user
 
-
+282-288
 ///////////////////////////////////////////////////////////////////
 //(4.2) Creating a password form
 
@@ -687,9 +687,73 @@ as the route will be redirected again to /reset through the email
 the getNewPassword router url will be /reset/token
 
 
+>in postNewPassword controller in auth.js
+take inputs including hidden, from the page
+put into the new user, save the new user
+
+
+now we can change the password without mail by
+reset password, put user's email
+get the token from compass and access
+reset/tokenw23123123123 to access the put new password view
+(like the email already sends)
+you can submit a new password and refresh compass to see it
 
 
 
+///////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////
+//(4.3) Why we need authentication
+
+not every authenticated user is allowed to do everything
+i can delete all products either i created or someone else
+restrict the permissions of a logged in user
+users should not be able to delete products they did not add
+
+we did store the userId for each product created
+is the current logged in user is the user who created that product
+before allowing any edit
+
+in the admin controller getProducts
+want to show only products that where added by the current logged in user
+add a filter of userId = the current logged in user
+in the find method
+
+///////////////////////////////////////////////////////////////////
+but we can still send requests to delete these products
+
+postEdit, postDeleteProducts
+want to check that the product i try to delete
+is really created by the currently logged in user
+
+postEditProduct
+if (product.userId.toString() !== req.user._id.toString()) {
+redirect
+
+postDeleteProduct
+//delete one product where .. = ..
+ProductClassModel.deleteOne({_id: prodId, userId: req.user._id})
+
+
+
+///////////////////////////////////////////////////////////////////
+
+Password Resetting
+has to be implemented in a way that prevents users
+from resetting random user accounts
+
+Reset tokens have to be random, unguessable (at least till the expiration date) and unique
+great mechanism to identify the user for whom we want to reset the password
+
+
+Authorization
+locking down access for authenticated users
+Authorization is an important part of pretty much every app
+Not every authenticated user should be able to do everything
+Instead, you want to lock down access by restricting the 
+permissions of your users
 
 
 

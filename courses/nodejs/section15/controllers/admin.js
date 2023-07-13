@@ -315,16 +315,25 @@ exports.postEditProduct = (req,res, next) => {
     //but have to set our properties
     ProductClassModel.findById(prodId)
     .then((product) => {
+
+        //(4.3)
+        if (product.userId.toString() !== req.user._id.toString()) {
+            return res.redirect("/");
+            //the next then block will be executed even though i did redirect here
+
+        }
+        //
         product.title = updatedTitle;   
         product.price = updatedPrice;  
         product.description = updatedDescription;                      
         product.imageUrl = updatedImageUrl;
-        return product.save();      //return to chain another then
-    })
-    .then(() => {
-        //handles any success responses from the (save) promise
-        console.log("updated product");
-        res.redirect("/admin/products");
+        return product.save()
+        .then(() => {
+            //handles any success responses from the (save) promise
+            console.log("updated product");
+            res.redirect("/admin/products");
+        })
+    
     })
 	.catch((err) => {
 		console.log(err);
@@ -369,7 +378,13 @@ exports.getProducts = (req, res, next) => {
 
     //mongoose
     //find for all products
-    ProductClassModel.find()
+    //ProductClassModel.find()
+    
+    //(4.3)
+    //now when i find a product, i do not find all of them
+    //by adding a filter of userId = the current logged in user
+    //the user exists because we did extract it in app.js middleware
+    ProductClassModel.find({userId: req.user._id})
     //(10)
     //can select the kind of data should be received, in find
     //select after find, defines which fields you want to select/un-select(- sign)
@@ -441,7 +456,10 @@ exports.postDeleteProduct = (req, res, next) => {
 
     //mongoose
     //(7)
-    ProductClassModel.findByIdAndRemove(prodId)
+    //ProductClassModel.findByIdAndRemove(prodId)
+    //(4.3)
+    //delete one where id is product id, user id is ..
+    ProductClassModel.deleteOne({_id: prodId, userId: req.user._id})
 	.then((result) => {
         console.log("removed product");
         res.redirect("/admin/products");

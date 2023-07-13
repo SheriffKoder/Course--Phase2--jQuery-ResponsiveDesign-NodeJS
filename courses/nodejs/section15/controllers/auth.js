@@ -397,13 +397,48 @@ exports.getNewPassword = (req, res, next) => {
             //pass also the user id so we can include it
             //in the user request where we can update the password
             //and add it as a hidden input in the new-p.ejs
-            userId: user._id.toString()
+            userId: user._id.toString(),
+            passwordToken: token
           });
     })
 	.catch((err) => {
 		console.log(err);
 	})
 
+
+
+
+}
+
+exports.postNewPassword = (req, res, next) => {
+    const newPassword = req.body.password;
+    const userId = req.body.userId;
+    const passwordToken = req.body.passwordToken;
+    let resetUser;
+
+    User.findOne({
+        resetToken: passwordToken, 
+        resetTokenExpiration: {$gt: Date.now()},
+        _id: userId
+    }).then((user) => {
+        //store the user to use in next then
+        resetUser = user;
+        //number of hashing rounds
+        return bcrypt.hash(newPassword, 12)
+    })
+    .then ((hashedPassword) => {
+        resetUser.password = hashedPassword;
+        resetUser.resetToken = undefined;
+        resetUser.resetTokenExpiration = undefined;
+        return resetUser.save();
+    })
+    .then (result => {
+        res.redirect("/login");
+        //can also send a mail confirming that reset if wanted to
+    })
+	.catch((err) => {
+		console.log(err);
+	})
 
 
 
