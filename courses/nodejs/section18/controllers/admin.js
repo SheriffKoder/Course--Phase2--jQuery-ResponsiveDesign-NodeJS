@@ -3,6 +3,10 @@ const mongodb = require("mongodb");
 
 const ProductClassModel = require("../models/product.js");
 
+//(18.1.3)
+const { validationResult } = require("express-validator");
+
+
 exports.getAddProduct = (req, res, next) => {
     //console.log("<h1>Add product page");
     //res.send(productAdd);
@@ -19,6 +23,13 @@ exports.getAddProduct = (req, res, next) => {
         productCSS: true, formsCSS: true, activeProductAdd: true,
         //isAuthenticated: req.isLoggedIn
         //isAuthenticated: req.session.isLoggedIn //(2.9) //-(3.8)
+        
+        //(18.1.3) //added this to make the one in post work and this not give an error undefined
+        hasError: false,
+        errorMessage: null,
+        validationErrors: errors.array()
+
+
     });
 
 };
@@ -32,6 +43,30 @@ exports.postAddProduct = (req, res, next) => {
     const imageUrl = req.body.imageUrl;
     const price = req.body.price;
     const description = req.body.description;
+
+    //(18.1.3)
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        //return to not continue below
+        return res.status(422).render("admin/edit-product", 
+        {
+            myTitle: "Add-Product page", 
+            path: "/admin/add-product", 
+            editing: false,
+            hasError: true,
+            product: {
+                title: title,
+                imageUrl: imageUrl,
+                price: price,
+                description: description,
+            },
+            errorMessage: errors.array()[0].msg,
+            validationErrors: errors.array()
+
+
+        });        
+    }
+
 
     //(3)
     //a new product based on our mongoose model
@@ -198,27 +233,33 @@ exports.getEditProduct = (req, res, next) => {
 
     //mongoDB
     //also mongoose (as findById is a default method in mgs)
-      ProductClassModel.findById(prodId)
-      .then((product) => {
-            if (!product) {
-                console.log("product does not exist to be edited");
-                res.redirect("/");
-            }
-            res.render("admin/edit-product", 
-            {
-                product: product,
-                myTitle: "edit-Product page", 
-                path: "/admin/add-product", 
-                editing: editMode,
-                        //isAuthenticated: req.isLoggedIn
-        //isAuthenticated: req.session.isLoggedIn //(2.9) //-(3.8)
+ProductClassModel.findById(prodId)
+    .then((product) => {
+        if (!product) {
+            console.log("product does not exist to be edited");
+            res.redirect("/");
+        }
+        res.render("admin/edit-product", 
+        {
+            product: product,
+            myTitle: "edit-Product page", 
+            path: "/admin/add-product", 
+            editing: editMode,
+            //isAuthenticated: req.isLoggedIn
+            //isAuthenticated: req.session.isLoggedIn //(2.9) //-(3.8)
+            
+            //(18.1.3) //added this to make the one in post work and this not give an error undefined
+            hasError: false,
+            errorMessage: null,
+            validationErrors: []
 
-                
-            });        
-            })
-        .catch((err) => {
-            console.log(err);
-        })
+
+
+        });        
+    })
+    .catch((err) => {
+        console.log(err);
+    })
 
 
 };
@@ -237,6 +278,34 @@ exports.postEditProduct = (req,res, next) => {
     const updatedImageUrl = req.body.imageUrl;
     const updatedPrice = req.body.price;
     const updatedDescription = req.body.description;
+
+    //(18.1.3)
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        //return to not continue below
+        return res.status(422).render("admin/edit-product", 
+        {
+            myTitle: "Edit-Product page", 
+            path: "/admin/add-product", 
+            editing: true,
+            hasError: true,
+            product: {
+                title: updatedTitle,
+                imageUrl: updatedImageUrl,
+                price: updatedPrice,
+                description: updatedDescription,
+                //id is extracted when the page is rendered the first time
+                //on re-rendering on validation fail, 
+                //the id will be missing so add it here
+                _id: prodId
+            },
+            errorMessage: errors.array()[0].msg,
+            validationErrors: errors.array()
+
+
+        });        
+    }
+
 
     //express
     /*

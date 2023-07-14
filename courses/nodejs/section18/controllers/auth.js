@@ -76,7 +76,13 @@ exports.getLogin = (req, res, next) => {
         //isAuthenticated: false, //(2.7)
         //just access the key for the message
         //errorMessage: req.flash("error") //-(3.10)
-        errorMessage: message
+        errorMessage: message,
+        oldInput: {
+            email: "", 
+            password: ""
+        },
+        validationErrors: []
+    
     });        
 }
 
@@ -92,10 +98,16 @@ exports.postLogin = (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         //return so the code below not execute
+        //the status code is not requires, but it is a good practice to make intentions clear
         return res.status(422).render("auth/login", {
             path: "/login",
             myTitle: "Login Page",
-            errorMessage: errors.array()[0].msg
+            errorMessage: errors.array()[0].msg,
+            oldInput: {
+                email: email,
+                password: password
+            },
+            validationErrors: errors.array()
         });        
     
     }
@@ -110,8 +122,24 @@ exports.postLogin = (req, res, next) => {
             //if user does not exist, want to flash an error message on to the session
             //takes a name key, the message
             //its in the session until we use it
-            req.flash("error", "Invalid Email or password.");
-           return res.redirect("/login"); 
+            //req.flash("error", "Invalid Email or password."); //-(18.1.1)
+            //return res.redirect("/login");  //-(18.1.1)
+            //(18.1.1) return the render with these passed inputs
+            //as we have an error here as well
+            return res.status(422).render("auth/login", {
+                path: "/login",
+                myTitle: "Login Page",
+                //this is the string of the req.flash as we do not need to flash anymore 
+                errorMessage: "Invalid Email or password.",
+                oldInput: {
+                    email: email,
+                    password: password
+                },
+                //can pass in the array {param: "email", param: "password" }
+                //if still want to show what went wrong, after redirection
+                validationErrors: []
+            });        
+    
         }
 
         //compare the entered password with the hashed password value
@@ -131,8 +159,24 @@ exports.postLogin = (req, res, next) => {
                 })
             }
 
-            req.flash("error", "Invalid Email or password.");
-            return res.redirect("/login"); 
+            //-(18.1.1)
+            //req.flash("error", "Invalid Email or password.");
+            //return res.redirect("/login"); 
+            //(18.1.1)
+            return res.status(422).render("auth/login", {
+                path: "/login",
+                myTitle: "Login Page",
+                //this is the string of the req.flash as we do not need to flash anymore 
+                errorMessage: "Invalid Email or password.",
+                oldInput: {
+                    email: email,
+                    password: password
+                },
+                //can pass in the array {param: "email", param: "password" }
+                //if still want to show what went wrong, after redirection
+                validationErrors: []
+            });        
+
 
         })
         .catch((err) => {
@@ -241,7 +285,8 @@ exports.getSignup = (req, res, next) => {
         email: "", 
         password: "",
         confirmPassword: ""
-    }
+    },
+    validationErrors: []
 
     });
   };
@@ -278,7 +323,8 @@ exports.postSignup = (req, res, next) => {
                 email: email, 
                 password: password,
                 confirmPassword: confirmPassword
-            }
+            },
+            validationErrors: errors.array()
         });
     }
 

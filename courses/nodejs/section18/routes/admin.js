@@ -20,6 +20,9 @@ const adminController = require("../controllers/admin.js")
 //(3.5)
 const isAuth = require("../middleware/is-auth.js");
 
+//(18.1.3)
+const {body} = require("express-validator");
+
 
 /*
 let productAdd = `
@@ -57,7 +60,25 @@ router.get("/add-product", (req, res, next) => {
 //output the added input
 
 // /admin/product => POST
-router.post("/add-product", isAuth, adminController.postAddProduct);
+router.post(
+    "/add-product",
+    [
+        //(18.1.3)
+        body("title")
+        //used instead of isAlphanumeric, isString as it allows white spaces
+            .isString()
+            .isLength({min: 3})
+            .trim(),
+        body("imageUrl")
+            .isURL(),
+        body("price")
+            .isFloat(),
+        body("description")
+            .isLength({min: 5, max: 400})
+            .trim()
+    ],
+    isAuth, adminController.postAddProduct
+);
 /*
 router.post("/product", (req, res, next) => {
     //console.log(req.body);    
@@ -76,7 +97,24 @@ router.post("/product", (req, res, next) => {
 router.get("/edit-product/:productId", isAuth, adminController.getEditProduct);
 
 
-router.post("/edit-product", isAuth, adminController.postEditProduct);
+router.post(
+    "/edit-product",
+    [
+        //(18.1.3)
+        body("title")
+            .isString()
+            .isLength({min: 3})
+            .trim(),
+        body("imageUrl")
+            .isURL(),
+        body("price")
+            .isFloat(),
+        body("description")
+            .isLength({min: 5, max: 400})
+            .trim()
+    ], 
+     isAuth, adminController.postEditProduct
+);
 
 router.post("/delete-product", isAuth, adminController.postDeleteProduct);
 

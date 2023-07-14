@@ -33,12 +33,16 @@ router.post(
     [
     body("email")
       .isEmail()
-        .withMessage("Please enter a valid email address"),
+        .withMessage("Please enter a valid email address")
+        //(18.1.2)
+        .normalizeEmail(),
     body("password", "Password has to be valid")
         .isLength({min: 5})
             //.withMessage("")
         .isAlphanumeric()
             //.withMessage("")
+        //(18.1.2)
+        .trim()
     ],
     authController.postLogin
 );
@@ -111,7 +115,9 @@ router.post(
 
             }
         });
-    }),
+    })
+    //(18.1.2)
+    .normalizeEmail(),
     //(18.0.3)
     //check in the body of the request, can use the above approach
     //2nd parameter is the default error message for all validators
@@ -119,12 +125,17 @@ router.post(
     //isAlphanumeric to only allow numbers and normal characters
     body("password", "Please enter a password with only numbers and text and at least 5 characters")
     .isLength({min: 5})
-    .isAlphanumeric(),
+    //(18.1.2) trim before the alphanumeric check otherwise whitespace will not be trimmed and rejected by alphanumeric first
+    .trim()
+    .isAlphanumeric()
+,
     //(18.0.4)
     //want to check if it is equal to our password
     //we will use a custom validator
     //and extract the request with destructuring
     body("confirmPassword")
+    //(18.1.2)
+    .trim()
     .custom((value, {req}) => {
         if (value !== req.body.password) {
             throw new Error("Passwords have to match!");

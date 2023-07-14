@@ -426,15 +426,155 @@ in an oldInput object with these values to use in the ejs
 also add the oldInput object to the getSignup to avoid undefined errors
 
 
+299-305
+///////////////////////////////////////////////////////////////////
+//(18.1.1) give the user input and invalid border
+
+
+you have to use the information which you are getting
+to pass it to your view
+and then render something different based on that information
+
+>> allow the postSignUp/getSignUp controller
+to pass validationErrors to the render
+the get will be an empty array and the post will be errors.array();
+
+>> go to the ejs and will change the styling of inputs
+based on the existence of errors
+
+> add to the input
+class="<%= validationErrors.find(e => e.path === 'email') ? 'invalid' : '' %>"
+find looks in arrays
+if not found will return undefined or null
+if found then set class to invalid
+
+> add the class to the css
+
+note: all the boxes will be red on wrong signup
+unlike the flash error which is displayed for the first wrong only
+
+///////////////////////////////////////////////////////////////////
+//keeping credentials and adding validation css for the login page
+
+>> postLogin controller
+add the oldInput, empty validationErrors to the render object
+instead of flashing then redirecting
+return a res.render
+and put the flashing message in the errorMassage key
+
+>>getLogin controller
+add an empty oldInput, empty validationErrors to the render object
+
+on the ejs 
+put for the inputs value = the passed oldLogin
+
+//we did setup that the wrong password gets a red border but wrong emails do not
+
+
+///////////////////////////////////////////////////////////////////
+//(18.1.2)
+//sanitizing data (visual) trimming inputs before storing
+security sanitizing will be covered later later
+
+on the validator library docs that the express-validator use
+we can also find sanitizers
+
+for example
+can ensure that there is no white space on the left/right
+in a string passed by user
+
+can normalize an email, its converted to lowercase with trimming etc.
+
+//to ensure the data you get is not just valid
+but also stored in a uniform way
+
+
+>>go to the auth.js routes, getLogin/getSignup
+and chain methods of normalizeEmail() to email and trim() to password
 
 
 
 
+///////////////////////////////////////////////////////////////////
+//(18.1.3)
+
+//Validating Product Addition for add-product
+to control input and display the error using the express-validator
+
+//title that should be alphanumeric, at least 3 chars long
+
+//imageUrl, valid url, 
+
+//price should be a floating point number - decimal
+
+//description at least 5 characters long
 
 
+>> go to the admin.js router
+import the express validator and destruct into body
+>>work on the add-product/edit-product post routes
+
+we start the middleware array by body("ejs-name")
 
 
+>> go to the admin controller and make sure we 
+collect these validation errors and return them
 
+const { validationResult } = require("express-validator");
+
+add if no error, render like the "edit-product"
+however will make product key an object with the ejs data
+and set a key of hasError to true (also copied as false in the get controller)
+
+>> in the edit-product view
+want to render the existing product inputs if i am editing
+or if hasError
+
+>> in the edit-product view
+add from the login.ejs the if errorMessage to display errorMessage
+
+
+//make sure each key put in post controllers render to pass info
+is put in the get controllers as empty or null to not cause undefined errors
+
+body("title")
+//used instead of isAlphanumeric, isString as it allows white spaces
+    .isString()
+
+
+///////////////////////////////
+//Validating Product Addition for edit-product
+to control input and display the error using the express-validator
+
+>> copy the validation methods array in the router
+>>copy the validationErrors if is empty render
+to the post edit-product controller
+with changing key values to the ones in the controller
+
+Note: we can overwrite the default error message displayed on the website
+by using the methods we used before like custom, withMessage, 2nd body argument string
+
+to add the red border css
+>>add the validationErrors class line to each input
+>> add this to the postEdit/postAdd controller render object
+validationErrors: errors.array()
+and put it with empty array for the get controllers
+
+
+///////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////
+//Wrap up
+
+adding validation to routes with the express-validator and validator
+then we collect errors in our controllers
+and we do something if we do find errors
+render, 
+    pass error message(display with div), 
+    validationErrors(for if for css),
+    oldInputs (for refilling with entered values again)
+
+//there are also other 3rd party validation packages to use
+//
 
 
 
