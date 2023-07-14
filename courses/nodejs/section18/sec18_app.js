@@ -101,14 +101,25 @@ const authRoutes = require("./routes/auth.js");
 //this middleware execute first then next to the next app.uses
 app.use((req, res, next) => {
     
+    //write a clever code what will succeed
+    //by avoiding to find session.user if there is no session
     //to allow the middleware below to only run if there is a session.user
     if (!req.session.user) {
         return next();
     }
+
     //User.findById("64a6f2a6c017acc261356a8c")
     //User is a mongoose model with method findById
     User.findById(req.session.user._id) //(2.10)
         .then(user => {
+
+            //clever code to avoid any possible errors
+            //if cant find the user to continue 
+            //and not store undefined in the user object
+            if (!user) {
+                return next();
+            }
+
             //req.user = user;
             //create a new user in order to be able to call its methods 
             //mongoDB //(10)
@@ -130,8 +141,19 @@ app.use((req, res, next) => {
             next();
 
         })
+        //this catch will not fire if not found the user with this id
+        //it will fire if there is a technical issues, db down, 
+        //user/app do not have sufficient permissions to use this action
         .catch(err => {
-            console.log(err);
+            //console.log(err);
+            //(19.0.2)
+            //console.log is not really useful
+            //if we have a technical issue, we throw a real error
+            //express js gives us a way of taking care of such errors
+            //throwing an error has an advantage
+            //we can also use next(); to continue
+            //without request user being sent
+            throw new Error(err);
         })
     
 });
@@ -175,6 +197,11 @@ app.use((req, res, next) => {
 });
 */
 const errorController = require("./controllers/errorController.js");
+
+//(19.0.2)
+//render this in case of get, not when any route fails
+app.get("/500", errorController.get500);
+
 app.use(errorController.get404);
 
 
@@ -474,7 +501,7 @@ put for the inputs value = the passed oldLogin
 ///////////////////////////////////////////////////////////////////
 //(18.1.2)
 //sanitizing data (visual) trimming inputs before storing
-security sanitizing will be covered later later
+security sanitizing will be covered later
 
 on the validator library docs that the express-validator use
 we can also find sanitizers
@@ -574,8 +601,123 @@ render,
     oldInputs (for refilling with entered values again)
 
 //there are also other 3rd party validation packages to use
+
+
+
+
+
+
+
+
+//Section19
+///////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////
+
+
+//306-312
+///////////////////////////////////////////////////////////////////
+//(19.0.0)
+
+
+there will always be errors in your application
+if it is not from your code it can be
+from the users inputs, server issues
+
+- different types of errors
+- handling errors in an elegant way in the nodejs application
+
+errors are not necessarily the end of your app
+you just need to handle errors correctly
+
+- technical/Network errors 
+    > e.g mongoDB server is down 
+    > show error page to user / send email to system administrator
+- expected errors
+    > file cant be read, database operation fails
+    > inform user, possibly retry
+- bugs/logical errors
+    > interact with user object that does not exist
+    > fix during development
+
+
+How can we work with the different types of errors
+a) error is thrown (the error is a technical object in a node application)
+                    there is a built in error object which we can throw
+                    it is also a js programming feature, most languages have it
+    synchronous code: try-catch
+    asynchronous code: then(), catch()
+    for both ways we decide if 
+    -directly handle the error
+    -use express error handling function 
+    (mechanism built into express, a special error handling middleware)
+
+b) no error is thrown (we cant continue with our code but there is no technical error)
+    validate values (with if checks for example)
+    and decide whether we want to
+    -throw error
+    -directly handle error (add some code that can continue with the missing input data )
+
+
+c) in both ways we can
+-return an error page, dedicated page informs the user we have a problem (last resort)
+-return the page the user was on kept the input values and just added an error message
+-redirect
+-intended page/response with error information
+
+
+
+///////////////////////////////////////////////////////////////////
+//(19.0.1)
+
+//try and catch, to handle sync code errors
+
+in auth.js router signup confirm password
+we throw an error that is handled behind the scenes with the express validator
+
+let us add code that is not handled behind the scenes
+> create error-playground.js in the root directory
+
+where we throw an error in a normal sync function
+and call the function in a try block, 
+block chained with catch(error) block to do something when an error happens
+
+
+//we also have async operations that can fail
+//and with using promises errors are handled with then and catch
+catch do catch all errors that are thrown by any prior then blocks
+and will fire on any error thrown on any then block
+
+
+///////////////////////////////////////////////////////////////////
+//(19.0.2)
+
+
+//let us see in our application how we can improve error handling
+>> in app.js we have 2 catch blocks, work on the first
+
+validating the inputs in the routes
+is a form of error handling
+
+//better error handling
+//returning the same page, giving the user an error message, user can try again
+>> in the admin controller post add product
+in the catch block we will return render to the add-product page
+with status code 500
+
+
 //
+sometimes you do not want to do that, 
+and want to send the user to a page saying that something is wrong
+and you are not able to continue
 
-
+error handling page
+> add a new view 500.ejs like the 400.ejs
+> add in the error.js controller get500 like the get404 middleware
+> add route app.get("/500", errorController.get500); in app.js beside 404
+> in the catch block of admin.js add-product, redirect to /500
+now the created-database-error redirects to the 500 page
+and this can be a decent way of handling errors for bigger problems
 
 */

@@ -138,6 +138,9 @@ router.post(
     .trim()
     .custom((value, {req}) => {
         if (value !== req.body.password) {
+            //this will be handled behind the scenes with express validator package
+            //catches it, add it to its own errors array 
+            //and allows us to read that list of errors it caught
             throw new Error("Passwords have to match!");
         }
         return true;

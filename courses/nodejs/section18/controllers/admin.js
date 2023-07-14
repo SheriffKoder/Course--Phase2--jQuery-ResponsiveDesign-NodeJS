@@ -7,6 +7,9 @@ const ProductClassModel = require("../models/product.js");
 const { validationResult } = require("express-validator");
 
 
+//(19.0.2)
+const mongoose = require("mongoose");
+
 exports.getAddProduct = (req, res, next) => {
     //console.log("<h1>Add product page");
     //res.send(productAdd);
@@ -27,7 +30,7 @@ exports.getAddProduct = (req, res, next) => {
         //(18.1.3) //added this to make the one in post work and this not give an error undefined
         hasError: false,
         errorMessage: null,
-        validationErrors: errors.array()
+        validationErrors: []
 
 
     });
@@ -75,6 +78,8 @@ exports.postAddProduct = (req, res, next) => {
     //(9) userId
     const product = new ProductClassModel(
         { 
+            //(19.0.2)
+            _id: new mongoose.Types.ObjectId("64af4071d27bc99594844b24"),
             title: title, 
             price: price, 
             description: description, 
@@ -92,7 +97,11 @@ exports.postAddProduct = (req, res, next) => {
             res.redirect("/admin/products");
         })
         .catch((err) => {
-            console.log(err);
+            //console.log(err);
+            //(19.0.2)
+            res.redirect("/500");
+    
+
         })
 
 
