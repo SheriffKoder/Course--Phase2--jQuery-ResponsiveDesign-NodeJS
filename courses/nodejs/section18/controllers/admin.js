@@ -79,7 +79,7 @@ exports.postAddProduct = (req, res, next) => {
     const product = new ProductClassModel(
         { 
             //(19.0.2)
-            _id: new mongoose.Types.ObjectId("64af4071d27bc99594844b24"),
+            //_id: new mongoose.Types.ObjectId("64af4071d27bc99594844b24"),
             title: title, 
             price: price, 
             description: description, 
@@ -99,8 +99,16 @@ exports.postAddProduct = (req, res, next) => {
         .catch((err) => {
             //console.log(err);
             //(19.0.2)
-            res.redirect("/500");
-    
+            //res.redirect("/500");
+            //(19.0.3)
+            //throwing an error with a bit more details
+            //err is the message returned from the catch block
+            //or can put a message string
+            //wen we call next with an error object passed as an argument
+            //we let express know that an error occurred
+            //and will skip all other middleware's
+            //and move right away to an error handling middleware
+            return next(new Error(err).httpStatusCode=500); //(19.0.3)    
 
         })
 
@@ -267,7 +275,8 @@ ProductClassModel.findById(prodId)
         });        
     })
     .catch((err) => {
-        console.log(err);
+        //console.log(err);
+        return next(new Error(err).httpStatusCode=500); //(19.0.3)
     })
 
 
@@ -394,6 +403,9 @@ exports.postEditProduct = (req,res, next) => {
     ProductClassModel.findById(prodId)
     .then((product) => {
 
+        //(19.0.3)
+        //force occurrence of an error to test the catch
+        //throw new Error("Dummy");
         //(4.3)
         if (product.userId.toString() !== req.user._id.toString()) {
             return res.redirect("/");
@@ -414,7 +426,9 @@ exports.postEditProduct = (req,res, next) => {
     
     })
 	.catch((err) => {
-		console.log(err);
+		//console.log(err);
+        //(19.0.3)
+        return next(new Error(err).httpStatusCode=500); //(19.0.3)
 	})
 
 
@@ -490,7 +504,8 @@ exports.getProducts = (req, res, next) => {
         });
 	})
 	.catch((err) => {
-		console.log(err);
+		// console.log(err);
+        return next(new Error(err).httpStatusCode=500); //(19.0.3)
 	});
 
 
@@ -543,7 +558,9 @@ exports.postDeleteProduct = (req, res, next) => {
         res.redirect("/admin/products");
     })
     .catch((err) => {
-        console.log(err);
+        // console.log(err);
+        return next(new Error(err).httpStatusCode=500); //(19.0.3)
+
     });
 
 

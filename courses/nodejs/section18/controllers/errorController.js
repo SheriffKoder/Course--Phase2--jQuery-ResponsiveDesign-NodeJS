@@ -15,7 +15,7 @@ exports.get404 = (req, res, next) => {
 exports.get500 = (req, res, next) => {
     //res.status(404).send("<h1>Page not found</h1>");
     //res.status(404).sendFile(path.join(__dirname, "views", "404.html"));
-    res.status(404).render("500", {
+    res.status(500).render("500", {
         myTitle: "500 Page", 
         path: "/500",
                 //isAuthenticated: req.isLoggedIn

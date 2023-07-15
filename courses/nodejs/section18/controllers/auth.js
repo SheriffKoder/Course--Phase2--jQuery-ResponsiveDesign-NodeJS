@@ -187,7 +187,8 @@ exports.postLogin = (req, res, next) => {
         })
     })
     .catch(err => {
-        console.log(err);
+        // console.log(err);
+        return next(new Error(err).httpStatusCode=500); //(19.0.3)
     })
 
     //in the dummy user example we did save the user as logged in by req.user = user
@@ -370,8 +371,9 @@ exports.postSignup = (req, res, next) => {
             //
         })
         .catch((err) => {
-            console.log("transporter return ");
-            console.log(err);
+            //console.log("transporter return ");
+            //console.log(err);
+            return next(new Error(err).httpStatusCode=500); //(19.0.3)
 
         });
 
@@ -472,7 +474,8 @@ exports.postReset = (req, res, next) => {
             });
         })    
         .catch((err) => {
-            console.log(err);
+            // console.log(err);
+            return next(new Error(err).httpStatusCode=500); //(19.0.3)
         })
     })
 
@@ -510,7 +513,8 @@ exports.getNewPassword = (req, res, next) => {
           });
     })
 	.catch((err) => {
-		console.log(err);
+		// console.log(err);
+        return next(new Error(err).httpStatusCode=500); //(19.0.3)
 	})
 
 
@@ -545,7 +549,8 @@ exports.postNewPassword = (req, res, next) => {
         //can also send a mail confirming that reset if wanted to
     })
 	.catch((err) => {
-		console.log(err);
+		// console.log(err);
+        return next(new Error(err).httpStatusCode=500); //(19.0.3)
 	})
 
 

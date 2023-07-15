@@ -98,9 +98,29 @@ const adminJsRoutes = require("./routes/admin.js");
 const shopJsRoutes = require("./routes/shop.js");
 const authRoutes = require("./routes/auth.js");
 
+
+//(3.8)
+//after the middleware that extracts our user
+//but before our routes
+////for every request that will be executed
+//these two fields will be set for the views that are rendered
+app.use((req, res, next) => {
+    //a special feature/field provided by express js
+    //locals allows to set local variables that are passed 
+    //into the views which are rendered
+    res.locals.isAuthenticated = req.session.isLoggedIn;
+    res.locals.csrfToken = req.csrfToken();
+    //call next so we are able to continue
+    next();
+});
+
 //this middleware execute first then next to the next app.uses
 app.use((req, res, next) => {
     
+    //this is the way of reaching the error handling middleware
+    //as this part of code is (synchronous)
+    //throw new Error("Dummy");
+
     //write a clever code what will succeed
     //by avoiding to find session.user if there is no session
     //to allow the middleware below to only run if there is a session.user
@@ -112,6 +132,9 @@ app.use((req, res, next) => {
     //User is a mongoose model with method findById
     User.findById(req.session.user._id) //(2.10)
         .then(user => {
+
+            //this is to test the return next in the catch
+            //throw new Error("Dummy");
 
             //clever code to avoid any possible errors
             //if cant find the user to continue 
@@ -153,26 +176,20 @@ app.use((req, res, next) => {
             //throwing an error has an advantage
             //we can also use next(); to continue
             //without request user being sent
-            throw new Error(err);
+            //if you throw errors in async (then/catch)
+            //you will not reach the error handling middleware
+            //to to make this throw work and go to the error middleware
+            //throw an error before the .then (sync) part of code
+            //throw new Error(err); < this does not work here
+            //as this part is a async
+            //use this
+            return next(new Error(err).httpStatusCode=500); //(19.0.3)
+
         })
     
 });
 
 
-//(3.8)
-//after the middleware that extracts our user
-//but before our routes
-////for every request that will be executed
-//these two fields will be set for the views that are rendered
-app.use((req, res, next) => {
-    //a special feature/field provided by express js
-    //locals allows to set local variables that are passed 
-    //into the views which are rendered
-    res.locals.isAuthenticated = req.session.isLoggedIn;
-    res.locals.csrfToken = req.csrfToken();
-    //call next so we are able to continue
-    next();
-});
 
 
 
@@ -202,7 +219,35 @@ const errorController = require("./controllers/errorController.js");
 //render this in case of get, not when any route fails
 app.get("/500", errorController.get500);
 
+//catch all middleware
+//not a technical error object
 app.use(errorController.get404);
+
+//(19.0.3)
+//error handling middleware
+//express is smart enough to detect that this is a special kind of middleware
+//as it has an extra error argument
+//and will move to it right away when we call next with an error object passed to it
+//like in the addProduct controller
+app.use((error, req, res, next) => {
+    //res.redirect("/500");
+     /*
+    we can also not redirect
+    and res.render() a page
+    res.status(error.httpStatusCode).render(...)
+    so we can use the httpStatusCode sent with 
+    the error object in the controller middleware's returned
+    or return some JSON data (will do later in the code)
+     */
+    res.status(500).render("500", {
+        myTitle: "500 Page", 
+        path: "/500",
+                //isAuthenticated: req.isLoggedIn
+        isAuthenticated: req.session.isLoggedIn //(2.9)
+
+    });
+
+})
 
 
 //connect to the node server once connected to the database
@@ -719,5 +764,133 @@ error handling page
 > in the catch block of admin.js add-product, redirect to /500
 now the created-database-error redirects to the 500 page
 and this can be a decent way of handling errors for bigger problems
+
+//312-318
+///////////////////////////////////////////////////////////////////
+//(19.0.3) central error handling middleware in app.js
+to redirect any middleware error to the 500 status code page
+
+instead of redirecting we can throw a new error
+
+in the post addProduct controller in the catch block
+return next(new Error(err).httpStatusCode=500);
+
+in the app.js add a middleware with an extra error argument
+which will be evoked by the return next(error) in any middleware
+
+we still have our if statements in the controllers
+to handle errors
+and the return next error object is the last resort
+if everything else fails
+
+>>add the return next error-object to all catch blocks in all 
+controller middleware's in the project
+
+the idea is to show to the user something when something fails
+instead of doing nothing or console to non end users
+
+
+////////////////////////////////
+//sync vs async code part errors
+
+in the user middleware in app.js
+we throw new Error(err);
+and to make it reach the error handling middleware in app.js
+
+1) make the error handling middleware render the 500 not redirect
+2) to throw a test throw new Error ("Dummy");
+it has to be outside of async code, outside .then/.catch blocks
+in the middleware
+this way the dummy error could reach 500 page
+
+Note: 
+so in sync code errors we could throw new Error("..")
+in async parts (then) for any throw new Error or code error to go to 500 page 
+    in the (catch) return next(new Error(err).httpStatusCode=500); //(19.0.3)
+
+async: promise, then/catch, callbacks
+
+
+///////////////////////////////////////////////////////////////////
+//(19.0.4)
+
+errors and http response/status codes
+
+which codes do we have and why do we use them
+
+the codes are extra information we pass to the browser
+which helps the browser understand if an operation succeeded or not
+
+if you are writing an application with alot of client side js
+or a mobile app, 
+and will fetch only data instead of complete html pages
+(will do that in the REST module later)
+
+status codes help to understand if an error happened
+what kind of error
+because you typically map certain kinds of errors
+to certain kinds of status codes
+
+some of the codes available we use
+//2XX (Success status code, operation succeeded)
+    //200: operation succeeded
+    //201: Success also but when we created a resource
+
+//3XX (Redirection happened)
+    //301: moved permanently
+
+//4XX (Client-side error, error done by the client)
+    //401 not authenticated
+    //403 not authorized
+    //404 page not found
+    //422 invalid input
+
+//5XX (Server-side error occured)
+    //500 server-side error
+    //also have other codes for timeout and so on
+
+
+the default is always 200
+like when we use res.render which no status code set on
+
+res.redirect will use 300 code
+even if put a status, this status will be overwritten by 300
+
+these status codes does not mean that our app crashes or request failed
+we have some problem and we are returning information with the problem
+to the client
+
+
+status codes can be viewed in dev tools > network > names
+
+in REST
+we will have direct interactions with our requests
+because we will not render pages all the time
+and then we can get useful information from these status codes
+
+
+Which status codes are available? 
+MDN has a nice list: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
+also https://httpstatuses.com/
+
+
+
+///////////////////////////////////////////////////////////////////
+Wrap up
+
+we looked at the different types of errors and how we can handle them
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 */

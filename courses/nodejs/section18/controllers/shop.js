@@ -66,7 +66,8 @@ exports.getProducts = (req, res, next) => {
         });
     })
     .catch((err) => {
-        console.log(err);
+        // console.log(err);
+        return next(new Error(err).httpStatusCode=500); //(19.0.3)
     });
 
 
@@ -163,7 +164,8 @@ exports.getProduct = (req, res, next) => {
 
     })
     .catch((err) => {
-        console.log(err);
+        // console.log(err);
+        return next(new Error(err).httpStatusCode=500); //(19.0.3)
     });
 
 
@@ -238,7 +240,8 @@ exports.getIndex = (req, res, next) => {
             });
         })
         .catch((err) => {
-            console.log(err);
+            // console.log(err);
+            return next(new Error(err).httpStatusCode=500); //(19.0.3)
         });
 
 
@@ -354,7 +357,8 @@ exports.getCart = (req, res, next) => {             //router
 
     })
     .catch(err => {
-        console.log(err);
+        // console.log(err);
+        return next(new Error(err).httpStatusCode=500); //(19.0.3)
     })
 
     //console.log("req.user.cart 1" + req.user.cart); //(21)
@@ -436,7 +440,8 @@ exports.postCartDeleteProduct = (req, res, next) => {
     .then (result => {
         res.redirect("/cart");
     })
-    .catch(err => console.log(err));
+    // .catch(err => console.log(err));
+    return next(new Error(err).httpStatusCode=500); //(19.0.3)
 
 
     //mongoDB
@@ -520,7 +525,8 @@ exports.postOrder = (req, res, next) => {
         res.redirect("/orders");
     })
     .catch( (err) => {
-        console.log(err);
+        // console.log(err);
+        return next(new Error(err).httpStatusCode=500); //(19.0.3)
     })
 
 
@@ -593,7 +599,10 @@ exports.getOrders = (req, res, next) => {
 
         });        
     })
-    .catch(err => console.log(err));
+    .catch((err) => {
+        // console.log(err)
+        return next(new Error(err).httpStatusCode=500); //(19.0.3)
+    });
 
 
     //(14)
