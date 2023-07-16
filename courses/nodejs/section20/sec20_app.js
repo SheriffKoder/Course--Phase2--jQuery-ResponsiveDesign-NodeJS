@@ -371,9 +371,10 @@ mongoose.connect(MongoDbUri)
 
 
 ///////////////////////////////////////////////////////////////////
+//Section 20
+
 /*
 
-Section 20
 
 //319-325
 ///////////////////////////////////////////////////////////////////
@@ -535,7 +536,7 @@ as if there where in the root folder
 as if the images are not stored with /images/filename 
 but rather filename directly
 
-so will add in the express.static middleware at the begining
+so will add in the express.static middleware at the beginning
 "/images", express.static
 this tells that if we have a request with /images
 we use the images folder not the root
@@ -721,10 +722,87 @@ or generate files on the fly
 depending on the app requirement
 
 
+*/
 
 
+///////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////
+//Section 21
+/*
 
 
+//338-344
+///////////////////////////////////////////////////////////////////
+//(21.0.0)
+
+
+Pagination allows to split data across multiple pages
+something you typically want to do when working with a lot of data
+
+
+let us say we have 100's of products
+we would not want to display all of these products on one page
+instead we would like to split them across multiple pages
+and at the bottom of the page for example we have some controls
+to go to page one, two, next, previous pages
+
+this is pagination, and you can find third party packages for that
+but we will implement it from scratch on our own
+
+implemented by adding some controls that always lead to the same path
+always /products for example
+then you add a query parameter
+which allow you to specify optional data
+like page=1, page=2
+
+and these query parameters are changed with the controls added
+
+
+>>in the index.ejs
+add a section with page links with /?page1 query parameters
+inside the if products block
+add some styling in the main.css
+
+
+///////////////////////////////////////////////////////////////////
+//(21.0.1)
+
+
+to use these query parameters on the back-end to control the data
+we are fetching
+
+>> go to the shop.js controller getIndex
+as we are working on index.ejs or shop link of "/"
+add the query value
+and use in the product.find that sends product array to the ejs
+skip and limit items to 2 (global variable) for example 
+
+
+///////////////////////////////////////////////////////////////////
+//(21.0.2) Adding dynamic pagination links
+
+we adjust the number of page buttons
+based on the page we are on and the maximum number of items available
+
+might want to highlight the page i am on
+and then show the next page number, previous page number
+
+>> go to the shop.js controller getIndex
+add totalItems variable
+that will have the total number of items stored into it
+> then can pass the total to the render
+> with other keys like next, previous page etc.
+to be used in the ejs
+-- the find products, skip and limit will be moved to the 
+find countDocument's then block
+and the render will be on the then block after it
+
+>> in the index.ejs
+add links for page 1, previous page, current page, next page, last page
+with if logics to output depending on page on
+
+
+>>
 
 
 

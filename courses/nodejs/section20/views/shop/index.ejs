@@ -28,6 +28,51 @@
                     </article>
                 <% } %>
             </div>
+
+            <!--(21.0.0)-->
+            <section class="pagination">
+                <!--//-(21.0.2)
+                <a href="/?page=1">1</a>
+                <a href="/?page=2">2</a>
+                -->
+                <!--comparing strings to number so should use one equal sign != 
+                however this has been fixed in the controller by adding
+                + sign before the value to convert it to a number -->
+                <% if (currentPage !== 1 && previousPage != 1) { %>
+                    <a href="/?page=1" class="active">1</a>
+                    
+                <% } %>
+
+                <% if (hasPreviousPage) { %>
+                    <a href="/?page=<%=previousPage%>">
+                        <%=previousPage%>
+                        
+                    </a>
+                <% } %>
+
+                <a href="/?page=<%=currentPage%>" class="active">
+                        <%=currentPage%>
+            
+                </a>
+
+                <% if (hasNextPage) { %>
+                    <a href="/?page=<%=nextPage%>">
+                        <%=nextPage%>
+                        
+                    </a>
+                <% } %>
+
+                <% if (lastPage !== currentPage && nextPage !== lastPage) { %>
+                    <a href="/?page=<%=lastPage%>">
+                        <%=lastPage%>
+                        
+                    </a>
+                <% } %>
+<!---->
+
+
+            </section>
+
         <% } else { %>
             <h1>No Products Found!</h1>
         <% } %>

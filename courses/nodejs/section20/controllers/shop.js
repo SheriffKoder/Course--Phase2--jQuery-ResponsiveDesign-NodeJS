@@ -15,6 +15,11 @@ const path = require("path");
 //pdfkit exposes a document constructor
 const PDFDocument = require("pdfkit");
  
+//(21.0.1)
+const ITEMS_PER_PAGE = 1;
+
+
+
 
 exports.getProducts = (req, res, next) => {
     //const products = adminData.products;
@@ -186,8 +191,10 @@ exports.getProduct = (req, res, next) => {
 
 }
 
+
 //main-page
 exports.getIndex = (req, res, next) => {
+
     /*
     ProductClassModel.fetchAll(products => {
         res.render("shop/index.ejs", {prods: products, myTitle: "Shop page", path:"/"});
@@ -235,13 +242,61 @@ exports.getIndex = (req, res, next) => {
     });
     */
 
+    //(21.0.1)
+    //retrieve the information on which page we are
+    //which data for which page needs to be displayed
+    //page because we named the link /?page=n
+    //getting the page "n" number and storing in the const
+    //if page not hold a value (link "/") then it will be page=1
+    //+ sign to not concatenated with numbers
+    const page = +req.query.page || 1;
+    
+    //(21.0.2)
+    //this will contain the number of products
+    //will be returned in the render
+    let totalItems;
+
+    //now we need to define how many items should be displayed per page
+    //will define a global constant in this file for the items per page
+    //so on page 1 want to fetch 1,2
+    //page 2, fetch items 3,4 etc.
+    //we will limit the .find() which finds all products
+
+    //(21.0.2)
+    //this will not retrieve all the products
+    //but simply just the number of products
+    ProductClassModel.find().countDocuments()
+	.then((numProducts) => {
+    
+        //(21.0.2)
+        totalItems = numProducts;
+
+        return ProductClassModel.find()
+        //(21.0.1)
+        //skip the items of previous pages
+        //we can add .skip() on a cursor, returned by find
+        //to skip the first x amount of results
+        //on page=1, skip 0 but limit after
+        //so on page=2 would skip the first two items
+        .skip((page-1)*ITEMS_PER_PAGE)
+        //i also want to limit the amount of items i retrieve also
+        //on current page, fetch as many items as i want to display
+        //.limit, limits the amount of data we fetch to the number we specify
+        .limit(ITEMS_PER_PAGE)
+
+    })
+
     //mongoose
     //find will get all products, into an array
     //when working with large amounts of data
     //can work with a cursor or manipulate find to limit the set of data that is retrieved (pagination)
     //can chain with cursor() to get access to cursor
     //then .next() to get the next element or each async to allow to loop through them
-    ProductClassModel.find()
+    // ProductClassModel.find() //-(21.0.2)
+    // .skip((page-1)*ITEMS_PER_PAGE) //(21.0.1) //-(21.0.2)
+    // .limit(ITEMS_PER_PAGE) //(21.0.1) //-(21.0.2)
+
+
         .then((products)=>{
             res.render("shop/index.ejs", {
                 prods: products, 
@@ -251,6 +306,18 @@ exports.getIndex = (req, res, next) => {
                 //isAuthenticated: req.session.isLoggedIn, //(2.9) //-(3.8)
                 //method provided by the csrf middleware in app.js //(3.7)
                 //csrfToken: req.csrfToken()  //-(3.8)
+                
+                //(21.0.2)
+                currentPage: page,
+                totalProducts: totalItems,
+                //we have a next page if
+                hasNextPage: ITEMS_PER_PAGE * page < totalItems,
+                hasPreviousPage: page > 1,
+                nextPage: page + 1,
+                previousPage: page -1,
+                //if 11/2 = 5.5, ceil return 6 as last page
+                lastPage: Math.ceil(totalItems / ITEMS_PER_PAGE )
+
             });
         })
         .catch((err) => {
