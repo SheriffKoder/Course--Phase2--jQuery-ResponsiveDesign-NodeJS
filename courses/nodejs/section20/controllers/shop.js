@@ -16,7 +16,7 @@ const path = require("path");
 const PDFDocument = require("pdfkit");
  
 //(21.0.1)
-const ITEMS_PER_PAGE = 1;
+const ITEMS_PER_PAGE = 2;
 
 
 
@@ -71,9 +71,10 @@ exports.getProducts = (req, res, next) => {
     });
     */
 
-    //(4)
+    //(4) //-(21.0.3)
     //mongoose
-   ProductClassModel.find()
+    /*
+    ProductClassModel.find()
     .then((products)=>{
         res.render("shop/product-list.ejs", {
             prods: products, 
@@ -88,6 +89,43 @@ exports.getProducts = (req, res, next) => {
         // console.log(err);
         return next(new Error(err).httpStatusCode=500); //(19.0.3)
     });
+    */
+
+    //(21.0.3)
+    //Pagination
+    //check the getIndex for more details about the code
+    const page = +req.query.page || 1;
+    let totalItems;
+    ProductClassModel.find().countDocuments()
+	.then((numProducts) => {
+        totalItems = numProducts;
+        return ProductClassModel.find()
+        .skip((page-1)*ITEMS_PER_PAGE)
+        .limit(ITEMS_PER_PAGE)
+    })
+    .then((products)=>{
+        res.render("shop/product-list.ejs", {
+            prods: products, 
+            myTitle: "All products page", 
+            path:"/products",
+                    //isAuthenticated: req.isLoggedIn
+            //isAuthenticated: req.session.isLoggedIn, //(2.9) //-(3.8)
+            //method provided by the csrf middleware in app.js //(3.7)
+            //csrfToken: req.csrfToken()  //-(3.8)
+            
+            //(21.0.2)
+            currentPage: page,
+            totalProducts: totalItems,
+            //we have a next page if
+            hasNextPage: ITEMS_PER_PAGE * page < totalItems,
+            hasPreviousPage: page > 1,
+            nextPage: page + 1,
+            previousPage: page -1,
+            //if 11/2 = 5.5, ceil return 6 as last page
+            lastPage: Math.ceil(totalItems / ITEMS_PER_PAGE )
+
+        });
+    })
 
 
 
@@ -241,6 +279,7 @@ exports.getIndex = (req, res, next) => {
         console.log(err);
     });
     */
+
 
     //(21.0.1)
     //retrieve the information on which page we are

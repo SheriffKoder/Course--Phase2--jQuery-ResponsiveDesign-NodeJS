@@ -804,6 +804,48 @@ with if logics to output depending on page on
 
 >>
 
+344-340
+///////////////////////////////////////////////////////////////////
+//(21.0.3) Adding the pagination to products page 
+as we did for the index page
+
+
+>> add the pagination section to a separate ejs in the views/include folder
+
+<%- include('../includes/pagination.ejs', {currentPage: currentPage, ...}) %>
+
+>> add the include to the product list ejs
+
+Note: the url should not start with /
+so it can be appended to whatever the current path is
+otherwise will always refer to the / page and not work for /products-->
+like we did before to put the / at the beginning of the image url
+while saving so the static save to fs way not direct to the root folder
+
+>> add the same logic for getIndex controller to the getProducts controller
+with changing only the render path etc.
+
+
+///////////////////////////////////////////////////////////////////
+//wrap up
+
+with pagination
+you can display the data you want to display
+and to not fetch all the data in one go
+
+as .find() in the controller uses a cursor
+it does only find the items you need
+as we used .countDocuments() that does not retrieve all
+which only counts them (faster than retrieving them)
+
+and .skip() .limit() provided by mongoDB
+which does not do server side filtering on the data
+it re-filters the data on the database server
+
+
+
+
+
 
 
 
