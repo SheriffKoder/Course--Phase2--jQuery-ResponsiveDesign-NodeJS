@@ -2,10 +2,19 @@
 const ProductClassModel = require("../models/product.js");
 //as cart and order are related to the nexted user, we do not need to import
 
+//(14) //(20.1.0)
+const Order = require("../models/order.js");
+
+
 //(20.1.0)
 //core modules
 const fs = require("fs");
 const path = require("path");
+
+//(20.2.1)
+//pdfkit exposes a document constructor
+const PDFDocument = require("pdfkit");
+ 
 
 exports.getProducts = (req, res, next) => {
     //const products = adminData.products;
@@ -492,7 +501,6 @@ exports.getCheckout = (req, res, next) => {
     });
 };
 
-const Order = require("../models/order.js");
 //(14)
 exports.postOrder = (req, res, next) => { 
 
@@ -681,11 +689,13 @@ exports.getInvoice = (req, res, next) => {
         //the path i want to read
         const invoicePath = path.join("data", "invoices", invoiceName);
     
+        //(20.1.0)
         //we can retrieve the file with the node file system
         //path should be constructed by the path core module
             //so it can work on all operating systems
         //read file gives a callback exe once done reading the file
         //data will be in the format of a buffer
+        /*
         fs.readFile(invoicePath, (err, data) => {
             
             if (err) {
@@ -705,6 +715,97 @@ exports.getInvoice = (req, res, next) => {
             //data here theoretically should be our file
             res.send(data);
         });
+        */
+
+        //(20.2.1)
+        //create a pdf document (write to pc)
+        //which is a readable stream
+        const pdfDoc = new PDFDocument();
+        res.setHeader("Content-Type", "application/pdf");
+        
+        res.setHeader('Content-Disposition', 
+        'inline; filename="' + invoiceName + '"   '
+        );
+
+        //pass a path to WriteSteam where want to write
+        //this ensures that the pdf we write here
+        //also get stored on the server, not just served to the client
+        pdfDoc.pipe(fs.createWriteStream(invoicePath));
+        //return it to the client
+        pdfDoc.pipe(res);
+        //now whatever we add to the document
+        //will be forwarded into this file which gets generated on the fly
+        //and to the response
+
+        //this allows to add a single line of text into the pdf document
+        //pdfDoc.text("Hello World!");
+
+        //(20.2.2)
+        pdfDoc.fontSize(26).text("Invoice", {
+            underline: true
+        });
+        pdfDoc.fontSize(14).text("-------------------------");
+        //looping through the orders products when creating the output
+        //with the hierarchy seen in the database
+        let totalPrice = 0;
+        order.products.forEach(prod => {
+            totalPrice = totalPrice + (prod.quantity * prod.product.price);
+            pdfDoc.fontSize(14).
+            text(
+                prod.product.title + 
+                " - " + 
+                prod.quantity + 
+                " x " + 
+                "$" + prod.product.price
+            );
+        });
+        pdfDoc.text("----------");
+        pdfDoc.fontSize(18).text("Total Price: $" + totalPrice);
+
+
+        //tell node that we are done writing to the stream
+        //the streams for writing and sending to response
+        //will be closes
+        //thus the file will be saved and response will be sent
+        pdfDoc.end();
+
+
+
+
+
+
+
+
+
+        //(20.2.0)
+        //streaming files (reading files from pc)
+        //node js will then read in the file step by step
+        //in different chunks
+        //const file = fs.createReadStream(invoicePath);
+        
+        // res.setHeader("Content-Type", "application/pdf");
+        
+        // res.setHeader('Content-Disposition', 
+        // 'inline; filename="' + invoiceName + '"   '
+        // );
+
+        //pipe, to forward the data that is read in with that stream
+        //to the response
+        //because the response object is a writable stream actually
+        //and you can use readable streams to pipe their output
+        //to a writable stream
+        //this means the browser can view the data (downloaded step by step)
+        //for large files this has an advantage
+        //because node does not have to pre-load all data into memory
+        //but just streams it to the client on the fly
+        //and the most it has to store, it one chunk of data
+        //the chunks are what we work with, the buffers gives access to them
+        //we not store chunks but forward them to the browser
+        //then it will be able to concatenate the incoming data pieces
+        //into the final file
+        // file.pipe(res);
+
+
 
     })
     .catch((err) => {

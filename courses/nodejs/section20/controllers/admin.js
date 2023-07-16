@@ -10,6 +10,10 @@ const { validationResult } = require("express-validator");
 //(19.0.2)
 const mongoose = require("mongoose");
 
+//(20.2.3)
+const fileHelper = require("../util/file");
+
+
 exports.getAddProduct = (req, res, next) => {
     //console.log("<h1>Add product page");
     //res.send(productAdd);
@@ -453,6 +457,11 @@ exports.postEditProduct = (req,res, next) => {
         
         //(20.0.4)
         if (image) {
+            //(20.2.3)
+            //delete the product image from the file system
+            //path to the file is imageUrl
+            fileHelper.deleteFile(product.imageUrl);
+            //(20.0.4)
             product.imageUrl = image.path;
 
         }
@@ -555,6 +564,20 @@ exports.getProducts = (req, res, next) => {
 exports.postDeleteProduct = (req, res, next) => {
     const prodId = req.body.productId;
 
+    //(20.2.3)
+    //delete image file on the product deletion
+    //delete the image then we can delete the product
+    ProductClassModel.findById(prodId)
+    .then((product) => {
+        if(!product) {
+            return next(new Error("Product not found"));
+        }
+        //slice1 as the url has the beginning / to be removed for the fs to work
+        fileHelper.deleteFile(product.imageUrl.slice(1));
+        return  ProductClassModel.deleteOne({_id: prodId, userId: req.user._id})
+
+	})
+
     //express
     //ProductClassModel.deleteById(prodId);
 
@@ -592,7 +615,8 @@ exports.postDeleteProduct = (req, res, next) => {
     //ProductClassModel.findByIdAndRemove(prodId)
     //(4.3)
     //delete one where id is product id, user id is ..
-    ProductClassModel.deleteOne({_id: prodId, userId: req.user._id})
+    // ProductClassModel.deleteOne({_id: prodId, userId: req.user._id})
+    //-(20.2.3) moved up then the return on it will let the then/catch work
 	.then((result) => {
         console.log("removed product");
         res.redirect("/admin/products");

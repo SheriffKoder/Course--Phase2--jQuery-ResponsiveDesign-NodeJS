@@ -11,6 +11,9 @@
 //sendGrid/Mailchimp etc need to be sorted out yet
 //# npm install --save express-validator //s18 validating inputs //s18 18.0.1
 //# npm install --save multer //s20: parse incoming files (upload)
+//# npm install --save pdfkit //s20.2 generate pdf files
+
+
 
 const http = require("http");
 const express = require("express");
@@ -633,7 +636,90 @@ otherwise continue reading the file
 
 331-337
 ///////////////////////////////////////////////////////////////////
-//
+//(20.2.0) reading files by streaming instead of static reading 
+
+
+when you read a file using fs.readFile
+node will first of all access the file
+read the entire content into memory
+then return it with the response
+this means that for bigger files
+this will take very long before a response is sent
+and the memory on the server might overflow
+from many incoming requests
+because it has to read all the data into memory
+which of course is limited
+instead you should be streaming your response data
+
+>> comment out the fs.readFile code in getInvoice controller
+
+
+///////////////////////////////////////////////////////////////////
+//(20.2.1)
+
+//create a pdf file on the fly
+want to generate a pdf file based on the real order data
+
+using third party packages like PDFKit
+very popular for creating pdf on a node js server
+//check out its docs, it has so many options, its powerful
+and can do a lot of things
+
+the docs are written in coffeeJs library which is different from vanilla js
+
+# npm install --save pdfkit
+
+>> import in the shop.js controller pdfkit
+create new pdfDocument object
+set headers on the response for file type and name 
+pipe to fs.createWriteStream and res
+add text 
+end stream to save and send
+
+///////////////////////////////////////////////////////////////////
+//(20.2.2)
+//populating the created pdf with order data
+
+will add multiple pdfDoc.text lines
+with a order.products.forEach looping over each product
+and adding its text (with counting order cost sum)
+
+
+
+///////////////////////////////////////////////////////////////////
+//(20.2.3) //deleting files
+
+with the file system package also have options for deleting files
+you could delete files whenever you edit a product
+
+if we overwrite an image (product.findById postEditProduct)
+or when we delete a product
+
+>> create a file.js in util folder
+to add this functionality
+by fs.unlink the imported file path
+
+>> go to admin.js controller
+go to postEditProduct
+
+
+///////////////////////////////////////////////////////////////////
+//wrap up
+
+we learned the file upload functionality
+both on the form and the backend
+by using multer
+
+how to store files for adding and editing
+how to download files
+statically with the express.static and make sure that it uses the right path
+and alternatively how you can serve files as a response in a route
+by loading it into memory and then returning it
+or 
+could steam files instead
+or generate files on the fly
+depending on the app requirement
+
 
 
 
