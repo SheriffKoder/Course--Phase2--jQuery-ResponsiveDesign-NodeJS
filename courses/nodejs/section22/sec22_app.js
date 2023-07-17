@@ -12,6 +12,7 @@
 //# npm install --save express-validator //s18 validating inputs //s18 18.0.1
 //# npm install --save multer //s20: parse incoming files (upload)
 //# npm install --save pdfkit //s20.2 generate pdf files
+//# npm install --save strp //s23 using strp
 
 
 
@@ -318,6 +319,10 @@ app.use((error, req, res, next) => {
     the error object in the controller middleware's returned
     or return some JSON data (will do later in the code)
      */
+    //this is the app crashing error consoled
+    if (error) {
+        console.log(error);
+    }
     res.status(500).render("500", {
         myTitle: "500 Page", 
         path: "/500",
@@ -627,7 +632,7 @@ Client(Browser)     ->   collect card data
                                 v
                         send to 3rd party strp servers (not owned by us)
                         to validate that input
-token               <-   stripe will return a token once it is valid
+token               <-   strp will return a token once it is valid
 (which includes the card data)
 (and the confirmation that it is correct)
 (then we send that token to our server)
@@ -665,6 +670,118 @@ by looping over the products array and adding to total quantity*price
 
 now we can click order now and be directed to the checkout page
 which displays the cart products and total price for all
+
+
+///////////////////////////////////////////////////////////////////
+//(23.0.2) //connecting to strp
+
+
+//go to their website
+//they have good documentation
+//create account
+//verify email
+
+in the developers tab will find the api keys you need to add strp
+there is a test key button
+>> make a name, click new business at top left
+
+>> grow your online business with payments > read the docs
+this will take us to the strp documentation
+https://strp.com/docs/payments
+there you can learn about all the different ways of collecting payments
+
+on the docs page > web tab > integrate strp js tab
+however new site is
+strp.com/docs/payment/quickstart
+at (3) copy
+    <script src="https://js.strp.com/v3/"></script>
+    and the provided test api key
+    const strp = strp("......");
+
+
+>> in the checkout.ejs
+create a div
+place that script tag and a button
+
+> and in another script tag 
+place the api key
+on button click use strp.redirectToCheckout
+which asks for sessionId in its passed object
+now we want the session
+
+>> go to the shop.js controller 
+to prepare a strp session to send to the ejs
+install strp # npm install --save strp
+"import" with secret key
+
+> in the getCheckout .then 
+return the "stripe".checkout.sessions.create({config})
+and place the render in another then which receives the session
+
+> do the session config
+payment method, mapped items into a array of objects, urls for success/cancel
+
+>> create routes for success/cancel urls
+
+> cancel will use getOrder controller
+>> create getCheckoutSuccess in shop.js controller
+which is the same as postOrder
+
+!! now we can click order now and get redirected to strp payment page
+enter dummy data with card 4242 .. and date in the future
+
+
+///////////////////////////////////////////////////////////////////
+//(23.0.3) //strp code fixes
+
+//there is an issue
+if we added a product
+and entered in the browser the url
+/checkout/success
+the cart gets empty and an order is placed without paying for it
+
+solution: use strp webhooks
+
+in the home of strp site can see the order details
+and what products where ordered and the customer's info
+there is charges strp take for each transaction
+you can compare that to the orders you see in the database,
+
+and on large scale applications it can be hard to compare all orders
+as stated on the strp docs of one-time-payments
+that you should not rely on the success_url alone
+as users could directly access the success_url without paying
+or users can not reach the success_url in case closed page before redirecting
+
+instead as "After the payment" page
+you have to fulfill a payment
+make sure that strp tell you when a payment happened
+instead of a url telling you
+using "fulfilling purchases with webhooks"
+where strp sends a request to a url of your choice
+which you have to manage in your application with routing/controlling
+and that then tells you that the order succeeded
+because stripe sends you that request behind the scenes
+a request validated by stripe not easy to fake
+but it requires a website hosted on the internet
+
+///////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

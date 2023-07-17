@@ -46,9 +46,16 @@ router.post("/cart-delete-item", isAuth, shopController.postCartDeleteProduct);
 //isAuth to access if the user is authenticated
 router.get("/checkout", isAuth, shopController.getCheckout);
 
+//(23.0.2)
+//can use in success postOrder
+router.get("/checkout/success", shopController.getCheckoutSuccess);
+router.get("/checkout/cancel", shopController.getCheckout);
+
+
 router.get("/orders", isAuth, shopController.getOrders);
 
-router.post("/create-order", isAuth, shopController.postOrder);
+//-(23.0.2) replaced with checkout/success
+//router.post("/create-order", isAuth, shopController.postOrder);
 
 //(20.1.0)
 router.get("/orders/:orderId",isAuth, shopController.getInvoice);

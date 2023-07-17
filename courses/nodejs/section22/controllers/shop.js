@@ -19,6 +19,9 @@ const PDFDocument = require("pdfkit");
 const ITEMS_PER_PAGE = 2;
 
 
+//(23.0.2) //remove*
+//import stripe with the secret key on the site's developer tab
+const stripe = require("stripe")("secretkey");
 
 
 exports.getProducts = (req, res, next) => {
@@ -599,17 +602,73 @@ exports.postCartDeleteProduct = (req, res, next) => {
 
 //(23.0.1)
 exports.getCheckout = (req, res, next) => {
+
+    //(23.0.2)
+    let products;
+    let total = 0;
+
+    //add products data to the user object
     req.user    //(2.9)
     .populate("cart.items.productId")
     .then(user => { //still working with the req.user
-        const products = user.cart.items;
+        //const products = user.cart.items; //-(23.0.2)
+        products = user.cart.items;
 
-        let total = 0;
+        //define total price for user's cart to pass to the render
+        //let total = 0; //-(23.0.2) move to global as we used another then
         products.forEach(p => {
             total = total + (p.quantity * p.productId.price);
         });
 
+        //setup the strp config
+        //(23.0.2) create a session that will return the key needed in the ejs config
+        //with a passed object of the data stripe needs
+        //needs an array of objects which has amount, currency, quantity
+        return stripe.checkout.sessions.create({
+            //means we accept c card payments
+            payment_method_types: ["card"],
+            //specify which items will be checked out
+            //map because each product needs to look a bit different
+            //as we populated the productId with product data will access p.productId.x
+            //
+            line_items: products.map(p => {
+                return {
+                    //name: p.productId.title,
+                    //description: p.productId.description,
+                    //amount: p.productId.price *100,
+                    //currency: "usd",
+                    // quantity: p.quantity,
 
+                    //this form works with this type of API
+                    quantity: p.quantity,
+                    price_data: {
+                        currency: "egp",
+                        unit_amount: p.productId.price * 100,
+                        product_data: {
+                            name: p.productId.title,
+                            description: p.productId.description
+                            //images: item.image
+                        }
+                    }
+                }  
+            }),
+            //
+            //mode is needed, payment or subscription
+            mode: "payment",
+            //urls stripe will redirect to once the transaction is completed or failed
+            //derive the url the node server is running on, valid for development localhost and production ip's
+            //express gives us the http protocol http/https
+            //req.get("host") will give us our host address (localhost:3000) on development
+            // > http://localhost:3000/checkout/success
+            //these are routes stripe will redirect us to on confirmed or cancelled payments
+            //routes created at shop.js routes
+            success_url: req.protocol + "://" + req.get("host") + "/checkout/success",
+            cancel_url: req.protocol + "://" + req.get("host") + "/checkout/cancel"
+
+        });
+
+    })
+    .then((session) => { //(23.0.2) added the stripe return and put render in a below then to send the session
         //console.log(products);  //to be able to see it and adjust the values in the ejs file
         res.render("shop/checkout", {
             path: "/checkout",  //for navigation
@@ -618,7 +677,9 @@ exports.getCheckout = (req, res, next) => {
             //(23.0.1)
             //can be retrieved from product data
             //products is an array of products of quantity, id field with data
-            totalSum: total
+            totalSum: total,
+            //(23.0.2)
+            sessionId: session.id
         });    
 
     })
@@ -721,6 +782,50 @@ exports.postOrder = (req, res, next) => {
 
     };
 
+
+
+//(23.0.2)
+//same as postOrder, but to have the get in the name as it is a get route
+exports.getCheckoutSuccess = (req, res, next) => { 
+
+    //req.user
+    req.user //(2.9)
+    .populate("cart.items.productId")
+    .then(user => { //still working with the req.user
+
+        const products = user.cart.items.map(item => {
+            //returning the same structure as the order model
+            //return {quantity: item.quantity, product: item.productId};    //this will return the product id only
+            
+            //using the spread operator and a special function ._doc to access just the data without meta data and pull out all the product data into a new object
+            //otherwise the order will not populate correctly and no product data but the id is stored
+            return {quantity: item.quantity, product: {...item.productId._doc}};
+
+        });
+
+        const order = new Order({
+            user: {
+                email: req.user.email, 
+                //name: req.user.name,        //a full user object fetched from the db, so will be a name property //-(3.8)
+                userId: req.user            //mongoose will pick the id
+            },
+            products: products
+        });
+        return order.save();
+    })
+    .then(result => {
+        //(15)
+        req.user.clearCart();
+    })
+    .then(() => {   //clearCart is returned in the model so can add .then
+        //redirect after the cart is cleared
+        res.redirect("/orders");
+    })
+    .catch( (err) => {
+        // console.log(err);
+        return next(new Error(err).httpStatusCode=500); //(19.0.3)
+    })
+};
 
 
 exports.getOrders = (req, res, next) => { 
