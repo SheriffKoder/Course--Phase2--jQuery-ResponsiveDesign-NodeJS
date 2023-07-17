@@ -6,12 +6,17 @@
 //and do something when they get clicked
 
 const deleteProduct = (btn) => {
-    console.log(btn);
+    //console.log(btn);
 
     //get access to the csrf token and the productId
     const prodId = btn.parentNode.querySelector("[name=productId]").value;
     const csrf = btn.parentNode.querySelector("[name=_csrf]").value;
 
+    //(22.0.3)
+    //closest method provided by js
+    //gives the closest ancestor element with that selector
+    //as we have only one article in the ancestor history for the btn
+    const productElement = btn.closest("article");
 
     //method supported by the browser for sending http requests
     //as we try to send to the router to activate the controller
@@ -34,8 +39,20 @@ const deleteProduct = (btn) => {
     })
     //will return a promise that allows to listen to the response
     .then((result) => {
-		console.log(result);
+		//console.log(result);
+
+        //(22.0.3)
+        //this is the response from the fetch sending to route>controller>logic
+        //a function that will return a new promise
+        return result.json();
 	})
+    .then(data => {
+        //then will have the data(response body)
+        console.log(data);
+        //(22.0.3)
+        //productElement.remove(); //will work on all modern browsers but not IE
+        productElement.parentNode.removeChild(productElement); //will work on all modern browsers
+    })
 	.catch((err) => {
 		console.log(err);
 	})

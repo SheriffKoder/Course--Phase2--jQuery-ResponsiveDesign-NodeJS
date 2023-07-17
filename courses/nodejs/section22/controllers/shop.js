@@ -597,14 +597,35 @@ exports.postCartDeleteProduct = (req, res, next) => {
 }
 
 
+//(23.0.1)
 exports.getCheckout = (req, res, next) => {
-    res.render("shop/checkout", {
-        path: "/checkout",
-        myTitle: "Checkout",
-                //isAuthenticated: req.isLoggedIn
-        //isAuthenticated: req.session.isLoggedIn //(2.9) //-(3.8)
+    req.user    //(2.9)
+    .populate("cart.items.productId")
+    .then(user => { //still working with the req.user
+        const products = user.cart.items;
 
-    });
+        let total = 0;
+        products.forEach(p => {
+            total = total + (p.quantity * p.productId.price);
+        });
+
+
+        //console.log(products);  //to be able to see it and adjust the values in the ejs file
+        res.render("shop/checkout", {
+            path: "/checkout",  //for navigation
+            myTitle: "Checkout",
+            products: products,
+            //(23.0.1)
+            //can be retrieved from product data
+            //products is an array of products of quantity, id field with data
+            totalSum: total
+        });    
+
+    })
+    .catch(err => {
+        console.log(err);
+        return next(new Error(err).httpStatusCode=500); //(19.0.3)
+    })
 };
 
 //(14)

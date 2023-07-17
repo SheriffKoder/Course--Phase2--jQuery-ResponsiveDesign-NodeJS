@@ -42,6 +42,10 @@ router.post("/cart", isAuth, shopController.postCart);
 
 router.post("/cart-delete-item", isAuth, shopController.postCartDeleteProduct);
 
+//(23.0.1)
+//isAuth to access if the user is authenticated
+router.get("/checkout", isAuth, shopController.getCheckout);
+
 router.get("/orders", isAuth, shopController.getOrders);
 
 router.post("/create-order", isAuth, shopController.postOrder);

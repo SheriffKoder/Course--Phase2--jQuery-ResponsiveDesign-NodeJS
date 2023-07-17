@@ -548,14 +548,132 @@ and when refresh the product will be deleted
 note: delete did not work on products with images of url not file
 
 
+//352-358
 ///////////////////////////////////////////////////////////////////
-//(22.0.3) Removing the product from the dowm without refresh
+//(22.0.3) Removing the product from the dom without refresh
 
 manipulating the dom
+
+the result in the admin.js script
+was a cryptic body with a readable stream
+
+>> the controller then/catch result in json
+will send to the script a json result
+in the script's then json the result
+.then display the output of the result.json
+which is the (controller then/catch result in json)
+
+
+>> in admin.js script
+access the button parent (the product's container)
+with btn.closest
+
+then when displaying the json result
+btnParent.parent.remove(btnParent)
+let the btn parent access its parent and delete the child (btn parent "itself") 
+
+!! now when the product is deleted, it is also deleted from the dom
+
+
+//you can send data to your backend
+with the help of these async requests
+and how you can include data
+and how you can handle that on the backend
+
+*/
+
+
+///////////////////////////////////////////////////////////////////
+//Section 23
+
+/*
+
+///////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////
+//(23.0.0) //Payment
+
+//Adding Payments
+
+before the
+REST API is a whole new way of interacting with the client
+lets work on the payment functionality
+
+we will add a simple checkout page
+will collect some card data from the user
+do the purchase, charge the card
+and store the order as we did before
+
+we will use a third party provider, S.T.R.I.P.E
+
+
+
+
+//how payments work
+
+collect payment method (card)
+verify payment method (correct data, expiry, number)
+charge payment method
+manage payments
+process order in our app (store in a database)
+
+the first 4 processes are complex
+from a legal and technical sides
+this is why we typically outsource them (even very big companies outsource this)
+
+
+//how strp work
+
+Client(Browser)     ->   collect card data
+                                v
+                        send to 3rd party strp servers (not owned by us)
+                        to validate that input
+token               <-   stripe will return a token once it is valid
+(which includes the card data)
+(and the confirmation that it is correct)
+(then we send that token to our server)
+|                              ^
+V                              |
+Server (Node App)       (create payment data with the help of strp)
+(our code charge this payment method)
+
+
+
+so we send a charge object, we send that to strp
+with that token and with our price included
+and strp will do the actual charging/managing
+we will get a response once it is done
+then we can cont. with our code and store this in the db 
+
+
+///////////////////////////////////////////////////////////////////
+//(23.0.1) //Adding a checkout page
+
+
+>> go to the views/shop/checkout.ejs
+want to go there when we click "Order now" in the cart
+create an empty body boilerplate like the cart.js
+
+>> need to create a route in shop.js to reach the page
+>> change the order now button in cart.ejs to href to /checkout
+
+>> shop.js controller, getCheckout copy code from getCart
+and also send totalSum of cost
+by looping over the products array and adding to total quantity*price
+
+
+..in the getCheckout will have the possibility to create an order
+
+now we can click order now and be directed to the checkout page
+which displays the cart products and total price for all
+
+
+
+
+
+
+
 
 
 
 
 */
-
-
