@@ -24,6 +24,9 @@ exports.getPosts = (req, res, next) => {
 };
 
 
+//our response here will be a json response
+//or a json response depending on the input
+
 //we expect the client to interact with us with json data, as we return json data
 
 //(24.0.3)
@@ -47,6 +50,6 @@ exports.createPost = (req, res, next) => {
             title: title,
             content: content
         }
-    })
+    });
 
 }

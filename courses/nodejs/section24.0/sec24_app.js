@@ -282,8 +282,8 @@ but you do not have to, but it is a good practice, to know what to expect
 ///////////////////////////////////////////////////////////////////
 //conclusion to part 1
 modern web applications do have a client side UI(phones) or single html page 
-that only needs data from the server (no html) to re-render information, 
-this data can work on any given UI, data in json format as it can 
+that only needs data from the server (no html) to re-render specific information, 
+in REST API we should send data can work on any given UI, data in json format as it can 
 contain data and can be converter to js, 
 
 ---- 
@@ -348,7 +348,7 @@ on the REST API you could send back some headers
 that tells the client how long the response is valid
 so that the client can cache the response
 
-3.b) Client-Serve r separation
+3.b) Client-Server separation
 client is not concerned with persistent data storage
 
 3.c) Layered System
@@ -381,6 +381,29 @@ const bodyParser = require("body-parser");   //(24.0.3)
 
 
 const feedRoutes = require("./routes/feed.js"); //(24.0.2)
+
+
+//(24.0.4)
+//solve the browser CORS Error
+//before we forward the request to the routes
+//add headers to any response
+app.use((req, res, next) => {
+    //we can add a header to the response
+    //with setHeader
+    //even though the response will not be sent from here yet
+    //set it to all the domains that will access our server
+    //allow access from any client with "*" or lock it down to specific domains
+    //and separate them with commas
+    //allow specific origins to access our data
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    //allow these origins to use specific http methods you want to be used
+    res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE");
+    //headers the clients might set on their requests
+    //this allows on the frontend to set content type in the fetch config
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    next();
+});
+
 
 //(24.0.3)
 //will define the body-parser in another way than the used before
@@ -468,6 +491,9 @@ and render a good looking ui automatically with the data we send
 //but first we will check how we can test the REST API
 even without using the url into the browser
 
+///////////////////////////////
+//using postman for making a POST request
+
 >> define a post route
 to add new posts
 add createPost to the feed controller
@@ -501,13 +527,174 @@ these were set automatically by express
 
 //we will work with a real front end so can have beautiful to look at
 and see that in a real app
-but Postman is a tool will be used alot when working with REST APIs
+but Postman is a tool will be used a lot when working with REST APIs
+
+
+app.js app.use > router > controller
+
+
+
+///////////////////////////////////////////////////////////////////
+//(24.0.4) 
+//CORS and client server communication
+//simulating a front end app with an code pen
+//setting a basic client front end to use the GET/POST server routes
+
+//simulating a front end app with an code pen
+a front-end app if its a single page
+will only user html/css/js no backend code
+
+> the fetch() is supported in modern browsers
+
+//font-end
+>> create an html page
+with two buttons
+and a script having click event listener on the get button
+fetch then res.json then console
+
+
+//app.js
+> there is a CORS error in the browser
+which happens when the client/server are on different hosts/domains
+
+>> add a setHeader middleware to app.js to fix the CORS error
+
+        how can we solve fetch/CORS error
+        CORS: Cross Origin Resource Sharing
+        and by default this is not allowed by browsers
+
+        if the client and the server run on the same 
+        server/domain, we can send req/res without issues
+
+        but if both run on different domains
+        we will have issues
+        for example myApp.com and myAPI.com
+        or 8080/3000
+
+        CORS Error means cant share resources
+        across servers/domains
+
+        but we want to offer data from our server
+        to different clients who run on different servers
+
+        we need to tell the browser
+        that it may accept the response sent by our server
+        for that we have to solve something on the server code
+        
+        we need to set special headers
+        for any response that leaves our server
+        that will happen in the app.js file
+
+         
+the client code differs depending on the client you are using
+we used js code using the fetch api
+there are different ways of sending async requests
+you can send ajax requests through libraries like axios
+or if you are building a mobile app
+you may have different objects or helper methods for sending such requests
+so the client code can differ
+
+but the server side code does not really differ
+
+
+//you will see we have two posts requests in the network dev tools
+200 and 201
+the 200 (general) has a method of options
+as we said before the options http method is sent automatically by the browser
+and many mobile app clients
+
+what is the idea behind options the browser simply goes ahead
+and checks whether the request you plan to send
+which is a post request
+check if it will be allowed otherwise it will throw an error
+the options method was allowed even though we did not allow it in the app.js
+it is simply a mechanism done by the browser
+to see if the next request it wants to do, the POST will succeed if it is allowed
+
+
+///////////////////////////////////////////////////////////////////
+//wrap up
+
+the core ideas is that REST API
+- is all about data, no user interface logic is exchanged
+- are normal node servers
+- just the data format, and the way we send responses changes
+- we expose a couple of endpoints which are http_methods + paths
+- we exchange data in the json format for requests and responses
+- rest apis are decoupled from the clients therefore
+- neither share/store connection history
+
+Requests and responses
+- should attach data in the json format
+and let the other end know by setting the content-type header
+- express does this automatically when using json method
+but on the browser it depends on which method you use
+- when using axios, popular library for sending async requests
+will be done automatically
+- CORS errors
+
+
 
 
 
 
 
 */
+
+
+
+/*
+///////////////////////////////////////////////////////////////////
+//section 25
+
+///////////////////////////////////////////////////////////////////
+//(25.0.0) 
+
+Advanced REST API Topics
+
+building a complete backend for a project as a REST API
+authentication
+image uploading
+
+plan a REST API then build it
+implement CRUD Operations & endpoints
+    creating, reading, updating, deleting
+add validation on the server side, to make sure only valid data gets stored in the db
+image upload store images
+add authentication
+
+
+Node + Express app setup            >  no changes
+routing / endpoints                 >  no changes, more http methods
+Handling Requests and Responses     >> Parse + Send JSON Data, no views
+Request Validation                  >  no changes (express-validator)
+Database Communication              >  no changes
+Files, Uploads, Downloads           >> changes only on client side
+Sessions & cookies                  >! #no session and cookie usage #
+Authentication                      >> different authentication approach
+
+the biggest changes are related to sessions and thus "authentication"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+*/
+
+
+
+
 
 
 

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        html {
+            background-color: rgba(0, 0, 0, 0.834);
+            padding-top: 15vmax;
+        }
+
+        .btn-container {
+            margin-left: 25%;
+            margin-right: 25%;
+
+        }
+    </style>
+</head>
+<body>
+    <!--//(24.0.4)-->
+    <div class="btn-container">
+        <button id="get">Get Posts</button>
+        <button id="post">Create a Post</button>    
+    </div>
+
+    <script>
+        const getButton = document.getElementById("get");
+        const postButton = document.getElementById("post");
+
+        ////(24.0.4)
+        getButton.addEventListener("click", () => {
+        fetch("http://localhost:8080/feed/posts")
+            //in the then we get back a 
+            //response object
+            //where we still wait for the body to complete
+            //because it will be streamed in
+            //so with res.json() we can wait for this
+            //then automatically convert it 
+            .then(res =>  res.json())
+            .then(resData => console.log(resData))
+            .catch(err => console.log(err));
+        });
+
+        //as it is a post request
+        //pass a js object as a second argument
+        //that allows to set some options
+
+        //there is an issue that the title/content
+        //are sent with a text (js object) header not json data
+        //as seen in dev tools > network > post request headers
+        //so will use stringify to convert it to json
+        //and also need to set the sent content type to json
+        postButton.addEventListener("click", () => {
+        fetch("http://localhost:8080/feed/post", {
+            method: "POST",
+            //set body of the response to be posted
+            body: {
+            title: "A frontend post",
+            content: "Created with js"
+            },
+            headers: {
+            "content-type": "application/json"
+            }
+        })
+            .then(res =>  res.json())
+            .then(resData => console.log(resData))
+            .catch(err => console.log(err));
+        });
+
+
+    </script>
+</body>
+</html>
