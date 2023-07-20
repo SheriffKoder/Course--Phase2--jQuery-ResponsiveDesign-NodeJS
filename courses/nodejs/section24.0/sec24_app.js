@@ -372,11 +372,14 @@ but not used too often
 //# npm install --save express      //s24
 //# npm install --save-dev nodemon  //s24
 //# npm install --save body-parser  //s24: to parse incoming requests body
+//# npm install --save express-validator //s25.0.4
+//# npm install --save mongoose      //s25.0.5
 
 
 const express = require("express");         //(24.0.2)
 const app = express();                      //(24.0.2)
-const bodyParser = require("body-parser");   //(24.0.3)
+const bodyParser = require("body-parser");  //(24.0.3)
+const mongoose = require("mongoose")        //(25.0.5)
 
 
 
@@ -422,12 +425,20 @@ app.use("/feed",feedRoutes);
 
 
 
-
-
+//connect to the messages database by amending /messages
+const mongoDB_URI = "mongodb+srv://sheriffkoder:Blackvulture_92@cluster0.jgxkgch.mongodb.net/messages/?retryWrites=true&w=majority";
+//(25.0.5)
+mongoose.connect(mongoDB_URI)
+.then((result) => {
+    app.listen(8080);
+})
+.catch((err) => {
+    console.log(err);
+})
 
 //(24.0.2)
 //listen to port 8080, will use 3000 for something else later
-app.listen(8080);
+//app.listen(8080);
 
 
 
@@ -676,15 +687,203 @@ Authentication                      >> different authentication approach
 the biggest changes are related to sessions and thus "authentication"
 
 
+372-378
+///////////////////////////////////////////////////////////////////
+//(25.0.1) 
+
+
+//front end app of a single page application with React framework
+inside that project run 
+# npm install
+to install all the dependencies of that project
+the packages used here are packages used by the browser
+react related packages
+no node express in them
+
+run 
+# npm start
+to start a development server
+which is a node js server serving your application
+but it is not related to the backend node server we will build
+
+a dummy development server that serves the built version
+of our front end application
+serves an html file in the public folder
+the html contains only hooks
+hooks are in the src folder
+to render a page in react js
+
+> add to the scripts in package.json to avoid ssl error
+    "start": "react-scripts --openssl-legacy-provider start",
+
+after running # npm start
+if you opened the browser
+and opened the source code will find the same html
+and if you inspect the you will find more html code
+that is rendered dynamically by react
+
+we will not write react,
+but the idea is to experience how 
+a decoupled front-end/back-end
+can work together
+we will only do some edits
+
+> the app.js file is the entry file where our react application starts
+rendering the first screen
+there is some logic
+logic for signing users in, signing up
+
+
+> the pages/feed.js file is responsible for what is seen on the front page
+the new post button and so on
+routes
+fetch status of currently logged in user
+loading existing posts and reaching a url that serves some posts
+
+hooks/methods to edit the user status
+where we can add new posts
+or edit existing posts (finishEditHandler)
+delete posts (deletePostHandler)
+with a couple of fetch methods set up
+
+urls are missing and this is something we will do
+we will add our own URLSs and make sure
+we have the respective endpoints for that
+
+> on the pages/singlePost/singlePost.js
+we load a single post if we click on it
+and there we also need to reach to the backend
+and fetch data for that single post
+
+////Back to the API, 
+we will also need routes for 
+getting a single post
+for editing a single post
+for deleting a single post
+logging user in
+signing users up/creating new users
+viewing the status of a user
+editing the status of a user
+
+we already have getPosts
+and post Posts routes
+will implement these in the react application
+to get and create posts
+
+>> run the REST API it is on (localhost 8080)
+react are served on static hosts
+which are optimized for static html/js/css
+we have different servers for the backend and the front end
 
 
 
+///////////////////////////////////////////////////////////////////
+//(25.0.2) 
+
+//sending data to the react front end
+
+>> find the function that fetches for data in the FE
+that is in the SinglePost.js
+and in the getPost API controller fill the data
+
+>> at to the feed.js in the front-end
+in the loadPosts function > fetch
+the url for the server getPosts
+http://localhost:8080/feed/posts
+
+
+///////////////////////////////////////////////////////////////////
+//(25.0.3) 
+
+//clicking on "new post" in FE to add a new post
+
+>> go to the feed.js in the FE
+find the finishEditHandler function
+this is the function responsible for clicking accept after new post
+when adding valid data (Frontend validation)
+> add the url for the API post route
+> as this url will have a fetch(), we should configure the fetch
+    
+    fetch(url)
+    
+    will be
+    
+    fetch(url, {
+      method: method, //"POST"
+      headers: {
+        "Content-type": "application/json"
+      },
+      body: JSON.stringify({
+        //postData is an argument received in this function
+        title: postData.title,
+        content: postData.content
+      })
+    })
+
+there is an error that author property post.creator.name
+is not defined
+
+
+>> working on the createPost route in the API
+add fields for the creator, createdAt, change id to _id
+
+
+till now the the validation we have is on the frontend
+which is not the safe way to do it as it can be manipulated by users
+we have to validate on the server
+
+**
+what the front-end send and put that in the controllers
+add to the front end fetch method the right async configuration
 
 
 
+///////////////////////////////////////////////////////////////////
+//(25.0.4) 
+
+//adding server validation
+
+# npm install --save express-validator
+
+>> add validation in the route of post
+on the passed in title and content
+the front end requires 5 min length
+on the server we will require 7 to test
+it will give an error due to validation
+if less than 7
+
+we can see the error on the browser's console
+clicking on the link error will take you to the network dev
+and checking the post name, preview we will see
+the response with an errors array
+
+
+///////////////////////////////////////////////////////////////////
+//(25.0.5)
+//adding a database
+
+will use mongoDB/mongoose
+will use the same mongoDB atlas server we configured earlier
+
+//will allow us to connect to the database
+//create the mongoose models, store data
+# npm install --save mongoose
+
+>> import and mongoose.connect uri
+with /messages database to created
+.then app.listen
+
+>> create a models folder
+and a post.js file in it
+to define how a post should look like
+
+import mongoose, schema
+define a PostSchema
+!! new: pass an option to the schema constructor
 
 
 
+//using the database model
 
 
 

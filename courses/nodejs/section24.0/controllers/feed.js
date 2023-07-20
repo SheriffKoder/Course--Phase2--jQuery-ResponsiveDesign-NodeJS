@@ -1,5 +1,8 @@
 
 
+//(24.0.4)
+const {validationResult} = require("express-validator");
+
 //(24.0.2)
 exports.getPosts = (req, res, next) => {
 
@@ -16,8 +19,17 @@ exports.getPosts = (req, res, next) => {
     res.status(200).json({
         posts: 
         [
-            {title: "first post"},
-            {content: "this is the first post"}
+            {
+                //(25.0.2) 
+                _id: "001",
+                title: "first post",
+                content: "this is the first post",
+                imageUrl: "images/image.png",
+                creator: {
+                    name: "Max"
+                },
+                createdAt: new Date()
+            }
         ]
     });
 
@@ -37,6 +49,15 @@ exports.createPost = (req, res, next) => {
     const title = req.body.title;
     const content = req.body.content;
 
+    //(24.0.4) validation
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(422).json({
+            message: "Validation failed, entered data is incorrect",
+            errors: errors.array()
+        })
+    }
+
     //create post in db
 
     //status 201 as we created a resource
@@ -46,9 +67,13 @@ exports.createPost = (req, res, next) => {
         //id should be created automatically by mongoDB
         //but we will create a dummy here as not used the db yet
         post: {
-            id: new Date().toISOString, 
+            _id: new Date().toISOString, 
             title: title,
-            content: content
+            content: content,
+            creator: {
+                name: "max"
+            },
+            createdAt: new Date()
         }
     });
 
