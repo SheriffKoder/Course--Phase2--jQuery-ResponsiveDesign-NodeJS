@@ -279,7 +279,7 @@ image: "http://localhost:8080/" + resData.post.imageUrl,
 and return the response with status and json
 
 
-//
+
 ///////////////////////////////////////////////////////////////////
 //(25.2.0)
 //image upload
@@ -288,8 +288,87 @@ the logic is the same as we used before
 
 # npm install --save multer
 
+>> import and register multer in app.js
+with the defined configuration functions 
+fileStorage and fileFilter
 
 
+>> use the file in the controller
+check for the req.file
+if not exist, throw error
+else put the imageUrl in the new Post properties
+
+>> tweak the FE
+go to the feed.js file finishEditHandler
+
+> create a new FormData
+append the data to it
+pass to the fetch body only the form data 
+with no headers (set automatically by formData type)
+
+!! now we can upload an image with the FE
+and it get added to the 
+file system and its url in the database
+
+
+///////////////////////////////////////////////////////////////////
+//(25.2.1)
+
+we still have edit posts, delete posts, authentication, 
+users, connecting posts to users
+
+//editing and deleting posts
+
+>> go to the feed.js route in API
+
+editing a post should be replacing the old one with the new one
+and will keep just the old id
+
+> add a PUT route with params
+> in the controller receive the param and req.body's
+store the imageUrl or throw an error if no imageUrl
+
+>> tweak the FE, in feed.js
+loadPost
+this is where we load the post data from the server
+including the image url
+
+
+>> add validation in the routes for the PUT same as the POST
+>> add validation in the controller for the updatePost as the createPost
+
+in the updatePost
+do some validation
+find post, check if post, save post
+then the the returned from save post sent as a response
+
+
+!! basically, error handling and validation logics are set once and reused
+in the route validation array
+in the controller the beginning error throw
+and the catch logic
+
+
+
+///////////////////////////////////////////////////////////////////
+//(25.2.2)
+//deleting the old image before saving when editing
+
+>> create a helper function in the feed.js controller
+which deletes the image from the file system
+and use it in the updatePost
+
+>> in the FE feed.js finishEditHandler
+add the url in the if (this.state.editPost) with method PUT
+
+!! now we can edit the information with out the image
+or just update the image and keep the information
+
+
+
+///////////////////////////////////////////////////////////////////
+//(25.2.3)
+//Deleting Posts
 
 
 

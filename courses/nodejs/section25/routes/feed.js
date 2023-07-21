@@ -20,7 +20,7 @@ router.get("/posts", feedController.getPosts);
 router.post("/post", [
     body("title") //(24.0.4) adding validation
     .trim()
-    .isLength({min:7}),
+    .isLength({min:5}),
     body("content")
     .trim()
     .isLength({min:5})
@@ -31,7 +31,19 @@ router.post("/post", [
 //(25.1.0)
 router.get("/post/:postId", feedController.getPost);
 
+//(25.2.1)
+//with normal browser forms will not be able to send a put request
+//but can send put requests with async requests triggered by js
+//PUT/PATCH both have a request body like POST requests
+router.put("/post/:postId", [
+    body("title") //(24.0.4) adding validation
+    .trim()
+    .isLength({min:5}),
+    body("content")
+    .trim()
+    .isLength({min:5})
 
+] ,feedController.updatePost);
 
 
 
