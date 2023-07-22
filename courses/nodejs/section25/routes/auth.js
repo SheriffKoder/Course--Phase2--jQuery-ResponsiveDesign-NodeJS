@@ -38,5 +38,10 @@ router.put("/signup", [
 ], authController.signup);
 
 
+//(25.2.8)
+router.post("/login", authController.login);
+
+
+
 
 module.exports = router;

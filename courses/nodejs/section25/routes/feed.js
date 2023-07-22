@@ -8,12 +8,15 @@ const {body} = require("express-validator"); //(25.0.4)
 //(24.0.2)
 const feedController = require("../controllers/feed");
 
+//(25.2.9)
+const isAuth = require("../middleware/isAuth");
+
 
 //(24.0.2)
 //route where we will serve the posts later on
 //  "/feed/posts" would be handled (/feed as stated in app.use in app.js)
 //as long as it is a GET request and then will be handled by the controller
-router.get("/posts", feedController.getPosts);
+router.get("/posts",isAuth ,feedController.getPosts);
 
 //(24.0.3)
 // POST request to /feed/post
