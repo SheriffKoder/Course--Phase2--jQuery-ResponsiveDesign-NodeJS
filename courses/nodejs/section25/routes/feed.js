@@ -29,10 +29,11 @@ router.post("/post", [
 
 
 //(25.1.0)
+//fetch a single post
 router.get("/post/:postId", feedController.getPost);
 
 //(25.2.1)
-//with normal browser forms will not be able to send a put request
+//with normal browser forms will not be able to send a PUT request
 //but can send put requests with async requests triggered by js
 //PUT/PATCH both have a request body like POST requests
 router.put("/post/:postId", [
@@ -44,6 +45,16 @@ router.put("/post/:postId", [
     .isLength({min:5})
 
 ] ,feedController.updatePost);
+
+
+
+//(25.2.3)
+//delete cant send body but can as all routes send params
+router.delete("/post/:postId", feedController.deletePost)
+
+
+
+
 
 
 

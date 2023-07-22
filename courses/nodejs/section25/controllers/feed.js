@@ -11,9 +11,45 @@ const Post = require("../models/post");
 
 
 //(24.0.2)
+//get all posts
 exports.getPosts = (req, res, next) => {
 
+    //(25.2.4)
+    const currentPage = req.query.page || 1;
+    const perPage = 2;  //we have the same value in the front-end
+                        //option: can send this value to the FE to adjust
+
+    //how many items are in the database
+    let totalItems;
+    //(25.2.4)
+    Post.find().countDocuments()
+	.then((count) => {
+        totalItems = count;
+        //(25.1.1)
+        return Post.find()
+        .skip((currentPage - 1) * perPage)
+        .limit(perPage);
+    })
+    .then((posts) => {
+        //(25.2.4)
+        //in the FE we have some logic to take the total amount of posts into account
+        //so in the react front-end, we know when to show next/prev buttons
+        //the FE needs for that the totalItems property
+        res.status(200).json({message: "fetched posts successfully", posts: posts, totalItems: totalItems});
+    })
+	.catch((err) => {
+        if (!err.statusCode) {
+            err.statusCode = 500;
+        }
+        next(err);  //async error handling         //(25.0.8)
+	})
+
+    
     //(25.1.1)
+    //-(25.2.4) moved to the countDocuments, where it is returned
+    //its then chained
+    //and the catch already there will catch its errors
+    /*
     Post.find()
 	.then((posts) => {
         res.status(200).json({message: "fetched posts successfully", posts: posts});
@@ -24,6 +60,7 @@ exports.getPosts = (req, res, next) => {
         }
         next(err);  //async error handling         //(25.0.8)
 	})
+    */
 
 
     //json is a method provided by express js
@@ -71,6 +108,7 @@ exports.createPost = (req, res, next) => {
     //expect to get a title from the incoming request
 
     //(24.0.4) validation
+    //validationResult passed from the router
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
 
@@ -223,6 +261,7 @@ exports.updatePost = (req, res, next) => {
     }
 
     //not extracted, 
+    //wont get to this code as the FE validation requires an image
     if (!imageUrl) {
         const error = new Error("No file picked");
         error.statusCode = 422;
@@ -276,6 +315,52 @@ exports.updatePost = (req, res, next) => {
 }
 
 
+
+//(25.2.3)
+exports.deletePost = (req, res, next) => {
+    const postId = req.params.postId;
+
+    //can use findByIdAndRemove
+    //but we later would need to verify if a user
+    //created this post before we delete it
+    Post.findById(postId)
+    .then((post) => {
+        //Check logged in user
+
+        //check wether this post exists
+        if (!post) {    //repeated
+            const error = new Error("Could not find post");
+            //if you throw an error inside a then block
+            //the next catch block will be reached
+            //and the error will be passed as an error to the catch block
+            error.statusCode = 404;
+            throw error;
+        }
+        clearImage(post.imageUrl);
+        return Post.findByIdAndRemove(postId);
+    })
+    .then((result) => {
+        console.log(result);
+        res.status(200).json({  //repeated
+            message: "Deleted post",
+        });
+    })
+	.catch((err) => {
+        //(25.0.8)
+        if (!err.statusCode) {
+            err.statusCode = 500;
+        }
+        next(err);  //async error handling         //(25.0.8)
+	})
+
+
+}
+
+
+
+
+
+
 //(25.2.2)
 //want to trigger the clearImage function
 //whenever uploaded a new image
@@ -283,6 +368,7 @@ const clearImage = (filePath) => {
    
     //up one folder as we are in the controllers folder now
     filePath = path.join(__dirname, "..", filePath)
+    //unlink removes the file
     fs.unlink(filePath, err => console.log(err));
 
 }

@@ -32,6 +32,7 @@ const path = require("path")                //(25.0.7) to import static images
 const multer = require("multer");           //(25.2.0) uploading files
 
 const feedRoutes = require("./routes/feed.js"); //(24.0.2)
+const authRoutes = require("./routes/auth.js"); //(25.2.5)
 
 
 //(25.2.0) uploading files
@@ -114,7 +115,9 @@ app.use("/images", express.static(path.join(__dirname, "images")));
 //(24.0.2)
 //will forward any incoming request to feedRoutes
 //only incoming requests that start with "/feed"
+//filtering mechanism
 app.use("/feed",feedRoutes);
+app.use("/auth",authRoutes); //(25.2.5)
 
 
 //(25.0.8)
@@ -129,7 +132,9 @@ app.use((error, req, res, next) => {
     const status = error.statusCode || 500;
     //exists by default, hold the message passed in the controller validation error handling
     const message = error.message;
-    res.status(status).json({message: message})
+    const data = error.data; //(25.2.5)
+
+    res.status(status).json({message: message, data: data})
 })
 
 
@@ -307,7 +312,7 @@ pass to the fetch body only the form data
 with no headers (set automatically by formData type)
 
 !! now we can upload an image with the FE
-and it get added to the 
+and it gets added to the 
 file system and its url in the database
 
 
@@ -365,10 +370,84 @@ add the url in the if (this.state.editPost) with method PUT
 or just update the image and keep the information
 
 
-
+384-400(400-406)(406-412)
 ///////////////////////////////////////////////////////////////////
 //(25.2.3)
 //Deleting Posts
+
+
+>> add a route with the DELETE http method
+>> add a deletePost controller
+Post.findById(postId)
+return Post.findByIdAndRemove(postId);
+
+>> work on the FE and put this route
+feed.js file, deletePostHandler
+
+//want to send a delete request
+//so will send a 2nd argument with method of delete
+fetch('http://localhost:8080/feed/post/' + postId, {
+    method: "DELETE"
+})
+    .then(res => {
+
+
+///////////////////////////////////////////////////////////////////
+//(25.2.4)
+//add pagination
+
+splitting our list of posts across multiple pages
+limit the amount of posts
+and instead pass information to the front end
+that allows the front-end
+to show some next/previous buttons
+all this logic was already added to the front end
+
+
+>> in loadPosts in the FE
+fetch('http://localhost:8080/feed/posts?page=' + page)
+
+pass the page query parameter to the backend
+and extract it to implement pagination
+which can be accessed in the API with req.query
+
+>> go to controller getPosts
+that is where want to implement pagination
+define currentPage, perPage
+    Post.find().countDocuments()
+where you skip and limit
+then return a response with json posts and total items
+
+
+///////////////////////////////////////////////////////////////////
+//(25.2.5)
+//adding a user model
+
+>> add a new model user.js
+we can use this model to add a sign up/in routes
+
+>> add a new route file named auth.js
+because it will be authentication related
+>> in auth.js router add a PUT route
+>> inside the route add "express-validation" for incoming properties (email, password, name)
+and guess what, the email validation rejects the email if it exists
+
+
+>> import/use the route in app.js
+
+
+//adding the signup controller
+>> create a new controller file auth.js
+> add a signup middleware
+> import the controller file into the auth.js router
+> use the signup controller into the PUT route in auth.js
+
+
+//working on the signup middleware
+where with the help of express-validator throws an error if there are errors
+!! in the app.js general error middleware store the error.data property
+
+
 
 
 
