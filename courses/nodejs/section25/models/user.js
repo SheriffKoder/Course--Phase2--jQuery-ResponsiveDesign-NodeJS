@@ -20,7 +20,8 @@ const userSchema = new Schema({
     //because we could not load it
     status: {
         type: String,
-        required: true
+        //every user will start with this status
+        default: "I am new"
     },
     //array with each object in that array
     //will be of type schema, types, objectId

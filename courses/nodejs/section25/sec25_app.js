@@ -22,7 +22,7 @@
 //# npm install --save express-validator //s25.0.4
 //# npm install --save mongoose      //s25.0.5
 //# npm install --save multer       //(25.2.0) to upload images
-
+//# npm install --save bcryptjs     //(25.2.6) encrypt passwords
 
 const express = require("express");         //(24.0.2)
 const app = express();                      //(24.0.2)
@@ -443,9 +443,98 @@ and guess what, the email validation rejects the email if it exists
 > use the signup controller into the PUT route in auth.js
 
 
+388-394
+///////////////////////////////////////////////////////////////////
+//(25.2.6)
+
 //working on the signup middleware
 where with the help of express-validator throws an error if there are errors
-!! in the app.js general error middleware store the error.data property
+> in the app.js general error middleware store the error.data property
+
+
+to store a password we should hash it
+so if someone got access to our database
+the password should not be stored in plain text
+
+# npm install --save bcryptjs
+
+>> import into auth.js controller
+>> in the signup controller
+bcrypt.hash(password, 12)
+then with the returned hashed password create a new user
+
+>> fix the url in the signup handler in FE's util/App.js
+
+!! on adjusting the urls in FE, the fetch should have 2 arguments
+1st: the url, 2nd: the method and headers { content-type }, body
+
+> change is Auth to false in the App extends component
+
+! now we can add a new user to the database through signup
+
+
+///////////////////////////////////////////////////////////////////
+//(25.2.7)
+
+//How authentication work in a REST API
+
+Client 
+sends authentication (Auth) data to
+Server
+
+in the past we checked that data on the server
+and if it was valid, we established a session
+we do not use sessions in REST APIs because the APIs are stateless
+
+every request should be treated standalone
+every request should have all the data it needs
+to authenticate itself
+
+with a session, the server needs to store data about the client
+the server stores that a client is authenticated
+
+in REST API, the server does not store anything about any client
+so we do not store sessions on a REST API
+
+we will still validate the input on the server
+we will still check for the validity of the email,password combination
+
+but then instead we return a Token to the client
+that Token will be generated on the server
+and will hold some information which can be validated by the server
+
+and this token will then be stored on the client
+storage in the browser (there are specific storage mechanisms for this)
+
+the client can then attach this token
+to every subsequent request it sends to the server
+for every request that targets a resource on the server
+that requires authentication
+
+that token can only be validated by the server
+which created the token
+and if tried to create that token on the front-end or fake it
+that will be detected
+because the server uses some algorithm
+for generating the token
+which you cant fake because you do not know 
+the private key used by that server for generating the token
+
+that token contains 
+. JSON data
+. signature (generated on the server with a special private key which is only stored on the server)
+and this gives us a "JSON Web Token JWT"
+
+this "JSON Web Token JWT" is then returned to the client
+and the signature can only be verified by the server
+
+so you cant edit or create the token on the client
+but the server will detect it and treat it as invalid
+
+
+
+
+
 
 
 
