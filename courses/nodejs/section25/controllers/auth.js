@@ -108,3 +108,70 @@ exports.login = (req, res, next) => {
 
 
 };
+
+
+//(25.3.3)
+exports.getUserStatus = (req, res, next) => {
+    //
+    User.findById(req.userId)
+	.then((user) => {
+        
+        if (!user) {
+            const error = new Error("User not found");
+            error.statusCode = 404; //not authenticated
+            throw error;
+        }
+
+        //have a user
+        //know what the front-end is looking for
+        //fe trying to extract a status filed from response data resData.status
+        res.status(200).json({
+            status: user.status
+        });
+
+
+    })
+	.catch((err) => {
+		if (!err.statusCode) {
+		    err.statusCode = 500;
+		}
+		next(err);
+		//async error handling
+		//(25.0.8)
+	})
+};
+
+
+//(25.3.3)
+exports.updateUserStatus = (req, res, next) => {
+    const newStatus = req.body.status;
+    User.findById(req.userId)
+    .then((user) => {
+        if (!user) {
+            const error = new Error("User not found");
+            error.statusCode = 404; //not authenticated
+            throw error;
+        }
+
+        //have a user
+        user.status = newStatus;
+        return user.save();
+
+
+
+	})
+    .then((result) => {
+        res.status(200).json({
+            message: "User updated"
+        });
+	})
+	.catch((err) => {
+		if (!err.statusCode) {
+		    err.statusCode = 500;
+		}
+		next(err);
+		//async error handling
+		//(25.0.8)
+	})
+
+} 

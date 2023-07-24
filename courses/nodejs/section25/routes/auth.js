@@ -9,6 +9,8 @@ const {body} = require("express-validator"); //(25.0.4)
 const User = require("../models/user");
 const authController = require("../controllers/auth");
 
+//(25.3.3)
+const isAuth = require("../middleware/isAuth");
 
 
 //(25.2.5)
@@ -41,6 +43,17 @@ router.put("/signup", [
 //(25.2.8)
 router.post("/login", authController.login);
 
+
+//(25.3.3)
+router.get("/status", isAuth, authController.getUserStatus);
+
+//(25.3.3)
+router.patch("/status", isAuth, [
+    body("status")
+    .trim()
+    .not()
+    .isEmpty()
+],authController.updateUserStatus);
 
 
 

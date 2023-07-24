@@ -18,8 +18,13 @@ const PostSchema = new Schema({
     },
     //will later be a link to a user
     creator: {
-        type: Object,
+        //(25.3.0)
+        //as we now have users signed up, we can use type Schema
+        //because will store a reference to the user
+        type: Schema.Types.ObjectId,
+        ref: "User", //(25.3.0)
         required: true
+
     }
     //2nd argument to Schema, options
 }, {

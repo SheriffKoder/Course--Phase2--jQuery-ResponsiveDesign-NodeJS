@@ -622,6 +622,177 @@ authentication information from FE to the backend
 //the token is sent again from the FE to the backend API (when access get posts)
 //to decode and verify the token before going to the next route middleware (viewing)
 
+//now we have to do this for all our routes
+//before allowing only users who created something can delete it
+
+
+>> add the isAuth to all API feed routes
+
+>> make sure you pass the token to the front end
+adding the header authorization bearer to feed.js middleware's in the FE
+to the fetch url's config object
+finishEditHandler, deletePostHandler
+FE's singlePost.js 
+ 
+
+
+
+
+
+
+//394-400
+///////////////////////////////////////////////////////////////////
+//(25.3.0)
+
+//add/delete posts which the user actually created
+//connect posts and users when create new posts
+
+
+>> go to post.js model in the API
+add type of creator 
+
+
+we store the creator of a post in every post we create
+and on the user model we add the post to the list of posts for that user
+
+user model
+    posts: [{
+        type: Schema.Types.ObjectId,
+        ref: "Post"
+    }]
+
+post model
+    creator: {
+        //(25.3.0)
+        //as we now have users signed up, we can use type Schema
+        //because will store a reference to the user
+        type: Schema.Types.ObjectId,
+        ref: "User", //(25.3.0)
+        required: true
+    }
+
+
+//create a new post assigned to a user
+>> now we need to adjust the feed controller
+go to feed.js
+in the place we create new posts createPost
+
+now only logged in users will access the createPost
+and when adding a new post it will be saved with their id
+
+
+//want to add the post to the list of posts for the given user
+find the user, push the post
+
+
+!! now we can add a post related to a user in both directions
+
+
+///////////////////////////////////////////////////////////////////
+//(25.3.1)
+
+
+//make sure that editing and deleting is only possible for the currently
+logged in user
+
+>> feed controller
+find and delete methods
+> UpdatePost
+check if the creator id is the id of the currently logged in user
+
+> deletePost
+same check
+check if the creator id is the id of the currently logged in user
+
+can also tweak the front end to not allow the view/edit/delete if not the auth user
+
+
+
+///////////////////////////////////////////////////////////////////
+//(25.3.2)
+//clearing Post-user relations
+
+//upon deleting a post
+we should clear the relation between posts and users
+
+on the user we need to pull our reference
+>> go to deletePost controller in feed.js
+user.posts.pull
+pass the id of the post want to remove
+
+!! now we can delete the post and it shall be deleted from the user > posts array in the db
+
+///////////////////////////////////////////////////////////////////
+//(25.3.3)
+
+//to get rid of the fe error
+//we have a status in the db
+//add some route to load the status and display it
+//and to change that status
+
+the status gets loaded in the FE feed.js file
+statusUpdateHandler
+
+body: JSON.stringify({status: this.state.status})
+
+it is up to you which file to add the routes
+can add them to feed, auth, or a new routes
+>> will add to auth route
+
+//view the user status on the site
+>> go to the auth controller
+add and work on getUserStatus
+
+>> on the FE, componentDidMount feed.js
+fetch URL
+add the localhost, config for the token in headers > authorization
+
+!! now when visiting the site, we can see the status of the user
+
+
+//update the user status on the site
+>> add a new route with validation
+
+>> add updateUserStatus controller in auth.js controller file
+
+>> on the FE
+//as we are sending json data, we need to set the content-type
+
+!! now when we update a status we can see it changed in FE and DB
+
+
+///////////////////////////////////////////////////////////////////
+//wrap up for module 25
+
+classic application
+render the views and server
+
+only the http methods are changed as we send json data
+and to construct the end points
+
+each request needs to be able to send some data
+that proves that the request is authenticated
+
+for this we use JSON web tokens JWT
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 */

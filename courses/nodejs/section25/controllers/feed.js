@@ -9,6 +9,9 @@ const {validationResult} = require("express-validator");
 //(25.0.6)
 const Post = require("../models/post");
 
+//(25.3.0)
+const User = require("../models/user");
+
 
 //(24.0.2)
 //get all posts
@@ -139,6 +142,13 @@ exports.createPost = (req, res, next) => {
     const title = req.body.title;
     const content = req.body.content;
 
+    //(25.3.0)
+    let creator;
+
+
+
+
+
     //(25.0.6)
     //we do not need to set createdAt
     //as mongoose will do that using the timestamp in the model
@@ -148,16 +158,38 @@ exports.createPost = (req, res, next) => {
         content: content,
         //imageUrl: "images/image.png", //-(25.2.0)
         imageUrl: imageUrl,             //(25.2.0)
-        creator: {name: "max"}
+        //creator: {name: "max"}        //-(25.3.0)
+        //the user id is already received from the isAuth middleware
+        //that would be a string not an object id, but mongoose will convert it
+        creator: req.userId             //(25.3.0)
+
     });
     
     post.save()
     .then((result) => {
 		console.log(result);
+
+        //(25.3.0)
+        return User.findById(req.userId)
+    })
+    .then((user) => {
+
+        //(25.3.0)
+        //now i have the user found, the currently logged in user
+        //take the user object which is a mongoose model
+        //access the posts of that user
+        //mongoose will pull out the userId and add the post to the user
+        creator = user;
+        user.posts.push(post)
+        return user.save();
+    })
+    .then((result) => {
         res.status(201).json({
             message: "Post created successfully!",
-            post: result
-	    })
+            //post: result, 
+            post: post,         //(25.3.0)
+            creator: {_id: creator._id, name: creator.name}
+        })
     })
 	.catch((err) => {
 		//console.log(err);         //-(25.0.8)
@@ -283,6 +315,17 @@ exports.updatePost = (req, res, next) => {
             throw error;
         }
 
+        //(25.3.1)
+        //check if the creator id is the id of the currently logged in user
+        //id belongs to the token we received
+        if (post.creator.toString() !== req.userId) {
+            const error = new Error ("Not authorized");
+            error.statusCode = 403;
+            throw error;
+        }
+
+
+
         //(25.2.2)
         if (imageUrl !== post.imageUrl) {
             clearImage(post.imageUrl);
@@ -336,8 +379,30 @@ exports.deletePost = (req, res, next) => {
             error.statusCode = 404;
             throw error;
         }
+
+        //(25.3.1)
+        //check if the creator id is the id of the currently logged in user
+        //id belongs to the token we received
+        if (post.creator.toString() !== req.userId) {
+            const error = new Error ("Not authorized");
+            error.statusCode = 403;
+            throw error;
+        }
+
+
+
         clearImage(post.imageUrl);
         return Post.findByIdAndRemove(postId);
+    })
+    //(25.3.2)
+    .then((result) => {
+        return User.findById(req.userId)
+    })
+    .then((user) => {
+        //(25.3.2)
+        //pass the id of the post want to remove
+        user.posts.pull(postId);
+        return user.save();
     })
     .then((result) => {
         console.log(result);
