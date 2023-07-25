@@ -556,12 +556,30 @@ add to Post.find() sort
 ///////////////////////////////////////////////////////////////////
 //(27.0.8)
 
+//deleting posts on all connected clients to socket.io
+
+>> feed.js controller > deletePost
+
+want to emit a socket.io before deleting, before sending a response
 
 
+>> on the FE, will simply reload the page
+go to delete post handler and comment out
 
 
+!! now when a user deletes a post
+the posts reloads on the other user's page
 
 
+///////////////////////////////////////////////////////////////////
+//wrap up on section 27
+
+pushing data from the web server to a connected client
+this is allowed by the WebSocket protocol
+which socket.io makes them used easier
+
+we have normal requests
+and WebSocket requests
 
 
 

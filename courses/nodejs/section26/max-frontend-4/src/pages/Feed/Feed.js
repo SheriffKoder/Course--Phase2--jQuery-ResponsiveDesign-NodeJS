@@ -42,13 +42,16 @@ class Feed extends Component {
     this.loadPosts();
     const socket = openSocket('http://localhost:8080');
     //use the same event name used at the API "posts"
-    //(27.0.4)
+      //(27.0.4)
     socket.on("posts", data => {
       if (data.action === "create") {
         this.addPost(data.post);
-    //(27.0.6)
+      //(27.0.6)
       } else if (data.action === "update") {
        this.updatePost(data.post); 
+       //(27.0.8)
+      } else if (data.action === "delete") {
+        this.loadPosts();
       }
     })
   }
@@ -253,10 +256,15 @@ class Feed extends Component {
       })
       .then(resData => {
         console.log(resData);
+        //-(27.0.8)
+        /*
         this.setState(prevState => {
           const updatedPosts = prevState.posts.filter(p => p._id !== postId);
           return { posts: updatedPosts, postsLoading: false };
         });
+        */
+       //(27.0.8)
+      this.loadPosts();
       })
       .catch(err => {
         console.log(err);

@@ -504,6 +504,13 @@ exports.deletePost = async (req, res, next) => {
         //return user.save();
         const result = await user.save();
     //})
+
+        //(27.0.8)
+        io.getIO().emit("posts", {
+            action: "delete",
+            post: postId
+        });
+
     //.then((result) => {
         console.log(result);
         res.status(200).json({  //repeated
