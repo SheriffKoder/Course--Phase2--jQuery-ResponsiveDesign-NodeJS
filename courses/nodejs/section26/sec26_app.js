@@ -156,12 +156,30 @@ mongoose.connect(mongoDB_URI)
     //this gives us a websocket.io object
     //that uses the http protocol as a basis
     //which setups all the webSocket stuff behind the scene for us
-    const io = require("socket.io")(server);
-    //use io to define a couple of event listeners
-    //to wait for new connections, whenever a new client connects to us
-    //we get the client/connection-between-server-client (socket)
-    //this function will be executed for every new client that connects
-    //not only one time, but as often as required
+    /*
+    const io = require('socket.io')(server, {
+    //     //avoid browser's CORS error on new socket.io version
+        cors: {
+            origin: "http://localhost:3000",
+            methods: ["GET", "POST"]
+        }
+    });
+    */
+
+    //(27.0.4)
+    //will use the configuration through the socket.js file instead of direct
+    const io = require("./socket.js").init(server, {
+        cors: {
+            origin: "http://localhost:3000",
+            methods: ["GET", "POST"]
+        }
+
+    });
+    // //use io to define a couple of event listeners
+    // //to wait for new connections, whenever a new client connects to us
+    // //we get the client/connection-between-server-client (socket)
+    // //this function will be executed for every new client that connects
+    // //not only one time, but as often as required
     io.on("connection", (socket) => {
         console.log("Client connected");
     })
@@ -416,6 +434,132 @@ we now have a waiting socket connection waiting for clients
 
 ///////////////////////////////////////////////////////////////////
 //(27.0.2)
+
+go to the FE, quit the dev server
+install the socket.io for the client
+
+# npm install --save socket.io-client
+
+>> import the socket.io-client
+which exposes a function to connect
+
+>> use in the component did mount
+openSocket("http://localhost:8080");
+
+now when connecting the backend, frontend(to 8080)
+the API console will output
+
+411-417
+///////////////////////////////////////////////////////////////////
+//(27.0.3)
+//using socket.io in real time
+
+//if we created a post with user A
+that we can instantly see it with user B
+
+
+on the FE, want to react to a new post being created
+then want to render it in the client instantly
+
+
+>> add a new function addPost to the FE before loadPosts
+we want to call "addPost" whenever we create a new post on some other client
+
+
+///////////////////////////////////////////////////////////////////
+//(27.0.4)
+//a created post from user A appears on user b
+so in the API createPost controller
+will reuse the current socket.io connection to
+inform all the connected clients about the new post
+
+for that idea, we need to share the connection
+setup in app.js
+
+>> create a new file, socket.js in API root
+which we can connect to the socket.io through it
+in any file
+starting with app.js
+
+>> then use the getIO function in the API feed > createPost controller
+which will return the io
+which we can then run methods on 
+like .on in app.js
+.emit will send a message to all connected users
+.broadcast will send to all the users except the one from which the request was sent
+
+
+> now we defined a message that can be sent from the server
+to all users,
+
+>> now we need to adjust the FE to receive the message
+below openSocket("URL") in the componentDidMount in feed.js
+
+>> by removing some "if else" block 
+we can see the added message on the second user without reloading
+
+open the browser
+open an incognito browser
+create a different user (B)
+create a post with user (A)
+
+
+///////////////////////////////////////////////////////////////////
+//(27.0.5)
+//to get the username on the post displayed through the FE
+
+populate(creator) in getPost
+add to the socket data in createPost
+creator: id, name
+
+
+
+///////////////////////////////////////////////////////////////////
+//(27.0.6)
+//updating posts on all connected clients
+
+we are also updating/deleting posts
+
+>> go to updatePost controller in feed.js
+
+> we want to store a socket event once done updating
+> go to where find the post and populate it with creator data
+
+populate:
+will take the creator id stored in the post object
+reach out to the users database/collection
+fetch the data for that specific user
+and add it here in our post
+
+
+>> go to the FE
+to establish code to update our post
+after the addPost function, add a new function updatePost
+
+!! now when we edit a post
+it is changed on both clients in the same time
+
+
+
+///////////////////////////////////////////////////////////////////
+//(27.0.7)
+
+//sorting posts
+//making latest post appear first
+
+>> in feed.js getPosts controller
+add to Post.find() sort
+
+
+
+417-423
+///////////////////////////////////////////////////////////////////
+//(27.0.8)
+
+
+
+
+
 
 
 

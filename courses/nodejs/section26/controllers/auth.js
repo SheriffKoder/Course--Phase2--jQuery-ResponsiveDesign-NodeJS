@@ -36,8 +36,8 @@ exports.signup = async (req, res, next) => {
             password: hashedPw,
             name:name
         });
-        return user.save();
-        await user.save();
+        //return user.save();
+        const result = await user.save();
     //})
     //.then((result) => {
         res.status(201).json({message: "User Created!", userId: result.id});
@@ -92,7 +92,7 @@ exports.login = async (req, res, next) => {
         //we can store anything we want in the web token
         //and the second argument is the secret private key
         //third argument to configure the key (will be hashed)
-        const token = jwt.sign({
+        const token = await jwt.sign({
             email: loadedUser.email,
             //convert to string as it is a mongoDB object
             userId: loadedUser._id.toString()

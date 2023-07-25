@@ -12,6 +12,10 @@ const Post = require("../models/post");
 //(25.3.0)
 const User = require("../models/user");
 
+//(27.0.4)
+const io = require("../socket");
+
+
 
 //(24.0.2)
 //get all posts
@@ -36,7 +40,14 @@ exports.getPosts = async (req, res, next) => {
             //return Post.find()
             //Post.find()
         const posts = await Post.find()
-            .populate('creator')
+            //(27.0.5)
+            .populate("creator") //not just fetch the creator id but the full object for that creator
+            
+            //(27.0.7)
+            //making latest posts appear first
+            //sort fetched posts by createdAt in a descending
+            .sort({createdAt: -1})
+
             .skip((currentPage - 1) * perPage)
             .limit(perPage);
         //})
@@ -228,6 +239,22 @@ exports.createPost = async (req, res, next) => {
         user.posts.push(post);
         await user.save();
     //})
+
+        //(27.0.4)
+        //get the socket.io here
+        //can call io methods
+        //.emit will send a message to all connected users
+        //emit("event name", {data-want to send})
+        //you can send any data you want, do not have to have action key
+        io.getIO().emit("posts", {
+            action: "create",
+            //all the data about the post
+            //set the creator = to an object where we have
+            //(27.0.5)
+            post: {...post._doc, creator: {_id: req.userId, name: user.name}}
+        });
+
+
     //.then((result) => {
         res.status(201).json({
             message: "Post created successfully!",
@@ -356,7 +383,9 @@ exports.updatePost = async (req, res, next) => {
     //here i can know i have valid data
     //and now can update it in the database
     try {
-    const post = await Post.findById(postId)
+    //(27.0.6)
+    //when find the post and populate it with creator data
+    const post = await Post.findById(postId).populate("creator")
     //.then((post) => {
         if (!post) {
             const error = new Error("Could not find post");
@@ -370,7 +399,10 @@ exports.updatePost = async (req, res, next) => {
         //(25.3.1)
         //check if the creator id is the id of the currently logged in user
         //id belongs to the token we received
-        if (post.creator.toString() !== req.userId) {
+        //if (post.creator.toString() !== req.userId) {
+        //(27.0.6) as we populated the creator with data
+        if (post.creator._id.toString() !== req.userId) {
+
             const error = new Error ("Not authorized");
             error.statusCode = 403;
             throw error;
@@ -392,6 +424,14 @@ exports.updatePost = async (req, res, next) => {
         //overwriting the old post but keeping the old id
         //return post.save();
         const result = await post.save();
+
+        //(27.0.6)
+        io.getIO().emit("posts", {
+            action: "update",
+            post: result
+        })
+
+
     //})
     //.then(result => {
         //we did not create a new resource so it is not 201
