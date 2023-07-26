@@ -62,6 +62,8 @@ module.exports = buildSchema(`
 //having an array of Posts [Posts!]!
 
 //RootQuery added //(28.0.4)
+//RootQuery edited to login //(28.1.1)
+
 
 module.exports = buildSchema(`
 
@@ -84,6 +86,11 @@ module.exports = buildSchema(`
         posts: [Post!]!
     }
 
+    type AuthData {
+        token: String!
+        userId: String!
+    }
+
     input UserInputData {
         email: String!
         name: String!
@@ -91,7 +98,7 @@ module.exports = buildSchema(`
     }
 
     type RootQuery {
-        hello: String
+        login(email: String!, password: String!) : AuthData!
     }
 
     type RootMutation {

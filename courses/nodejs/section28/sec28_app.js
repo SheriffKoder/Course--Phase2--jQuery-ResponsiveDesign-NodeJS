@@ -29,7 +29,8 @@
 //# npm install --save jsonwebtoken //(25.2.8)
 //# npm install --save socket.io    //(27.0.1)
 //# npm install --save graphql express-graphql //(28.0.1)
-//# npm install --save validator        //(28.0.5)
+//# npm install --force --save validator        //(28.0.5)
+//# npm install --save cors //(28.1.0) 
 
 
 const express = require("express");         //(24.0.2)
@@ -43,6 +44,7 @@ const {graphqlHTTP} = require("express-graphql"); //(28.0.2) setup GraphQL
 const graphqlSchema = require("./graphql/schema");
 const graphqlResolver = require("./graphql/resolvers");
 
+const cors = require("cors");   //(28.1.0) 
 //const feedRoutes = require("./routes/feed.js"); //(24.0.2) //-(28.0.1)
 //const authRoutes = require("./routes/auth.js"); //(25.2.5) //-(28.0.1)
 
@@ -96,9 +98,15 @@ app.use((req, res, next) => {
     //headers the clients might set on their requests
     //this allows on the frontend to set content type in the fetch config
     res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    //(28.1.0) 
+    if (res.method === "OPTIONS") {
+        return res.sendStatus(200);
+    }
     next();
 });
 
+//(28.1.0) 
+app.use(cors());
 
 //added here so all the other middleware's do apply
 //(28.0.2)
@@ -110,12 +118,12 @@ app.use("/graphql", graphqlHTTP({
     schema: graphqlSchema,
     rootValue: graphqlResolver,
     graphiql: true,                  //(28.0.4)
-    formatError(err) {              //(28.0.6)
+    customFormatErrorFn(err) {              //(28.0.6)
         //original error will be set by express graphql
         //when it detects an error thrown in your code
         //either by you or a third party package
         //if it is a technical error, missing email syntax
-        //then it will not have original error
+        //then it will not have original error?
         if (!err.originalError) {
             return err;
         }
@@ -463,6 +471,7 @@ there is also apollo-server but it hides many things behind the scenes
 //(28.0.2)
 //using GraphQL
 
+//fetching a query
 //setting the schema and resolver
 
 >> create a new folder "GraphQL" in the project
@@ -509,7 +518,6 @@ but something the express-graphql will look for
 it gets filtered on the server
 
 
-423-429
 ///////////////////////////////////////////////////////////////////
 //(28.0.3)
 
@@ -635,12 +643,93 @@ or keep the default format with just return err;
 >> go to the resolver
 //stored some values in the error thrown in the resolver
 
->> get these values in the app.js formatError config to create custom error format
+>> get these values in the app.js customFormatErrorFn config to create custom error format
+
+
+!! now can adjust the error received in GQL browser
+
+
+///////////////////////////////////////////////////////////////////
+//(28.1.0) 
+
+//working with the FE
+
+//working on the sign-up
+>> go to FE App.js signupHandler
+adjust the url to /graphql, method to post
+
+add a constant of a mutation object like used above
+and fill fields with user data (taken from the FE code)
+use it in body stringify
+
+move the status error to the .then res data
+check for errors
+
+now we can open the FE and sign up a user
+check for existence
+
+> however this is a CORS error
+solution
+>> npm install --save cors
+> and in the app.js app.use(cors());
+
+any time face an error check the network in dev tools
+
+sometimes express-graphql declines any request that is not a POST
+so the option request is denied
+
+>> add sendStatus(200) to the cors middleware in API app.js
+
+!! now we can sign up a new user or get a 500 error if exists
 
 
 
+///////////////////////////////////////////////////////////////////
+//(28.1.1) 
+
+//authenticating users
+
+//adding a login query and resolver in the API
+
+>> will add a query in schema for authentication
+"RootQuery" which returns a data when someone sends a query to login
+
+>> in resolvers define the login function
+to return a token generated when email/password are ok
+containing both
+and also return the userId
+both as defined in the query
 
 
+
+//wire the API authentication tokens with the FE
+
+>> go to loginHandler in app.js
+define graphqlQuery that fills/returns from the login API schema
+adjust the url, and stringify
+place errors in 2nd .then
+
+sending to the server through the GQL API
+where want to get the token and userId
+login(email: "email@test.com", password: "tester") {
+    token
+    userId
+}
+
+returns the token and userId
+
+by exposing the returned object from the API through the browser
+you can know how to reach a certain property to fetch in the FE
+
+! now can login with a user
+
+
+///////////////////////////////////////////////////////////////////
+//(28.1.2) 
+
+
+//now want to work on the get/edit posts
+and work with the token to restrict certain end-points
 
 
 

@@ -22,6 +22,8 @@ const bcrypt = require("bcryptjs");
 
 const validator = require("validator"); //(28.0.5)
 
+const jwt = require("jsonwebtoken");     //(28.1.1) 
+
 
 //the inputs will be the user input data
 //args object, request
@@ -111,8 +113,36 @@ module.exports = {
             _id: createdUser._id.toString()
 
         }
+    },
+    //(28.1.1) 
+    // de-construct from args
+    //email and password as defined in the RootQuery in schema
+    login: async function({email, password}) {
 
+        //find the user with the correct email address
+        //then confirm the password
+        const user = await User.findOne({email: email});
+        if (!user) {
+            const error = new Error("User not found.");
+            error.code = 401;
+            throw error;
+        }
 
+        const isEqual = await bcrypt.compare(password, user.password);
+        if (!isEqual) {
+            const error = new Error("Password is incorrect");
+            throw error;
+        }
 
+        //email exists, password is correct
+        //the data want to encode in the token, key, expiry
+        const token = jwt.sign({
+            userId: user._id.toString(),
+            email: user.email
+        }, "secret", {expiresIn: "1h"});
+
+        //return token: as defined in the schema
+        return {token: token, userId: user._id.toString()};
     }
+
 }
