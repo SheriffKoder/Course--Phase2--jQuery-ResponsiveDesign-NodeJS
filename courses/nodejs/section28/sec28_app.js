@@ -29,6 +29,8 @@
 //# npm install --save jsonwebtoken //(25.2.8)
 //# npm install --save socket.io    //(27.0.1)
 //# npm install --save graphql express-graphql //(28.0.1)
+//# npm install --save validator        //(28.0.5)
+
 
 const express = require("express");         //(24.0.2)
 const app = express();                      //(24.0.2)
@@ -106,7 +108,30 @@ app.use((req, res, next) => {
 //the schema file, resolver file
 app.use("/graphql", graphqlHTTP({
     schema: graphqlSchema,
-    rootValue: graphqlResolver
+    rootValue: graphqlResolver,
+    graphiql: true,                  //(28.0.4)
+    formatError(err) {              //(28.0.6)
+        //original error will be set by express graphql
+        //when it detects an error thrown in your code
+        //either by you or a third party package
+        //if it is a technical error, missing email syntax
+        //then it will not have original error
+        if (!err.originalError) {
+            return err;
+        }
+        //if i have originalError, then i can extract
+        //useful information from it, that i can add
+        //in other places, like in the resolver
+        //stored some values in the error thrown in the resolver
+        //get these values here to create custom error format
+        const data = err.originalError.data;
+        const message = err.message || "An error occurred";
+        const code = err.originalError.code || 500;
+        //with all that pulled out can return my own error object
+        return { message: message, status: code, data: data };
+
+    }
+
 }));
 
 
@@ -484,13 +509,133 @@ but something the express-graphql will look for
 it gets filtered on the server
 
 
+423-429
 ///////////////////////////////////////////////////////////////////
 //(28.0.3)
 
 //importing a graphql mutation schema
+//> edit/delete/put
+
+>> clear the FE feed.js from socket.io, addPost updatePost
+
+>> FE App.js signupHandler make sure
+we reach one of our mutations
+
+>> in the graphql schema.js define a createUser schema
+
+>> work on the resolver
+import the db user, define the createUser query as a function 
+that takes user input/req, to find/save user in db 
+and return user info
+
+>> delete the posts/users collection in the db
+it will be available again once entered data
+
+///////////////////////////////////////////////////////////////////
+//(28.0.4)
+
+////now we will test the mutation
+with a simpler approach than postman
+
+go to app.js where use graphql
+add graphiql: true
+which gives a special tool
+to use the 8080/graphql in the browser
+this will send a GET request
+will give you a screen to play with the graphQL api
+
+
+mutation {
+    createUser(userInput: {
+        email: "test@test.com", 
+        name: "max", 
+        password: "tester"})
+    //the returns
+    _id
+    email
+}
+
+press play,
+user will be created in the db
+
+GQL browser result:
+{
+  "data": {
+    "createUser": {
+      "_id": "64c085ede36c761ac30c5c2f",
+      "email": "test3@test.com"
+    }
+  }
+}
 
 
 
+///////////////////////////////////////////////////////////////////
+//(28.0.5)
+
+//add input validation/error messages to GQL before using the FE
+
+before storing in the database (mutation)
+we have to make sure that the information we put is valid
+
+with graphql it is not possible to add express-validator
+as we have only one route/end-point
+which is the app.use in the app.js
+and we do not want to validate all requests
+in exactly the same way
+
+solution is to move validation into the resolvers
+
+# npm install --force --save validator
+
+//this is the package that express-validator use behind 
+the scenes, we can use it directly from now
+
+>> import the validator package in the resolver file
+> add validation for email, password
+if there are errors, create and throw a new error
+
+!! now sending the mutation object with
+a missing syntax will result in an error response
+
+{
+  "errors": [
+    {
+      "message": "invalid input",
+      "locations": [
+        {
+          "line": 33,
+          "column": 5
+        }
+      ],
+      "path": [
+        "createUser"
+      ]
+    }
+  ],
+  "data": null
+}
+
+
+///////////////////////////////////////////////////////////////////
+//(28.0.6)
+
+//handling errors in GraphQL
+
+you cant set your own status code
+//but we could add more information to the errors we return
+
+to do that
+>> got to the app.js file and add the config option
+formatError
+and this is a method that receives the error detected by GQL
+and allows to return own format
+or keep the default format with just return err;
+
+>> go to the resolver
+//stored some values in the error thrown in the resolver
+
+>> get these values in the app.js formatError config to create custom error format
 
 
 

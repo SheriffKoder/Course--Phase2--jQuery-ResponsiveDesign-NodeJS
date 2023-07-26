@@ -22,7 +22,8 @@ const {buildSchema} = require("graphql");
 //but not need a resolver for the query in schema because it uses hello in the end
 
 
-
+//(28.0.2)
+/*
 module.exports = buildSchema(`
 
     type TestData {
@@ -36,6 +37,70 @@ module.exports = buildSchema(`
 
     schema {
         query: RootQuery
+    }
+
+`);
+*/
+
+//(28.0.3)
+//can specify arguments to the query name "createUser"
+//can make it createUser(email: String, password: String )
+//"input" special type for data that is used as an argument/data-input
+
+//what do i get back after a user was created
+//want to get back a user object
+//createUser return a User! when its created
+//for that will define a new type User
+//do not necessarily need to return a password
+
+//ID provided by graph.ql that signals that it is unique and treated as an id
+
+//also need to define how a post should look like
+//so will define a new type Post
+
+//creator of type User
+//having an array of Posts [Posts!]!
+
+//RootQuery added //(28.0.4)
+
+module.exports = buildSchema(`
+
+    type Post {
+        _id: ID!
+        title: String!
+        content: String!
+        imageUrl: String!
+        creator: User!
+        createdAt: String!
+        updatedAt: String!
+    }
+
+    type User {
+        _id: ID!
+        name: String!
+        email: String!
+        password: String
+        status: String
+        posts: [Post!]!
+    }
+
+    input UserInputData {
+        email: String!
+        name: String!
+        password: String!
+    }
+
+    type RootQuery {
+        hello: String
+    }
+
+    type RootMutation {
+        createUser(userInput: UserInputData): User!
+    }
+
+    schema {
+        query: RootQuery
+        mutation: RootMutation
     }
 
 `);
