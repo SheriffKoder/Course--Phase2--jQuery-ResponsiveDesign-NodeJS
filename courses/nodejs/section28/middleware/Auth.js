@@ -14,9 +14,21 @@ module.exports = (req, res, next) => {
     const authHeader = req.get("Authorization");
     //if cant find the header
     if (!authHeader) {
+
+        //(28.1.3) 
+        //will not return an error
+        //so i can handle this inside of the resolvers
+        req.isAuth = false;
+        //continue with the next middleware
+        //and not execute the below code
+        return next();
+        /*
+        //-(28.1.3) 
         const error = new Error("Not Authenticated");
         error.statusCode = 401;
         throw error
+        */
+
     }
 
     //get the bearer token in the FE
@@ -29,16 +41,29 @@ module.exports = (req, res, next) => {
         //same secret key used in the auth controller
         decodedToken = jwt.verify(token, "secret");
     } catch {
-        err.statuscode = 500;
-        throw err;
+        //-(28.1.3) 
+        //err.statuscode = 500;
+        //throw err;
+
+        //(28.1.3) 
+        req.isAuth = false;
+        return next();
+
     }
 
 
     //decoding worked (no catch error) but unable to verify the token
     if (!decodedToken) {
-        const error = new Error("Not authenticated");
-        error.statusCode = 401;
-        throw error
+        //-(28.1.3) 
+        // const error = new Error("Not authenticated");
+        // error.statusCode = 401;
+        // throw error
+
+        //(28.1.3) 
+        req.isAuth = false;
+        return next();
+
+
     }
 
     //if we got here we will have a valid token
@@ -51,6 +76,10 @@ module.exports = (req, res, next) => {
     req.userId = decodedToken.userId;
     //then forward the request
     //so either will have an error or pass decoding/verification
+
+    //(28.1.3) 
+    req.isAuth = true;
+
     next();
 
 

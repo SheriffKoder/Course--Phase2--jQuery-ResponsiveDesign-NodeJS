@@ -48,6 +48,11 @@ const cors = require("cors");   //(28.1.0)
 //const feedRoutes = require("./routes/feed.js"); //(24.0.2) //-(28.0.1)
 //const authRoutes = require("./routes/auth.js"); //(25.2.5) //-(28.0.1)
 
+//(28.1.2) 
+const auth = require("./middleware/Auth");
+
+
+
 
 //(25.2.0) uploading files
 const fileStorage = multer.diskStorage({
@@ -107,6 +112,14 @@ app.use((req, res, next) => {
 
 //(28.1.0) 
 app.use(cors());
+
+//(28.1.2) 
+//this middleware will run on every request
+//that reaches the GQL endpoint 
+//but will not deny the request if there is no token
+//the only thing it will do, set isAuth to false
+//and then i can decide in the resolver want to continue or not
+app.use(auth);
 
 //added here so all the other middleware's do apply
 //(28.0.2)
@@ -724,12 +737,127 @@ you can know how to reach a certain property to fetch in the FE
 ! now can login with a user
 
 
+//430-436(436-442)
 ///////////////////////////////////////////////////////////////////
 //(28.1.2) 
 
 
 //now want to work on the get/edit posts
 and work with the token to restrict certain end-points
+
+
+//add posts without a real image
+posts with just title content, dummy image url, attached user
+
+
+>> in the GQL schema add new mutation "createPost"
+and set a type for the input
+
+>> go to the resolvers, create new function createPost()
+validate inputs, create/save a post with these inputs
+return the createdPost, post id, createdAt, updatedAt
+
+defined a schema (input mapping and return mapping)
+defined a resolver (what to do with input and what to return)
+send in GQL a mutation object
+
+mutation {
+    createPost(postInput: {
+        title: "Tests", 
+        content: "Tests", 
+        imageUrl: "some url"}) {
+    _id
+    title
+    }
+}
+
+
+
+///////////////////////////////////////////////////////////////////
+//(28.1.3) 
+
+
+//the basic createPost is in place
+now want to validate the token and extract the user from it
+
+//make sure we send a token in a header in our incoming request
+
+
+>> rename the middleware > isAuth to Auth
+in there not throw errors but store false/true
+in req.isAuth
+
+>> in app.js import the Auth.js
+>> add app.use(auth) before GQL app.use/end-point
+
+>> in the resolvers
+in createPost, check if no req.isAuth
+if so, create/throw an error with status code
+
+>> before we create the post, we can get the user from the db
+because we do store the userId in the request
+req.userId = decodedToken.userId;
+> User.findById, if no user throw error
+> create the new Post with creator: user
+> push to user.posts the createdPost
+
+
+check for user if authenticated (logged in)
+connect created posts to user(owner)
+
+
+///////////////////////////////////////////////////////////////////
+//(28.1.4) 
+
+//work on the front end to send a request
+to the end point so we can see the user authentication/post connection
+
+>> FE feed.js file finishEditHandler
+
+want to reach the graphql endpoint and create a new user
+
+create graphqlQuery
+with the mutation object we used above in GQL browser
+
+edit the fetch url, method, body to JSON.stringify(graphqlQuery),
+content-type
+
+//the returned keys same as const post below
+//in creator only interested in the name as it is a complex schema
+let graphqlQuery = {
+    query: `
+    mutation {
+        createPost(postInput: {
+            title: "${postData.title}", 
+            content: "${postData.content}", 
+            imageUrl: "some url"}) {
+        _id
+        title
+        content
+        imageUrl
+        creator {
+        name
+        }
+        createdAt
+        }
+    }          
+    `
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

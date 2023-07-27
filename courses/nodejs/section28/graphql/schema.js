@@ -64,6 +64,10 @@ module.exports = buildSchema(`
 //RootQuery added //(28.0.4)
 //RootQuery edited to login //(28.1.1)
 
+//createPost added ////(28.1.2) 
+//which takes PostInputData and returns Post
+
+
 
 module.exports = buildSchema(`
 
@@ -91,6 +95,12 @@ module.exports = buildSchema(`
         userId: String!
     }
 
+    input PostInputData {
+        title: String!
+        content: String!
+        imageUrl: String!   
+    }
+
     input UserInputData {
         email: String!
         name: String!
@@ -103,6 +113,7 @@ module.exports = buildSchema(`
 
     type RootMutation {
         createUser(userInput: UserInputData): User!
+        createPost(postInput: PostInputData): Post!
     }
 
     schema {
