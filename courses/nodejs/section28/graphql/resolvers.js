@@ -219,6 +219,7 @@ module.exports = {
 
         const createdPost = await post.save();
         user.posts.push(createdPost);         //(28.1.3)
+        await user.save();  //to save the user with the created post pushed
 
         //add post to user's post
 
@@ -232,15 +233,62 @@ module.exports = {
             ...createdPost._doc, 
             _id: createdPost._id.toString(),
             createdAt: createdPost.createdAt.toISOString,
-            updatedAt: createdPost.updatedAt.toISOString,
-
-        
-        
+            updatedAt: createdPost.updatedAt.toISOString   
         }
+    },
+
+    //(28.1.5) 
+    //will not care about the first argument for now
+    //but will need req, to check whether the user is authenticated
+    //(28.1.7) 
+    //the page argument is the argument in the schema for posts
+    posts: async function ({page}, req) {
+
+        //(28.1.3)
+        //user not authenticated, not want to grant access
+        //to creating a post
+        if (!req.isAuth) {
+            const error = new Error("Not authenticated");
+            error.code = 401;
+            throw error;
+        }
+        //if the user is authenticated, we can continue
+        //later will add pagination logic
+
+        //(28.1.7)
+        //adding pagination
+        if (!page) {
+            page = 1;
+        }
+        const perPage = 2;
 
 
 
 
-    } 
+        const totalPosts = await Post.find().countDocuments();
+        //sort by createdAt in descending order
+        //fetch all creator data with name etc. to be used on the front end
+        const posts = await Post
+        .find()
+        .sort({createdAt: -1})
+        .skip((page -1)* perPage)            //(28.1.7)
+        .limit(perPage)                      //(28.1.7)
+        .populate("creator");
+
+        //return an object like the defined in schema
+        //posts will be returned with _id etc that is not
+        //understood by GQL, so will use map
+        //return a new object for every post
+
+        return {posts: posts.map(p => {
+            return {
+                ...p._doc, 
+                _id: p._id.toString(),
+                createdAt: p.createdAt.toISOString,
+                updatedAt: p.updatedAt.toISOString   
+            }
+        }), totalPosts: totalPosts};
+
+    }
 
 }

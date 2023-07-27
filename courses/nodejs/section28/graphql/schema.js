@@ -67,7 +67,8 @@ module.exports = buildSchema(`
 //createPost added ////(28.1.2) 
 //which takes PostInputData and returns Post
 
-
+//RootQuery posts added //(28.1.5) 
+//type postData
 
 module.exports = buildSchema(`
 
@@ -95,6 +96,11 @@ module.exports = buildSchema(`
         userId: String!
     }
 
+    type PostData {
+        posts: [Post!]!
+        totalPosts: Int!
+    }
+
     input PostInputData {
         title: String!
         content: String!
@@ -109,6 +115,7 @@ module.exports = buildSchema(`
 
     type RootQuery {
         login(email: String!, password: String!) : AuthData!
+        posts(page: Int): PostData!
     }
 
     type RootMutation {

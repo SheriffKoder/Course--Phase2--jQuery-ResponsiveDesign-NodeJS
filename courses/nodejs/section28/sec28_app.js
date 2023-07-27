@@ -39,6 +39,8 @@ const bodyParser = require("body-parser");  //(24.0.3)
 const mongoose = require("mongoose")        //(25.0.5)
 const path = require("path")                //(25.0.7) to import static images
 const multer = require("multer");           //(25.2.0) uploading files
+const fs = require("fs");                   //(28.1.8) 
+
 
 const {graphqlHTTP} = require("express-graphql"); //(28.0.2) setup GraphQL
 const graphqlSchema = require("./graphql/schema");
@@ -113,13 +115,50 @@ app.use((req, res, next) => {
 //(28.1.0) 
 app.use(cors());
 
+
 //(28.1.2) 
 //this middleware will run on every request
 //that reaches the GQL endpoint 
 //but will not deny the request if there is no token
 //the only thing it will do, set isAuth to false
 //and then i can decide in the resolver want to continue or not
+//loaded before post-image to be used there
 app.use(auth);
+
+
+//(28.1.8) 
+//adding images
+//we are using multer, which take our multipart form data request
+//extracts a file and stores it in the images folder
+//multer populates the file object with information about this file
+app.put("/post-image", (req, res, next) => {
+
+    if(!req.isAuth) {
+        throw new Error("Not authenticated")
+    }
+
+    if (!req.file) {
+        return res.status(200).json({message: "No file provided"});
+        //can set an error code if want
+    }
+
+    //if got here, we have a new image
+    //so then will delete the old image
+    //check for the existence of a body field named oldPath
+    //means an oldPath is passed with the incoming request
+    if (req.body.oldPath) {
+        clearImage(req.body.oldPath);
+    }
+
+    //path where multer stored the image
+    //the path we can then use in the front end
+    return res.status(201).json({message: "File stored.", filePath: req.file.path});
+
+
+
+});
+
+
 
 //added here so all the other middleware's do apply
 //(28.0.2)
@@ -264,7 +303,18 @@ mongoose.connect(mongoDB_URI)
 //listen to port 8080, will use 3000 for something else later
 //app.listen(8080);
 
+//(25.2.2)
+//(28.1.8) 
+//want to trigger the clearImage function
+//whenever uploaded a new image
+const clearImage = (filePath) => {
+   
+    //up one folder as we are in the controllers folder now
+    filePath = path.join(__dirname, "..", filePath)
+    //unlink removes the file
+    fs.unlink(filePath, err => console.log(err));
 
+}
 
 
 ///////////////////////////////////////////////////////////////////
@@ -844,9 +894,160 @@ let graphqlQuery = {
     `
 };
 
+433
+///////////////////////////////////////////////////////////////////
+//(28.1.5) 
+
+//extract all the data on the front-end
+
+when consoling the resData
+will get the data object of the post created
+then can use it to track and map needed properties
+to put in the post const
+
+
+//load posts on webpage
+
+>> add a "posts" query in schema
+and input PostData that takes posts and totalPosts
+
+getting posts is a normal query (not mutation)
+so add it in the RootQuery
+
+>> add a resolver
+if authenticated, find posts count, find posts
+return posts and count
+but the returned posts will be a mapped object
+with converted/overwritten properties
+
+>> test on the GQL browser
+
+//interested in the posts in id, title, content
+query {
+    posts{
+        posts {
+            _id
+            title
+            content
+        }
+        totalPosts
+    }
+}
+
+will send back not authenticated because not sending a token
+
+///////////////////////////////////////////////////////////////////
+//(28.1.6) 
+//work on the front-end, add token, render posts
+
+>> FE, feed.js, loadPosts
+
+what we do in the FE is
+
+1) add const graphqlQuery
+like the one used in GQL browser
+but can also select the specific needed properties of a complex schema here in the FE
+like in posts, creator name
+
+2) set fetch
+url, method, headers { authorization, content-type},
+body json.stringify(graphqlQuery)
+
+now we can view posts on the main page
+!!! check the max FE code feed.js to avoid this error
+
+
+//add code to add a new post immediately
+FE > feed.js > finishEditHandler after const post
+in this.setState
+
+
+///////////////////////////////////////////////////////////////////
+//(28.1.7) 
+
+
+//adding pagination in the API
+
+//we want to add pagination through the post query
+>> add to the RootQuery > post some arguments
+// page: Int
+
+>> retrieve the page argument with destructuring in the posts resolver
+
+>> add skip and limit in find() to page/perPage
+
+
+//adding pagination in the FE
+
+>> go to loadPosts
+add to the posts in query the page argument
+
+>> to not allow adding a post appear as a third post
+"because we defined 2 posts per page"
+add updatedPosts.pop();
+before updatedPosts.unshift
+to remove one element and ad the new one at the beginning
+
+*//*
+///////////////////////////////////////////////////////////////////
+//(28.1.8) 
+
+
+//uploading data
+
+until now GQL works with json data only
+one of the cleanest solution is to use a classic end point
+like the rest end point where you send your image to
+then let that endpoint
+store the image and return the path for the image
+and then send another request with that path to image/data
+to the graphql endpoint
+
+
+>> in app.js add app.put();
+
+>> add the clearImage function we made in controllers feed.js
+to app.js at the bottom
+> import the fs module
+
+//we can use this REST API end point
+//this shows can use REST and GQL concepts together
+
+
+//working on the FE
+feed.js > finishEditHandler
+
+    formData.append('image', postData.image);
+    if (this.state.editPost) {
+      formData.append("oldPath", this.state.editPost.imagePath);
+    }
+
+    also add to const post 
+    imagePath: resData.data.createPost.imageUrl
+
+    also add
+
+    //method PUT as stated in the API app.put
+    //authorization headers
+    fetch("http://localhost:8080/post-image", {
+      method: "PUT",
+      headers: {
+        Authorization: 'Bearer ' + this.props.token,
+      },
+      body: formData
+    }).then(res => res.json())
+    .then(fileResData => {
+      //filePath as returned in the API app.put
+      const imageUrl = fileResData.filePath;
 
 
 
+    and add imageUrl to loadPosts query
+
+///////////////////////////////////////////////////////////////////
+//(28.1.9)
+
+//click view post and see the post's details
 
 
 
