@@ -101,16 +101,16 @@ module.exports = buildSchema(`
         totalPosts: Int!
     }
 
-    input PostInputData {
-        title: String!
-        content: String!
-        imageUrl: String!   
-    }
-
     input UserInputData {
         email: String!
         name: String!
         password: String!
+    }
+
+    input PostInputData {
+        title: String!
+        content: String!
+        imageUrl: String!   
     }
 
     type RootQuery {

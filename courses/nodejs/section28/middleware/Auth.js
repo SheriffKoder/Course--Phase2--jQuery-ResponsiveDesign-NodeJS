@@ -40,7 +40,7 @@ module.exports = (req, res, next) => {
         //also have a decode method, which will only decode and not check if it is valid
         //same secret key used in the auth controller
         decodedToken = jwt.verify(token, "secret");
-    } catch {
+    } catch (err) {
         //-(28.1.3) 
         //err.statuscode = 500;
         //throw err;

@@ -85,6 +85,26 @@ const fileFilter = (req, file, cb) => {
     }
 }
 
+//(24.0.3)
+//will define the body-parser in another way than the used before
+//as we are using json for interactions and not form data
+//we used urlEncoded for used by enctype=x-www-form-url-encoded by forms
+//will use the json method
+//to parse incoming json data
+//so we are able to extract it on the body (req.body) in controllers
+app.use(bodyParser.json()); //enctype of application/json
+
+
+//(25.2.0) uploading files, register multer
+//use the configs we defined, 
+//tell multer we will fetch a single file in a field named image in the incoming request
+app.use(multer({storage: fileStorage, fileFilter: fileFilter}).single("image"));
+
+
+
+//(25.0.7) serving static images
+//any request that goes into /images
+app.use("/images", express.static(path.join(__dirname, "images")));
 
 
 //(24.0.4)
@@ -101,7 +121,7 @@ app.use((req, res, next) => {
     //allow specific origins to access our data
     res.setHeader("Access-Control-Allow-Origin", "*");
     //allow these origins to use specific http methods you want to be used
-    res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE");
+    res.setHeader("Access-Control-Allow-Methods", "OPTIONS, GET, POST, PUT, PATCH, DELETE");
     //headers the clients might set on their requests
     //this allows on the frontend to set content type in the fetch config
     res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
@@ -196,26 +216,8 @@ app.use("/graphql", graphqlHTTP({
 
 
 
-//(24.0.3)
-//will define the body-parser in another way than the used before
-//as we are using json for interactions and not form data
-//we used urlEncoded for used by enctype=x-www-form-url-encoded by forms
-//will use the json method
-//to parse incoming json data
-//so we are able to extract it on the body (req.body) in controllers
-app.use(bodyParser.json()); //enctype of application/json
 
 
-//(25.2.0) uploading files, register multer
-//use the configs we defined, 
-//tell multer we will fetch a single file in a field named image in the incoming request
-app.use(multer({storage: fileStorage, fileFilter: fileFilter}).single("image"));
-
-
-
-//(25.0.7) serving static images
-//any request that goes into /images
-app.use("/images", express.static(path.join(__dirname, "images")));
 
 
 

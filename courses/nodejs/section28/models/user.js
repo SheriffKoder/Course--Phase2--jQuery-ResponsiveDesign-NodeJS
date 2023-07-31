@@ -32,12 +32,13 @@ const userSchema = new Schema({
         ref: "Post"
     }]
     //2nd argument to Schema, options
-}, {
+}//, {
     //mongoose will auto add timestamps 
     //when a new version is added to the db
     //createdAt, updatedAt timestamps
     //timestamps: true,
-});
+    //}
+);
 
 //we export a model based on the schema (db_name, schema)
 module.exports = mongoose.model("User", userSchema);
