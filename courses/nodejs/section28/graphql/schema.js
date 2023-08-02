@@ -70,6 +70,13 @@ module.exports = buildSchema(`
 //RootQuery posts added //(28.1.5) 
 //type postData
 
+//(28.1.9)
+//post(id: ID!): Post!
+
+//(28.1.10)
+//updatePost
+
+
 module.exports = buildSchema(`
 
     type Post {
@@ -116,11 +123,14 @@ module.exports = buildSchema(`
     type RootQuery {
         login(email: String!, password: String!) : AuthData!
         posts(page: Int): PostData!
+        post(id: ID!): Post!
     }
 
     type RootMutation {
         createUser(userInput: UserInputData): User!
         createPost(postInput: PostInputData): Post!
+        updatePost(id: ID!, postInput: PostInputData): Post!
+        deletePost(id: ID!) : Boolean
     }
 
     schema {

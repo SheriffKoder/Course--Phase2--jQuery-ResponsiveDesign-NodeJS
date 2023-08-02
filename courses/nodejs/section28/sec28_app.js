@@ -39,7 +39,8 @@ const bodyParser = require("body-parser");  //(24.0.3)
 const mongoose = require("mongoose")        //(25.0.5)
 const path = require("path")                //(25.0.7) to import static images
 const multer = require("multer");           //(25.2.0) uploading files
-const fs = require("fs");                   //(28.1.8) 
+//const fs = require("fs");                   //(28.1.8) //-(28.1.11)
+const {clearImage} = require("./util/file"); //(28.1.11)
 
 
 const {graphqlHTTP} = require("express-graphql"); //(28.0.2) setup GraphQL
@@ -309,6 +310,8 @@ mongoose.connect(mongoDB_URI)
 //(28.1.8) 
 //want to trigger the clearImage function
 //whenever uploaded a new image
+//-(28.1.11)
+/*
 const clearImage = (filePath) => {
    
     //up one folder as we are in the controllers folder now
@@ -317,6 +320,7 @@ const clearImage = (filePath) => {
     fs.unlink(filePath, err => console.log(err));
 
 }
+*/
 
 
 ///////////////////////////////////////////////////////////////////
@@ -1046,11 +1050,86 @@ feed.js > finishEditHandler
 
     and add imageUrl to loadPosts query
 
+
+
+
 ///////////////////////////////////////////////////////////////////
 //(28.1.9)
 
 //click view post and see the post's details
 
+>> to the API Schema, add to post(id: ID!) to RootQuery
+
+>> add a resolver that takes the query input and return what is needed
+
+>> wire that on the FE
+> singlePost/SinglePost.js
+adjust the fetch url in componentDidMount
+add method, header > content type
+add graphqlQuery for the setState data
+
+> move error to 2nd .then
+
+!! type rootQuery > posts can be accessed in FE
+using resData(FE .then returned).data.post(the returned).xxx
+
+
+>> watch out for syntax errors
+
+
+work on edit and delete posts, user status
+
+
+
+
+///////////////////////////////////////////////////////////////////
+//(28.1.10)
+
+//edit a post
+
+>> go to schema RootMutation > updatePost()
+
+>> add updatePost to the resolvers
+authenticate, find, check, validate input, over write, save, return
+
+>> to to the FE, feed.js finishEditHandler
+below the graphqlQuery
+> if this.state.editPost add new data to the graphqlQuery
+and set the const post to update post
+by accessing data[value] which will have value of create/edit depending
+
+
+///////////////////////////////////////////////////////////////////
+//(28.1.11)
+
+//deleting a post
+
+>> go to schema RootMutation > deletePost()
+which returns a boolean indicating whether that succeeded or not
+
+>> add deletePost to the resolvers
+
+>> add in the root directory util > file.js
+where we will store the clearImage function
+and also use in app.js, so will remove the fs module also from app.js
+
+check on authentication, user ownership, post found
+then can remove the photo from the folder using clearImage with imageUrl
+and remove the post from the database
+
+remove the post from the user model by its id using pull
+
+!! can add try catch to all of these resolvers
+to catch errors but did not do it here to keep the code simple
+
+
+
+>> work on the FE
+feed.js > deletePostHandler
+
+add the graphqlQuery
+edit the url, method, add body: json.stringify(graphqlQuery)
+put the right error code in the right place
 
 
 

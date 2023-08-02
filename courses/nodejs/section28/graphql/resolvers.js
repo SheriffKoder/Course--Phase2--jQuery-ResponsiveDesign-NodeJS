@@ -26,6 +26,7 @@ const jwt = require("jsonwebtoken");     //(28.1.1)
 
 const Post = require("../models/post"); //(28.1.2) 
 
+const {clearImage} = require("../util/file"); //(28.1.11)
 
 
 //the inputs will be the user input data
@@ -290,7 +291,178 @@ module.exports = {
             }
         }), totalPosts: totalPosts};
 
+    },
+
+
+    //(28.1.9) view a single post
+    post: async function ({id}, req) {
+
+        //(28.1.3)
+        //user not authenticated, not want to grant access
+        //to creating a post
+        if (!req.isAuth) {
+            const error = new Error("Not authenticated");
+            error.code = 401;
+            throw error;
+        }
+        //if the user is authenticated, we can continue
+
+        //find post, with user populate
+        const post = await Post.findById(id).populate("creator");
+
+        //check if there is a post
+        if (!post) {
+            const error = new Error("No post found");
+            error.code = 404;
+            throw error;
+        }
+        //if there is a post continue
+
+        return {
+            //get all the data for that post
+            ...post._doc,
+            //these individual returns will overwrite what in _doc
+            _id: post._id.toString(),
+            //return createdAt because cant return dates
+            createdAt: post.createdAt.toISOString(),
+            updatedAt: post.updatedAt.toISOString()
+        };
+    },
+
+    //(28.1.9) view a single post
+    updatePost: async function ({id, postInput}, req) {
+
+        //(28.1.3)
+        //user not authenticated, not want to grant access
+        //to creating a post
+        if (!req.isAuth) {
+            const error = new Error("Not authenticated");
+            error.code = 401;
+            throw error;
+        }
+        //if the user is authenticated, we can continue
+
+        const post = await Post.findById(id).populate("creator");
+        
+        if (!post) {
+            const error = new Error("No post found");
+            error.code = 404;
+            throw error;
+        }
+
+        //check if the current user is the user who created the post
+        if (post.creator._id.toString() !== req.userId.toString()) {
+            const error = new Error("Not Authorized");
+            error.code = 403;
+            throw error;
+ 
+        }
+
+
+        //validation code copied from createPost
+        ////////////////////////////////////////////////////
+        //title validation
+        const errors = [];
+        if (validator.isEmpty(postInput.title) ||
+        !validator.isLength(postInput.title, {min: 5})) {
+
+            errors.push({message: "Title is invalid"});
+            
+        }
+
+        //content validation
+        if (validator.isEmpty(postInput.content) ||
+        !validator.isLength(postInput.content, {min: 5})) {
+
+            errors.push({message: "Content is invalid"});
+            
+        }
+
+        //
+        if (errors.length > 0) {
+            const error = new Error("invalid input");
+             error.data = errors; //(28.0.6)
+             //on the error get created here
+             //can add a data field, which is my array of errors
+             error.code = 422;
+             //add a code, or come up with own coding system not limited to http
+ 
+            throw error; 
+        }
+        ////////////////////////////////////////////////////
+
+
+        post.title = postInput.title;
+        post.content = postInput.content;
+
+        //if there is a new image, only then overwrite post's image 
+        if (postInput.imageUrl !== "undefined") {
+            post.imageUrl = postInput.imageUrl;
+
+        }
+
+        const updatedPost = await post.save();
+
+        return {
+            ...updatedPost._doc,
+            _id: updatedPost._id.toString(),
+            createdAt: updatedPost.createdAt.toISOString(),
+            updatedAt: updatedPost.updatedAt.toISOString()
+        };
+    },
+
+    deletePost: async function ({id}, req) {
+
+        //(28.1.3)
+        //user not authenticated, not want to grant access
+        //to creating a post
+        if (!req.isAuth) {
+            const error = new Error("Not authenticated");
+            error.code = 401;
+            throw error;
+        }
+        //if the user is authenticated, we can continue
+
+
+        const post = await Post.findById(id);
+
+        if (!post) {
+            const error = new Error("No post found");
+            error.code = 404;
+            throw error;
+        }
+
+        //check if the current user is the user who created the post
+        //as creator is not populated by the findById
+        //the creator is just the id
+        if (post.creator.toString() !== req.userId.toString()) {
+            const error = new Error("Not Authorized");
+            error.code = 403;
+            throw error;
+        }
+
+        //remove image, remove post
+        clearImage(post.imageUrl);
+        await Post.findByIdAndRemove(id);
+
+        //remove the post from the user model by its id using pull
+        //can access the req because of the Auth middleware added earlier
+        const user = await User.findById(req.userId);
+        user.posts.pull(id);
+        await user.save();
+
+        //as defined in schema want to return a boolean
+        return true;
+
+
+
     }
+
+
+
+
+
+
 
 ////
 }
