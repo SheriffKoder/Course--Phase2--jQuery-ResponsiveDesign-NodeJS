@@ -456,9 +456,66 @@ module.exports = {
 
 
 
+    },
+
+    //(28.1.12)
+    //i do not get any specific argument, so will use empty args
+    user: async function (args, req) {
+
+        //(28.1.3)
+        //user not authenticated, not want to grant access
+        //to creating a post
+        if (!req.isAuth) {
+            const error = new Error("Not authenticated");
+            error.code = 401;
+            throw error;
+        }
+        //if the user is authenticated, we can continue
+
+        const user = await User.findById(req.userId);
+        if (!user) {
+            const error = new Error("User not found");
+            error.code = 404;
+            throw error;
+
+        }
+
+        return {...user._doc, _id: user._id.toString()};
+
+    },
+
+    //(28.1.12)
+    updateStatus: async function ({status}, req) {
+
+        //(28.1.3)
+        //user not authenticated, not want to grant access
+        //to creating a post
+        if (!req.isAuth) {
+            const error = new Error("Not authenticated");
+            error.code = 401;
+            throw error;
+        }
+        //if the user is authenticated, we can continue
+
+        const user = await User.findById(req.userId);
+        if (!user) {
+            const error = new Error("User not found");
+            error.code = 404;
+            throw error;
+
+        }
+
+
+        user.status = status;
+        await user.save();
+        return {...user._doc, _id: user._id.toString()};
+
+
+
+
+
+
     }
-
-
 
 
 

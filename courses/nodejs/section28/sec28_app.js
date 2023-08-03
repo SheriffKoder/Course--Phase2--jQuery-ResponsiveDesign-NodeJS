@@ -994,6 +994,24 @@ add updatedPosts.pop();
 before updatedPosts.unshift
 to remove one element and ad the new one at the beginning
 
+bug fix: adding a new post not make next button appear unless refresh
+finishEditHandler > after creating new post then this.setState
+
+we do need to make sure we do increase, 
+the amount of total posts
+which will be the old totalPosts + 1
+after let updatedPosts = 
+let updatedTotalPosts = prevState.totalPosts;
+
+in the else
+updatedTotalPosts++;
+
+in return add
+totalPosts: updatedTotalPosts
+
+
+
+
 *//*
 ///////////////////////////////////////////////////////////////////
 //(28.1.8) 
@@ -1131,9 +1149,139 @@ add the graphqlQuery
 edit the url, method, add body: json.stringify(graphqlQuery)
 put the right error code in the right place
 
+443-449
+///////////////////////////////////////////////////////////////////
+//(28.1.12)
+
+//view user status and delete it
+
+>> in schema add a 
+query for getting the status (user)
+and mutation updateStatus
+
+>> in resolvers add user to fetch user data
+
+>> then in the FE 
+feed.js componentDidMount 
+> add graphqlQuery, method, content type, body
+put error in right place
+
+>> in resolvers add updateStatus
+
+>> in the FE go to status updateHandler
 
 
+///////////////////////////////////////////////////////////////////
+//(28.1.12)
 
+//a better more elegant way of using variables instead of ${}
+in the GQL queries defined in the FE
+
+will give the defined queries in FE a name
+it will not let it behave differently
+but will help in error messages
+
+    const graphqlQuery = {
+      query: `
+        {
+          posts(page: ${page}) {
+            posts {
+              _id
+              title
+              content
+              imageUrl
+              creator {
+                name
+              }
+              createdAt
+            }
+            totalPosts
+          }
+        }
+      `
+    };
+
+//to use the "query" and not just {
+//add custom name FetchPosts, define which variables this query will use
+//with type (GQL type)
+//this is GQL syntax that will be parsed on the server
+//add a second parameter named variables
+    const graphqlQuery = {
+      query: `
+        query FetchPosts($pageVariable: Int) {
+          posts(page: $pageVariable) {
+            posts {
+              _id
+              title
+              content
+              imageUrl
+              creator {
+                name
+              }
+              createdAt
+            }
+            totalPosts
+          }
+        }
+      `,
+      variables: {
+        pageVariable: page
+      }
+    };
+
+
+    const graphqlQuery = {
+      query: `
+        mutation UpdateUserStatus($userStatus: String){
+          updateStatus(status: $userStatus ) {
+            status
+          }
+        }
+      `,
+      variables: {
+        userStatus: this.state.status
+      }
+    }
+
+    add the required ! if defined in the schema that way
+
+    updateExistingPost
+    the image url not set when not add a new image
+    which can lead to an error
+    set
+    const imageUrl = fileResData.filePath || "undefined";
+
+///////////////////////////////////////////////////////////////////
+//wrap up
+
+GraphQl Core Concepts
+
+Stateless, client-independent API
+Higher flexibility than REST APIs offer
+due to custom query language that is exposed to the client
+
+can be used to exchange and manage data
+- Queries (GET), Mutation (POST, PUT, PATCH, DELETE)
+- Subscriptions (not covered in the course)
+
+all GraphQL requests are directed to ONE endpoint
+(POST /graphql)
+and use the graphqlQuery to describe the query/mutation
+want to execute from the back-end
+
+the server parses the incoming query expression
+typically done by third-party packages
+and calls the appropriate resolvers
+
+GraphQL gives you higher flexibility
+by exposing a full query language to the client
+
+GraphQL/REST are not limited to React.js applications
+can be implemented with ANY framework
+and ANY server side language 
+
+so REST can be preferred in static data requirement cases
+e.g file upload, scenarios where you need the same data all the time
 
 
 
