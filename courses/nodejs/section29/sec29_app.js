@@ -819,7 +819,7 @@ as will use a service provider's ssl better
 //(29.0.7)
 
 //using a hosting provider
-like heruko or AWS
+like heruko or AWS, digitalOcean, google nodejs hosting
 
 we deploy the code onto managed-spaces/virtual-servers
 on the hosting provider's computers
@@ -1033,11 +1033,48 @@ you'd use
 https://aws.amazon.com/sdk-for-node-js/
 
 
+462
+///////////////////////////////////////////////////////////////////
+//(29.1.2)
+
+we can deploy API applications using the same way
+
+but the only thing that will differ is that we do not
+open a link to view the app
+
+because we will have a server running that we can send requests to
+
+in the FE change the fetch urls
+to the hosting provider link/graphql
+instead of localhost 8080
+
+a front end app is typically sent to the users from app stores
+
+a react website is deployed as a static web application
+using npm run build
+will make all the directories and optimized code to build the project
+and take the files in the "build" folder
+and ship that to a static web host AWS-S3
+and spin the app on a totally different server than the node server
+
+
+
+
+
+
 
 
 
 
 */
+
+
+
+
+
+
+
+
 
 
 
