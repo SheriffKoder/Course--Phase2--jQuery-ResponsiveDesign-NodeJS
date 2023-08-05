@@ -31,11 +31,11 @@ const session = require("express-session"); //(2.6)
 const csrf = require("csurf");  //(3.7)
 const flash = require("connect-flash");   //(3.9)
 
-
+require("dotenv").config(); //(29.0.1)
 const helmet = require("helmet"); //(29.0.2)
 const compression = require("compression")//(29.0.3)
 const morgan = require("morgan"); //(29.0.4)
-//const fs = require("fs"); //(29.0.4) to store request logs
+const fs = require("fs"); //(29.0.4) to store request logs
 //const https = require("https"); //(29.0.6) allows to spin up https server
 
 const multer = require("multer"); //(20.0.1)
@@ -591,6 +591,38 @@ in stripe developer api keys there is a button to switch key mode
 that will require activation for the account and payment details
 
 
+!!!!
+dotenv package for handling environment variables
+reads the env file and appends it to the process.env
+do not save your .env file on your computer
+
+ignore, update the ignores on repo
+install dotenv, add .env.test file with variables
+run
+
+//add to gitignore
+# dotenv environment variables file
+.env
+.env.test
+
+//commit
+git add .gitignore
+git commit -m "adding .env.to .gitinore"
+
+//install dotenv
+# npm i dotenv
+
+//create .env.test and add the variables there
+
+//now we can run node filename normally and the variables will be used
+
+
+//read the .env file
+in app.js
+require("dotenv").config();
+
+
+
 ///////////////////////////////////////////////////////////////////
 //(29.0.2)
 
@@ -923,18 +955,6 @@ and add there "web: node app.js"
 
 
 >> now can deploy / add 
-
-dotenv package for handling environment variables
-reads the env file and appends it to the process.env
-do not save your .env file on your computer
-
-
-
-
-
-
-
-
 
 
 

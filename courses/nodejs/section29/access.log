@@ -9,3 +9,8 @@
 ::1 - - [03/Aug/2023:10:52:43 +0000] "GET /css/product.css HTTP/1.1" 200 379 "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36"
 ::1 - - [03/Aug/2023:10:52:43 +0000] "GET /js/main.js HTTP/1.1" 200 519 "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36"
 ::1 - - [03/Aug/2023:10:52:44 +0000] "GET /favicon.ico HTTP/1.1" 404 - "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36"
+::1 - - [05/Aug/2023:03:52:28 +0000] "GET / HTTP/1.1" 200 - "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36"
+::1 - - [05/Aug/2023:03:52:29 +0000] "GET /css/main.css HTTP/1.1" 200 - "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36"
+::1 - - [05/Aug/2023:03:52:29 +0000] "GET /images/2023-07-16T17:43:05.989Z-Breitling-Chronomat-Ladies-Watch-A77310101C1A1-32-mm-Blue-Dial.jpg HTTP/1.1" 200 57701 "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36"
+::1 - - [05/Aug/2023:03:52:30 +0000] "GET /css/product.css HTTP/1.1" 200 379 "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36"
+::1 - - [05/Aug/2023:03:52:30 +0000] "GET /js/main.js HTTP/1.1" 200 519 "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36"
