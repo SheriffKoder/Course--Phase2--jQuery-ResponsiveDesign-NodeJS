@@ -13,11 +13,14 @@
 //# npm install --save multer //s20: parse incoming files (upload)
 //# npm install --save pdfkit //s20.2 generate pdf files
 //# npm install --save strp //s23 using strp
+
+//# npm i dotenv //(29.0.1)
+//# npm install --save dotenv //(29.0.1)
 //# npm install --save helmet //(29.0.2) securing response headers
 //# npm install --save compression //(29.0.3)
 //# npm install --save morgan   //(29.0.4)
 //--# openssl req -nodes -new -x509 -keyout server.key -out server.cert //(29.0.6) setup self ssl
-
+//
 
 const http = require("http");
 const express = require("express");
@@ -607,10 +610,12 @@ run
 
 //commit
 git add .gitignore
-git commit -m "adding .env.to .gitinore"
+git commit -m "adding .env.to .gitignore"
 
 //install dotenv
-# npm i dotenv
+# npm i dotenv (try the npm install below if not work then use this also)
+//add to dependencies
+# npm install --save dotenv
 
 //create .env.test and add the variables there
 
@@ -914,6 +919,16 @@ and the server will be spun up based on it automatically
 ///////////////////////////////////////////////////////////////////
 //(29.1.0)
 
+//////Deploying in render
+
+add project repo
+add directory
+add npn install / node app.js commands
+add content for secret file .env ..
+add to the database ip's the connect outbound render ip addresses
+
+
+//////Deploying in Heroku
 
 //will learn about Heruko's CLI
 
@@ -956,8 +971,66 @@ and add there "web: node app.js"
 
 >> now can deploy / add 
 
+as there is package.json
+it should detect that this is a node app
+
+>> go to settings
+add config vars (env variables)
+even though they were put in max's package.json
+they where not used
+
+>> whitelist the ips in mongoDB site
+with free versions
+we do not have a static ip
+we have a dynamic range
+to use dynamic ranges, will whitelist all ip addresses
+allow access from anywhere
+we are still secure by using username/password in our app
+but it is better to use a static ip
+
+running mongoDB on the same server as your webserver
+is not an alternative
+because a database server is also not trivial to setup
+especially if it should be able to scale and so on
+
+>> back to the heroku dashboard
+>more > restart all dynos
+
+>> open the application link
 
 
+
+///////////////////////////////////////////////////////////////////
+//(29.1.1)
+
+Storing user-generated files on heroku
+
+Hosting providers
+when the app shutdown or goes to sleep
+the user-generated / uploaded images
+will not be available or re-created after server restart
+
+it is recommended to use a different storage place
+(does not apply when own / manage own server)
+
+alternative to this would be 
+AWS S3
+Simple Storage Service
+https://aws.amazon.com/s3/
+efficient and affordable
+
+you can easily configure multer to store your files
+with the help of another package
+multer-s3
+https://www.npmjs.com/package/multer-s3
+
+to also server your files
+can use packages like s3-proxy
+https://www.npmjs.com/package/s3-proxy
+
+for deleting the files or interacting with them on your own
+you'd use 
+https://aws.amazon.com/sdk-for-node-js/
 
 
 
