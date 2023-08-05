@@ -26,7 +26,9 @@
 //# npm install --save jsonwebtoken //(25.2.8)
 //# npm install --save socket.io    //(27.0.1)
 
-//# npm install --save-dev mocha chai //(30.0.1)
+//# npm install --save-dev mocha chai //(30.0.1) testing
+//# npm install --save-dev sinon    //(30.0.3) testing with mocking 3rd party methods in our code
+
 
 
 const express = require("express");         //(24.0.2)
@@ -323,6 +325,8 @@ tests run standalone, totally de-attached from our application
 
 you should not have the actual code in your tests with js
 
+think about testing as trying different scenarios
+not trying to build the framework 
 
 
 
@@ -335,6 +339,101 @@ you should not have the actual code in your tests with js
 
 >> import the auth middleware
 
+>> test parts of code using "it"(mocha) and "expect"(chai)
+>> combine all tests of this middleware in a "describe"(mocha)
+
+describe outputs the tests in a list format with header and items
+
+//not test external dependencies
+you should not test, whether the verify function works correctly
+because the verify is not a function owned by you
+it is the job of the package authors to test their code and make sure
+it works correctly
+
+we only want to test if our code behaves correctly
+
+
+///////////////////////////////////////////////////////////////////
+//(30.0.3)
+
+//mocking third party returned values
+
+
+when we have a third party dependency and want to 
+use a random value instead of its returned value
+we can use mocks or Stubs
+where we can replace the "verify" method with a simpler method
+
+//manual method
+>> import the jwt in the auth-middleware test file
+and store in the method want to mock a function that returns 
+a value as if it is supposed to return it
+
+
+however this method has a downside
+as if this test2(gives a token) was put before the test1 that (checks for a token)
+test1 would have a token and not test correctly
+as the verify method was Globally replaced/overwritten
+
+//automated method
+so instead of manually Stub or Mock methods
+it is good to restore the original method setup
+
+# npm install --save-dev sinon
+
+>> require in the test file
+> create a stub for jwt.verify
+> restore jwt.verify after expect
+
+
+with sinon stubs can:
+replace built-in methods with empty methods
+define what they should return, use that returned value
+find out whether they have been called
+replace external methods, restore them once you are done
+
+
+///////////////////////////////////////////////////////////////////
+//(30.0.4)
+
+//testing controllers
+
+for the feed controller we have routes
+that need to be authenticated
+
+
+we do reach the functions in the controllers
+through our routes which are defined in the routes folder
+where we send requests to in the end
+these are the API endpoints we are exposing
+
+we are doing unit testing
+for the signup, login functions
+
+we are not testing the routes whether we can send a request to login
+and can execute the login function in the auth controller
+because the entire forwarding of the request or execution
+that is all handled by express
+so we do not need to test this flow
+
+can test if it behaves correctly if no email is set for example
+or if already have a user with that email
+
+but now we have a new thing
+where we interact with the database
+through the models (ex. User) to find
+
+so how can we test the database operations
+we have two strategies
+
+1) stub/mock parts that actually rely on DB access
+mock User.findOne which returns a result we can test on
+and see if our code behaves correctly in login for example
+! how code behaves when findOne throws an error (having trouble interacting with the DB)
+! how code behaves if we do not have a user with that email address
+both two scenarios should throw an error eventually
+
+with status codes depending on the case 401 or 500
 
 
 
