@@ -878,6 +878,61 @@ and the server will be spun up based on it automatically
 >> downloads, download for your OS
 
 
+460
+///////////////////////////////////////////////////////////////////
+//(29.1.0)
+
+
+//will learn about Heruko's CLI
+
+on other hosting providers can just drag/drop the code
+as a zip file in the user interface
+
+but in heruko
+to run/deploy code is through typing command lines
+
+>> install heroku on the system
+>> enter the login command from the website in your console
+
+>> create a git repository or use the third command
+heroku git:remote -a name
+
+which will set the remote project url
+as a remote repo on this local code base
+
+>> deploy by adding, committing pushing
+
+>> in package.json add above scripts
+add the version of node js you are using (node -v)
+so it can be used when installed on the remote server
+
+"engines": {
+    "node": "18.12.1"
+}
+
+>> make sure compression is used in app.js
+as heroku do not provide it
+>>  comment out ssl
+
+
+>> add a new file in the project directory
+"Procfile"
+and add there "web: node app.js"
+
+>> the ignored node_modules will be re-created on the hosting providers
+
+
+>> now can deploy / add 
+
+dotenv package for handling environment variables
+reads the env file and appends it to the process.env
+do not save your .env file on your computer
+
+
+
+
+
+
 
 
 
