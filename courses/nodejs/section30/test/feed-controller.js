@@ -7,15 +7,11 @@ const User = require("../models/user");
 
 //import to test the login in the controller
 const FeedController = require("../controllers/feed");
-
+const io = require("../socket"); //(27.0.4) in the controller flow
 
 const mongoose = require("mongoose"); //(30.1.2) setup a testing database
 
-//(27.0.4)
-const io = require("../socket");
-
-
-require("dotenv").config(); //(29.0.1)
+require("dotenv").config(); //(29.0.1) hiding variables
 
 //the "it" will not wait for async code to return a promise .then
 //use "done", a function that will be called when the code execution end
