@@ -1,10 +1,9 @@
 
-const expect = require("chai").expect; //(30.0.2)
 
 const authMiddleware = require("../middleware/isAuth"); //(30.0.2)
-
 const jwt = require("jsonwebtoken"); //(30.0.3)
 
+const expect = require("chai").expect; //(30.0.2)
 const sinon = require("sinon"); //(30.0.3)
 
 
@@ -104,6 +103,7 @@ describe("Auth middleware", function () {
         //    return { userId: "abc" };
         // }
 
+        //////////////////////////////////////////////
         //pass in the object where i have the method i want to replace
         //and the actual method
         //by default will replace with an empty function
@@ -128,6 +128,7 @@ describe("Auth middleware", function () {
         //restore the method from sinon stub to its original
         //to be used correctly in next "it"s
         jwt.verify.restore();
+        //////////////////////////////////////////////
 
 
     });

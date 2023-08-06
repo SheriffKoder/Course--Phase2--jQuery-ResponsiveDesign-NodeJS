@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "sec24_app.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha --timeout 5000"
   },
   "author": "",
   "license": "ISC",

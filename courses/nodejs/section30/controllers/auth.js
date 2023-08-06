@@ -100,6 +100,10 @@ exports.login = async (req, res, next) => {
 
         }, "secret", { expiresIn: "1h"}); 
         res.status(200).json({token: token, userId: loadedUser._id.toString()})
+        
+        //(30.1.1)
+        //return which will be nothing(undefined) to be used in the test > auth-controller
+        return err;
 
 
 
@@ -113,7 +117,13 @@ exports.login = async (req, res, next) => {
 		//async error handling
 		//(25.0.8)
 	//})
+        //(30.1.1)
+        //return the error to be used in the test > auth-controller
+        return err;
+
     }
+
+    
 
 };
 

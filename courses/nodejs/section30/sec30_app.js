@@ -215,7 +215,7 @@ not just send requests to test the responses (manual testing)
 
 ////What is testing ?
 
-manual testing
+//manual testing
 pro: can interact with the app like users do
 con: easy to forget to test something, can test some parts
 or introduce code edits that can make bugs in other parts of code
@@ -223,7 +223,7 @@ you cannot be aware of
 it is hard to test every possible feature or combination of steps
 after every change made
 
-automated testing:
+//automated testing:
 we write code that tests our code
 we define steps that should be executed
 we define certain scenarios that are tested
@@ -280,7 +280,7 @@ to create Stubs or mocks
 
 
 //will return to the snapshot of our code
-in REST API when just finished Async/await
+in REST API when just finished Async/await section27 directory
 
 because that is nice to test and dive into testing
 testing different kinds of node applications like GQL
@@ -324,6 +324,7 @@ and run all tests that are defined in that test folder
 tests run standalone, totally de-attached from our application
 
 you should not have the actual code in your tests with js
+but we import code and inject arguments to see the result
 
 think about testing as trying different scenarios
 not trying to build the framework 
@@ -394,7 +395,7 @@ replace external methods, restore them once you are done
 
 
 ///////////////////////////////////////////////////////////////////
-//(30.0.4)
+//(30.1.0)
 
 //testing controllers
 
@@ -423,7 +424,7 @@ but now we have a new thing
 where we interact with the database
 through the models (ex. User) to find
 
-so how can we test the database operations
+//so how can we test the database operations:
 we have two strategies
 
 1) stub/mock parts that actually rely on DB access
@@ -435,6 +436,51 @@ both two scenarios should throw an error eventually
 
 with status codes depending on the case 401 or 500
 
+
+472
+///////////////////////////////////////////////////////////////////
+//(30.1.1)
+
+//testing an async code in 
+
+>> create test > auth-controller.js
+
+
+where we define a test
+stubbing findOne
+creating a dummy req as its needed in the controller part we are testing
+
+call the login method which will return (as we put in its code)
+undefined or an error which will be wrapped in a promise
+
+in this promise, can expect the promise's result to be
+err with status code or not
+
+
+//however the "it" will not wait for the async code to finish and return
+use the "done" function in the it function arguments
+
+
+///////////////////////////////////////////////////////////////////
+//(30.1.2)
+
+//setting up a testing database
+
+however it is a valid setup to have a dedicated testing database
+the downside that the tests will run a bit longer 
+the upside that will have a valid testing environment
+
+>> create a test in test > auth-controller.js
+where you make a connection to a test-messages database (will be created on use)
+
+create a dummy user and save to this database
+create a dummy req and res constants with data replicating the status line code
+which executes on success
+expect and done
+
+
+//can give the test a longer timeout period
+by adding to test: "mocha --timeout 5000" in package.json
 
 
 
