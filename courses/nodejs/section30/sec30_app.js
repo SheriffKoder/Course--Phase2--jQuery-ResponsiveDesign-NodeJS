@@ -41,6 +41,8 @@ const multer = require("multer");           //(25.2.0) uploading files
 const feedRoutes = require("./routes/feed.js"); //(24.0.2)
 const authRoutes = require("./routes/auth.js"); //(25.2.5)
 
+require("dotenv").config(); //(29.0.1)
+
 
 //(25.2.0) uploading files
 const fileStorage = multer.diskStorage({
@@ -146,9 +148,9 @@ app.use((error, req, res, next) => {
 
 
 //connect to the messages database by amending /messages
-const mongoDB_URI = "mongodb+srv://sheriffkoder:Blackvulture_92@cluster0.jgxkgch.mongodb.net/messages?retryWrites=true&w=majority";
+const mongoDB_URI = "";
 //(25.0.5)
-mongoose.connect(mongoDB_URI)
+mongoose.connect(process.env.MONGO_URI_MESSAGES_API)
 .then((result) => {
     //the listen returns a new node server
     const server = app.listen(8080);
@@ -471,12 +473,14 @@ the downside that the tests will run a bit longer
 the upside that will have a valid testing environment
 
 >> create a test in test > auth-controller.js
-where you make a connection to a test-messages database (will be created on use)
 
-create a dummy user and save to this database
-create a dummy req and res constants with data replicating the status line code
-which executes on success
-expect and done
+> make a connection to a test-messages database (will be created on use)
+> create a dummy user and save to this database
+> create a dummy req and res constants with data replicating the status line code
+> which executes on success
+> expect and use done
+> delete the created user from DB, close the DB connection, use done
+
 
 
 //can give the test a longer timeout period
@@ -484,10 +488,95 @@ by adding to test: "mocha --timeout 5000" in package.json
 
 
 
+//476
+///////////////////////////////////////////////////////////////////
+//(30.1.3)
+
+//lifecycle hooks by mocha
+to have a cleaner setup
+to not mix many codes in our test cases
+
+inside describe, we have extra functions we can call
+that actually runs before tests or after (each)
+
+for example we do not want to create a user before every test
+but initially when our test run starts
+
+use before
+and once its done
+it will then start running the test cases
+
+>> put the initialization code in "before"
+>> put the clean-up code in "after"
 
 
+before, before all test case
+beforeEach, runs before every "it" function call
+    useful if want to reset something or initialization before every test case
+
+after, after all test case
+afterEach, runs after every "it" function call
+    useful if want to do some cleanup work needs to be done after each test case
 
 
+///////////////////////////////////////////////////////////////////
+//(30.1.3)
+
+//testing code that requires authentication
+
+
+//test createPost in feed.js controller
+relies on the is-auth middleware
+
+needs on the user being authenticated
+
+access req.userId part of the request object
+as it is added in the is-auth middleware folder
+which is the first middleware in routing
+that stores a jwt decodedToken.userId in the req.userId
+
+want to test the createPost controller and not the full flow
+fake that, pass in a request object that has this user id
+
+and make sure we do create a post successfully
+and validate that this post was added to the users post array
+by user.posts.push(post)
+
+>> create a new file feed-controller.js
+
+copy the code from the auth-controller test file
+we need the same imports, before and after
+but will work on the "it" 
+
+///////////////////////////////////////////////////////////////////
+//wrap-up
+
+learned to use mocha and chai 
+to write tests and expectations
+
+can test async code
+can test with databases and stubs (if have external dependencies)
+
+always ask yourself
+are you testing something
+you are responsible for with your code
+
+can divide a complex function/controller
+into parts to test, which makes testing easier and not stab too much
+
+how to test sessions or cookies ?
+you can search that online
+
+testing is about trying stuff out
+gathering experience, diving into discussions with other developers
+and that will make it easier over time
+
+and the official docs of chai and mocha can help
+with defining tests, grouping tests, 
+
+and can find several third party packages that can make 
+testing things like sessions or promises even easier
+and write leaner code than what we wrote here
 
 
 

@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "sec24_app.js",
   "scripts": {
-    "test": "mocha --timeout 5000"
+    "test": "mocha --timeout 20000"
   },
   "author": "",
   "license": "ISC",
@@ -11,6 +11,7 @@
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.2",
+    "dotenv": "^16.3.1",
     "express": "^4.18.2",
     "express-validator": "^7.0.1",
     "jsonwebtoken": "^9.0.1",

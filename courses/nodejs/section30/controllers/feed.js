@@ -237,7 +237,9 @@ exports.createPost = async (req, res, next) => {
         //mongoose will pull out the userId and add the post to the user
         //creator = found_user;
         user.posts.push(post);
-        await user.save();
+        
+        //(30.1.3) store user here to be returned here before catch to the test
+        const savedUser = await user.save();
     //})
 
         //(27.0.4)
@@ -264,6 +266,9 @@ exports.createPost = async (req, res, next) => {
             creator: {_id: user._id, name: user.name}
         })
     //})
+
+        //(30.1.3)
+        return savedUser;
 
     } catch (err) {
 	//.catch((err) => {

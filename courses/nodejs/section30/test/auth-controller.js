@@ -11,13 +11,41 @@ const AuthController = require("../controllers/auth");
 
 const mongoose = require("mongoose"); //(30.1.2) setup a testing database
 
+require("dotenv").config(); //(29.0.1)
 
 //the "it" will not wait for async code to return a promise .then
 //use "done", a function that will be called when the code execution end
 //will wait for you to call it
 //and then you can call it in an async code snippet
 //otherwise the test will pass on all occasions fail/succeed
-describe("Auth Controller - Login", function () {
+describe("Auth Controller", function () {
+
+    //(30.1.3)
+    //initialization
+    //with before, mocha will know you are done with initializations
+    //then it will start running the test cases
+    //will run before all test cases, not each test case
+    before(function(done) {
+        //const mongoDB_URI = "";
+        mongoose.connect(process.env.MONGO_URI_TEST_MESSAGES)
+        .then(result => {
+
+            //testing logic
+            //user should be created as 
+            const user = new User({
+                email: "test@test.com",
+                password: "tester",
+                name: "Test",
+                posts: [],
+                _id: "5c0f66b979af55031b34728a"
+            });
+            return user.save();
+        })
+        .then(() => {
+            done();
+        })
+    });
+
 
     //to check wether the default statusCode 500 in the controller
     //gets applied correctly
@@ -75,6 +103,7 @@ describe("Auth Controller - Login", function () {
 
         //the database uri with /test-messages
         //to create a testing database
+        /*
         const mongoDB_URI = "mongodb+srv://sheriffkoder:Blackvulture_92@cluster0.jgxkgch.mongodb.net/test-messages?retryWrites=true&w=majority";
         mongoose.connect(mongoDB_URI)
         .then(result => {
@@ -91,7 +120,8 @@ describe("Auth Controller - Login", function () {
             return user.save();
 
         })
-        .then(() => {
+        */
+        //.then(() => {
 
             const req = {
                 //a mongoDB valid string format
@@ -110,10 +140,13 @@ describe("Auth Controller - Login", function () {
                     this.userStatus = data.status //user.status "I am new" by default
                 }
             };
-            console.log("finished const");
+
+            //testing the getUserStatus controller
+            //we need to pass a request with a user.id
+            //and a our response object that has ha status method and a json method
+            //where we then can set some status data
             //then as the getUserStatus is async and implicitly returns a promise
             AuthController.getUserStatus(req, res, () => {}).then(() => {
-
                 //then i can define my expectation
                 expect(res.statusCode).to.be.equal(200);
                 expect(res.userStatus).to.be.equal("I am new")
@@ -121,25 +154,39 @@ describe("Auth Controller - Login", function () {
 
             });
 
-
-
+                /*
         })
         .catch(err => {
             console.log(err);
         });
-
-
-        //testing the getUserStatus controller
-        //we need to pass a request with a user.id
-        //and a our response object that has ha status method and a json method
-            //where we then can set some status data
-        
-
-
-
-
+        */
 
     });
+
+
+    //(30.1.3)
+    //clean-up
+    //position of after in code does not matter
+    after(function(done) {
+        //clean: delete the created dummy user once done
+        //as this test will create the same user again next time
+        //and will throw an error and not quit the test process
+        User.deleteMany({})
+        .then(() => {
+            
+            //close the connection with the DB
+            //because it is an open process will not allow the test 
+            //to quit by itself
+            return mongoose.disconnect();
+            
+        })
+        .then(() => {
+            done();
+        });
+    });
+
+
+       
 
 
 
