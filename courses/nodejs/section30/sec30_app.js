@@ -578,14 +578,197 @@ and can find several third party packages that can make
 testing things like sessions or promises even easier
 and write leaner code than what we wrote here
 
-
-
-
-
 */
 
 
+///////////////////////////////////////////////////////////////////
+//section 31
 
+/*
+481
+///////////////////////////////////////////////////////////////////
+//npm as a build tool
+//(31.0.0)
+
+node and npm the package manager we get when installing node js
+can also be used as a build tool
+as a tool that runs utility scripts on the computer
+and can help build any (mostly js) project FE or BE
+
+when we install node js we get 
+- node.js 
+    - execute js code
+    - interact with files*
+
+- npm (node package manager) 
+    - to download new packages or defined dependencies
+    - run our code/scripts
+    - create and share packages *
+
+npm is a CLI command line interface 
+used from the terminal
+
+//
+we can have a code with an Isolated functionality" from other code
+we can put it in a package with npm help to share it internally or externally
+
+create and share packages, through the npm repo
+which is a cloud service
+where you can host packages you created
+
+//
+can visit npmjs.com and search for packages
+
+npm install express@specific-version-number
+
+packages also have their internal dependencies of dependencies
+
+can learn more about npm commands, creating/managing packages
+on the site docs
+
+#npm help
+get instructions about the available commands you may run
+
+#npm install --help or npm install -h
+get instructions about a specific command
+how to run this command
+what options we have to add additional flags
+
+
+
+//running scripts
+getting stated > using npm > scripts
+
+that is related to the package.json file
+when you put a project under control of npm
+which is done through the
+# npm init 
+
+in this json
+not only define certain dependencies
+but can add and run scripts
+
+# npm run scriptName
+
+or as in react
+scripts > start > "react-scripts start"
+where react-scripts is a dependency package/code we want to run
+
+we will use node js to be able to run on our machine 
+and not being limited to spinning up a web server
+
+dependencies in the json file sometimes have a "^" before the version number
+like "express": "^4.18.2",
+
+~ : Approximately equivalent to version, i.e., only accept new patch versions
+^ : Compatible with version, i.e., accept new minor and patch versions
+none: must match version exactly
+> : must be greater than version
+> =
+<
+< =
+1.2.X : 1.2.0, 1.2.1, etc., but not 1.3.0
+* : matches any version
+latest: obtains latest release
+
+
+///////////////////////////////////////////////////////////////////
+//npm as a build tool
+//(31.0.0)
+
+until now node js was used to
+- spin a webserver and write code that runs on the server side
+
+but theoretically you can run any js code with node js
+and specifically you can interact with your local file system read/write
+
+//file-system
+parse (read) file
+manipulate content
+output new file
+
+/////////////////////////////////
+//Build tools to optimize code
+mostly in FE development
+for example the react app still uses package.json
+and uses npm to install packages
+these packages are holding code that runs on the browser
+
+react code is not natively supported by all browsers (old ones)
+is separated, and combined by a package
+but then transformed into another code by a "build tool"
+for development with start
+and production with build
+
+merges all the code and transform into a format can run on all browsers
+that is also minified and optimized
+
+optimized to be shorter and not use modern js features
+const copy = (arr) => 
+{
+    return [...arr];
+}
+
+//becomes
+
+var a = function (b) 
+{ return b.slice() }
+
+on the server the code sits there and it runs
+on the browser the code has to be downloaded
+so want to keep it as small as possible 
+to start the app as quickly as possible
+
+this is possible using npm and node
+to transform the code to such qualities
+/////////////////////////////////
+
+
+///////////////////////////////////////////////////////////////////
+//
+//using npm in build process
+
+we can install packages that run on the browser for the FE too
+
+npm use:
+we install the packages with npm
+and start the scripts that uses these packages with npm
+
+now npm work is over
+and node js takes over from here
+
+in the package folder
+the code in the bin folder will be executed with node js
+
+this code will be executed on your machine
+which also uses other dependencies and file-system files
+before the code gets deployed to the server
+
+other dependencies like webpack
+which orchestrate your build workflow, compile your different files
+(your source code) parse them, pull all code together, rewrite code in supported syntax
+these methods are done with packages behind the scenes which are used by npm
+and then the code in these packages is executed through node js
+unlock next gen features and handle them correctly using other tools
+like babel
+
+
+
+we can tell we are using node js there
+by seeing the different import/export syntax from ES's
+const webpack = require ("webpack");
+instead of 
+import { file }
+
+so in the end
+you can use node js to execute any js code
+which also uses node js features
+which can also run utility scripts 3rd party or own
+takes our source code
+transform it as defined by the packages we use
+because we do not want to write all that build coding on our own
+
+*/
 
 
 
