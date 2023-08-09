@@ -10,10 +10,64 @@ const buttonElement = document.querySelector("button")!;
 //the ! means, that the expression before it could theoretically be null
 //but we know that it isn't
 
-//(33.0.2) add a number type
-function add(num1: number, num2: number) {
-  return num1 + num2;
+
+
+//(33.0.8) generic type
+const numResults: Array<number> = [];
+
+//(33.0.6)
+//want instead of consoling the results here
+//to store them in an array
+//the type of data in numResults is an array full of numbers "number[]"
+//const numResults: number[] = [];
+const textResults: string[] = [];
+
+
+//(33.0.7)
+type NumOrString = number | string;
+type ObjectResult = { val: number; timestamp: Date};
+
+//(33.0.7)
+interface ObjectResultInterface {
+  val: number;
+  timestamp: Date
 }
+
+
+//(33.0.2) add a number type
+//function add(num1: number | string, num2: number | string) {
+  function add(num1: NumOrString, num2: NumOrString) {
+
+  //(33.0.5) type guard
+  if (typeof num1 === "number" && typeof num2 === "number") {
+    return num1 + num2;
+  }
+
+  //(33.0.5) type guard
+  if (typeof num1 === "string" && typeof num2 === "string") {
+    return num1 + num2;
+  }
+
+  //(33.0.5)
+  //if we have number/string combination
+  //convert both to a number
+  return (+num1) + (+num2);
+
+}
+
+
+//(33.0.6)
+//function takes in a resultObj and expect it to have a val property
+//clear that i have an object type and what type this property have
+//properties separated by ;
+//the date object can be referred to a constructor function as a type
+//function printResult(resultObj: { val: number; timestamp: Date}) {
+  function printResult(resultObj: ObjectResultInterface) {
+
+  console.log(resultObj.val);
+}
+
+
 
 //(33.0.4) if the below code runs, buttonElement cant be null
 //if (buttonElement) {
@@ -27,7 +81,21 @@ function add(num1: number, num2: number) {
     //this is what TS is about, forced to write cleaner code by listening to the IDE
     const result = add(+num1, +num2); //convert to numbers and add
     const stringResult = add(num1, num2); //add numbers or concat strings
-    console.log(result);
+    //console.log(result);
+    //console.log(stringResult);
+    //(33.0.6)
+    numResults.push(result as number);
+    textResults.push(stringResult as string);
+
+
+    //(33.0.6)
+    //typescript warns that this could also be a string
+    //so will cas it as a number
+    printResult({val: result as number, timestamp: new Date() })
+
+    //(33.0.6)
+    console.log(numResults, textResults);
+
 
   });
 //}
@@ -36,6 +104,10 @@ function add(num1: number, num2: number) {
 
 //console.log(add(1, 6));
 //console.log(add('1', '6'));
+
+
+
+
 
 
 
@@ -207,8 +279,11 @@ typescript knows that the button we got from the query
 is an html button type element (inferred type)
 HTMLButtonElement is one of many built-in types
 which are supported by TS out of the box
-TS is able to know which type of value will be stored in this constant
-because of the querySelector line
+
+"TS is able to know which type of value will be stored in this constant
+because of the querySelector line 
+but not getElementById"
+also will not know it this button exists on our page
 that is why it knows that we can call add event listener
  
 
@@ -287,9 +362,9 @@ running # "tsc" will compile all TS files in the folder
 the IDE always picks up the config json file
 so the IDE support is always provided no matter how you compile it tsc app.js or just tsc
 
-
+//500
 ///////////////////////////////////////////////////////////////////
-//(33.0.4)
+//(33.0.5)
 
 //working with union types
 
@@ -304,11 +379,129 @@ and a stringResult constant, just adds or concatenate if string is incoming
 writing the stringResult without +'s will give a red-line
 
 
+//to add multiple types to accepted types for the function parameter
+>> separate them with a "|"
+
+but still also there is a red-line
+>> so we will run code depending on the type of data we get using a 
+js code "type guard"
+
+also add code for mixed types input, do not need the brackets though
 
 
 
+///////////////////////////////////////////////////////////////////
+//(33.0.6)
+
+//object and array types
+
+the defined "HTMLInputElement" and the pre-defined
+"HTMLButtonElement"
+are object types, because we have dom objects in js
+
+we can also define our object types
 
 
+//define an array with giving type to their values
+//push into them with specifying the input types
+
+//function that takes an object with specified input types
+//and call that function with inputs with their types specified
+
+
+
+create a function that its parameter is an object
+and define the object's keys types
+in the function call also define the passed keys type accordingly
+
+want instead of consoling the results here
+to store them in an array
+
+need to be specific about the type of data we store into the array
+and also be specific of the data pushed into these arrays to match
+
+
+///////////////////////////////////////////////////////////////////
+//(33.0.7)
+
+//working with Type Aliases and Interfaces
+
+
+//type aliases
+we have repetition in our code
+like when defined in the add function the number | string types
+
+its ok, but can be improved with "type alias"
+using the "type" TS operator
+
+>> where we define a custom type to combine multiple types in
+
+can use it on the object defined in the printResult function too
+
+
+//interfaces
+help define the structure of an object
+can be used to force classes to implement some certain methods or functionalities
+
+//
+if would add our own class or a constructor function
+could use the class name as a type as well
+
+like 
+type Result = { val: number; timestamp: Date };
+printResult({val: result as number, timestamp: new Date()});
+
+type Result = { val: number; timestamp: myClass };
+printResult({val: result as number, timestamp: new myClass()});
+
+
+
+///////////////////////////////////////////////////////////////////
+//(33.0.8)
+
+//understanding generics
+a type that interacts with another type
+
+we have a generic type in
+const numResults: number[] = [];
+where we defined numResults to be an "array type"
+and its contents be "number type"
+
+instead of
+const numResults: number[] = [];
+will use 
+>> const numResults: Array<number> = [];
+
+
+>> generic types can also be used for promises
 
 */
+
+//(33.0.8)
+//we need to add a library to ts-config to tell which kind of features
+//we want to support
+//in config.js the target can be changed from es5 to es6 (compile output)
+//es6 a js version that support promises that can't be compiled in es5
+//with this config change, run #tsc to take the config file into account with the compiler
+
+//Promise is a generic type by itself of type promise
+//because it eventually resolves to a value
+//the value it resolves to, is the generic type for the promise
+//as in the array it was the value stored in the array
+
+//but TS does not know the type of the result to use split on it
+//so will add generic <> to define the result of the resolve
+
+const myPromise = new Promise<string>((resolve, reject) => {
+  
+  setTimeout(() => {
+    resolve("It worked!");
+  }, 1000);
+
+});
+
+myPromise.then((result) => {
+  console.log(result.split("w"));
+});
+
 
