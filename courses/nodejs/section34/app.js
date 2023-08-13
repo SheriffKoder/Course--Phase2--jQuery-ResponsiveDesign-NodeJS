@@ -1,36 +1,11 @@
 
 
 /*
-
 //(34.0.4)
-
-//repeating the same code in 34.0.3 with node
-
-when using the "require" will get an IDE warning
-to fix this we will have to disable Deno extension
-
-differences
-when using writeFile, data can be just a string
-does not return a promise, pass in a callBack (code that executes when it completes)
-
-or use .promises to turn it to a promise based method
-
-# node app.js
-node by default has permissions to run any code
-even from sources you do not know
-
-
-the main difference is TS which is built into deno
-and the permissions
-
-
-
-
-*/
-
+//create a node equivalent to the code from 34.0.3
 
 //const fs = require("fs");
-const fs = require("fs").promises;
+const fs = require("fs").promises; //use promise based file-system module
 
 
 const text = "this is a test - and it should be stored in a file!";
@@ -38,3 +13,22 @@ const text = "this is a test - and it should be stored in a file!";
 fs.writeFile("node-message.txt", text).then(()=>{
     console.log("wrote file!");
 })
+
+*/
+
+
+
+/*
+//(34.1.2)
+//create a node equivalent to the code from 34.1.1
+
+const http = require("http");
+
+//function that will be executed on every incoming request
+const server = http.createServer((req, res) => {
+    res.end("Hello World (from Node!)");
+});
+
+server.listen(3000);
+
+*/
