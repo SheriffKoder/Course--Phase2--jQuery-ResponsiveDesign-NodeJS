@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "s4_app.js",
+  "engines": {
+    "node": "20.9.0"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start-s4-nodemon": "nodemon s4_app.js",
