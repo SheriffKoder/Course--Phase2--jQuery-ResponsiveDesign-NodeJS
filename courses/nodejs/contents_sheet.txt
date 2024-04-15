@@ -44,7 +44,7 @@ save product to existing products file
 
 ////////////////////////////////////////////////////////////////////////
 //Recap5 from section7
-//construct a shop website
+//construct a shop website using express/MVC structure
 
 admin router > admin controller (using admin ejs's)
 admin controller: 
@@ -74,4 +74,276 @@ delete product from cart:  product.find method id then filter method out this id
 get cart: read, parse, cb(parsed), cb would be render to ejs { products: parsed}
 
 
+
+////////////////////////////////////////////////////////////////////////
+//section: 10
+working with SQL/Sequelize
+to display a fully functioning store website with a dummy user
+just run node sec_app.js
+
+
+// ** keep in mind: ** //
+from section 29: using environment variables, hide variables and keys with dotenv
+.gitignore
+from section: 32 ES import syntax, using promises with node core modules
+from section 33 Typescript
+
+////////////////////////////////////////////////////////////////////////
+//section: 12
+working with NoSQL/MongoDB
+to display a fully functioning store website with a dummy user
+just run node sec_app.js
+
+////////////////////////////////////////////////////////////////////////
+//section: 13
+working with NoSQL/MongoDB using mongoose
+to display a fully functioning store website with a dummy user
+just run node sec_app.js
+and make sure to add your ip address in the mongo site whitelist every now and then 
+or will get cannot connect error
+
+////////////////////////////////////////////////////////////////////////
+//section: 14 //(2.X)
+using basic cookies and sessions (express-session)
+just run node sec_app.js
+
+//section: 15 //(3.X)
+User authentication
+adding a sign up, encrypting passwords (bycrypt), sign in, authenticated only routes,
+CSRF protection (csurf), passing session login error messages to user 
+interface with (connect-flash) just run node sec_app.js
+
+//section: 16 //(3.X)
+sending confirmation email on signup
+
+//section: 17 //(4.X)
+re-setting user password with email, restrict editing of users to other users products
+
+////////////////////////////////////////////////////////////////////////
+//section: 18 //(18.X.X)
+using express-validator to validate/sanitize signin/signup/add/editProducts 
+inputs in starting from the routes,
+pass this validation's message to the get controllers
+keeping wrong credentials + css border after redirecting to same page
+
+//section: 19 //(19.X.X)
+erros, sync code with try/catch
+.catch async block redirect to 500 page that catches all server side errors
+throw new Error syntax
+status codes
+
+
+////////////////////////////////////////////////////////////////////////
+//section: 20 //(20.X.X)
+
+use multer package to "store image file uploaded with adding product"
+defined the fileStorage in app.js to set destination and file name
+defined the fileFilter in app.js to accept specific file types
+use multer with these functions to store and filer + define ejs name
+ejs, controller adjustments, router clean (for the input reference of the file)
+
+upload files with ejs/multer package with specific types, 
+storing on the fs and their path on the database, 
+skip on edit product or replace images, 
+downloading files with fs read file and setting headers for naming with restricted file access, 
+streaming data, 
+create pdfs with pdfkit, 
+deleting files on product delete from db
+
+
+//section: 21 //(21.X.X)
+Pagination; in the shop page add numbered page links depending on the page we are in
+adding links to ejs with query params, 
+skip and limit products shown to view only 2 products for each page for example
+pass page, next page etc to ejs to render the correct links dynamically
+
+
+////////////////////////////////////////////////////////////////////////
+//section: 22 //(22.X.X)
+
+by clicking on the ejs button, access the button from 
+a javascript file scripted in the ejs itself using "this", 
+then access its parent/siblings, 
+send request using fetch to delete a product with its id (as each product button has an event listener)
+
+the fetch then gets the json response returned from the controller
+then when this response is json'd, then can read its data (the controller json)
+also now able to delete the product from the dom itself
+by accessing its parent1, then the parent1's parent2 delete the parent1 from the dom with js
+
+
+//section: 23 //(23.X.X)
+payments with stripe, 
+by importing stripe script in the checkout.ejs 
+and using a script there to redirect to the checkout page or your api, 
+stripe session configured and sent from the getCheckout controller, 
+on get cart page when submitting order now we are 
+redirected to the payment page (and the order is stored in the order db/page) 
+
+to use:
+update whitelist url on mongo site
+put stripe api keys in checkout ejs and shop controller to "Order now"
+node sec23_app.js
+
+
+
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+//section: 24 //(24.X.X)
+REST APIS
+a whole new folder and app.js file
+REST API how it works, what, why, core principles
+data types, http methods
+basic setup, sending a post request with Postman
+CORS browser error
+
+
+//section: 25 part 1
+sending and getting from a frontend with validation
+run react front-end
+GET send data to FE, POST add new pre-filled post, express-validation
+
+npm start (for the react app folder)
+
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+//section: 25 part 2 REST API
+connect to the mongoose database
+define a mongoose model schema
+create a post with the model
+sending responses with status codes
+error handling middleware to return json error for server-side errors
+view a single post, view all database posts
+use multer package to read image files
+edit posts with needed inputs and image replace
+delete posts
+Pagination
+user model, signup, hash passwords, 
+authentication and web tokens
+post ownership users can delete, edit their posts
+display/edit user.status
+
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+//section: 26
+using async/await instead of the .then/.catch on created promises
+
+//section: 27
+using webSocktets through sockets.io
+which pushes data/updates to another user who did not make the change live
+sorting with Post.find() "all"
+
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+//section: 30
+testing with mocha(describe/it), chai(expect), sinon(3rd party mocking/stabs)
+testing made on section 26
+testing a middleware
+mocking third party methods to test our wirtten code
+testing a controller with database interaction (mock / create a test-database)
+testing async code with the "done" keyword
+organizing test code with hooks (before/after/..each)
+testing a controller that requires authentication
+
+open the folder test, will find testing files for each code file
+run in console "npm test"
+
+
+
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+//section: 28
+GraphQL (as REST API's but with filtering data when needed) has a writing syntax
+fetching a query (view)
+set mutation query, use GraphQL API to send a mutation POST, (edit)
+using the GraphQL browser tool to test requests using GraphQL query syntax
+input validation and handling error messages
+CORS error handling
+sign-up
+login and authentication
+get/edit/add posts without a real image
+connect added post to a user ownership
+edit post if authenticated
+view all posts on the front-end
+Pagination
+uploading an image
+view post details
+edit a post
+deleting a post
+view and edit user status
+using variables in the GraphQL query syntax used in the front-end code
+
+basic idea: 
+app.js, schema > resolvers & helper files (models, etc.)
+connect to database
+
+front-end
+define a function that defines a GraphQL query that will send(fetch) with some configuration to the backend
+then the returned data can be used on the front-end
+
+
+open http://localhost/8080/GraphQL for API tests
+back-end : node sec28_app.js
+front-end: npm start
+open http://localhost:3000/ to use the front end which uses the back end by sending queries
+to the backend 8080 url, 
+
+
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+//section: 29
+Deploying node js applications
+
+preparing code for production by 
+using environment variables, hide variables and keys with dotenv
+reduce error output details using process.env.NODE_ENV variable
+set secure response headers with the helmet package
+add compression to files of css/js
+have log files for requests
+understand SSL/TLS
+
+hosting providers to host/deploy your side on the web
+deploying with render or heroku
+notes on deploying API apps 
+
+
+
+
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+//section: 30 (section27 flow)
+testing with mocha(describe/it), chai(expect), sinon(3rd party mocking/stabs)
+
+////////////////////////////////////////////////////////////////////////
+//section: 31
+
+using npm as a build tool
+more info using npm commands
+
+
+
+
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+//section: 32
+Modern javascript code practices
+
+using ES Modules (another way of exporting/importing)
+using __dirname with ES Modules
+using promises with Core APIs instead of callbacks
+
+use ES Modules to export/import between files, use promises with node core modules instead of callbacks
+
+
+
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+//section: 33
+Typescript
+
+
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+//section: 34,35
+Deno
 
