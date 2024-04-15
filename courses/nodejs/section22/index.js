@@ -26,7 +26,7 @@ const app = express();
 const path = require("path");
 
 const mongoose = require("mongoose");   //(2)
-const User = require("./models/user"); //(8)
+const User = require("./models/user.js"); //(8)
 
 const session = require("express-session"); //(2.6)
 const csrf = require("csurf");  //(3.7)

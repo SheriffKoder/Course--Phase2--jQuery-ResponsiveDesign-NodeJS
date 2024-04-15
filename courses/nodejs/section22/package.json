@@ -7,7 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start-s4-nodemon": "nodemon s4_app.js",
     "start-myServer4": "node s4_app.js",
-    "build": ""
+    "build": "",
+    "start": "node index.js"
   },
   "author": "Sheriff Koder",
   "license": "ISC",
