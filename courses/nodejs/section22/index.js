@@ -17,6 +17,8 @@
 //# npm install --save helmet compression  //libraries in the deploying section29
 //# npm install --save  morgan //makes logging request data simple
 
+// git push heroku HEAD:master
+
 ///////////////////////////////////////////////////////////////////////////////////////
 // Application imports 1
 
