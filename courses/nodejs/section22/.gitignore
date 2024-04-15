@@ -1,3 +1,4 @@
 node_modules
 views/shop/checkout.ejs
 .env
+.vercel
