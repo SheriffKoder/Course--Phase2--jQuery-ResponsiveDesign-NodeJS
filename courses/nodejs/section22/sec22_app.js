@@ -14,7 +14,11 @@
 //# npm install --save pdfkit //s20.2 generate pdf files
 //# npm install --save strp //s23 using strp
 
+//# npm install --save helmet compression  //libraries in the deploying section29
+//# npm install --save  morgan //makes logging request data simple
 
+///////////////////////////////////////////////////////////////////////////////////////
+// Application imports 1
 
 const http = require("http");
 const express = require("express");
@@ -29,7 +33,21 @@ const csrf = require("csurf");  //(3.7)
 const flash = require("connect-flash");   //(3.9)
 
 
+// 29.0
+require("dotenv").config();
+const helmet = require("helmet");
+const compression = require("compression");
+const morgan = require("morgan");
+const fs = require("fs");   //morgan will use it
 
+const accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'), {flags: "a"});
+
+
+///////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////
+// Use multer before accessing other middlewares*
+// if there is an image file on the request, will store it
 
 const multer = require("multer"); //(20.0.1)
 //diskStorage is a storage engine which can use with multer
@@ -84,10 +102,19 @@ const fileFilter = (req, file, cb) => {
 
 };
 
+///////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////
 
 
+
+///////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////
+// Application imports 2
 const mongoDBStore = require("connect-mongodb-session")(session);
-const MongoDbUri = "mongodb+srv://sheriffkoder:Blackvulture_92@cluster0.jgxkgch.mongodb.net/shop"; // mongoDB web app connect url //shop?retryWrites=true&w=majority
+const MongoDbUri = 
+`mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@cluster0.jgxkgch.mongodb.net/${process.env.MONGO_DEFAULT_DATABASE}`; // mongoDB web app connect url //shop?retryWrites=true&w=majority
 const store = new mongoDBStore({
     uri: MongoDbUri,
     //define a collection where your sessions will be stored
@@ -96,11 +123,23 @@ const store = new mongoDBStore({
 
 });
 
-//to use the req.body.fieldName, will be passed to the app.use's
+
+
+///////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////
+// Libraries Middlewares
+
+///////////////////////////////////////////////////////////////////////////////////////
+// bodyParser accepts incoming form field data to be used in the controllers on the "req"
+// to use the req.body.fieldName, will be passed to the app.use's
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: false}));
 
+
+///////////////////////////////////////////////////////////////////////////////////////
 //(20.0.1)
+// Use multer before accessing other middlewares*
 //single method as we will use one file
 //define the input name that will hold the file (as ejs)
 //{dest}, when add file, instead of buffering the file to memory
@@ -113,22 +152,23 @@ app.use(bodyParser.urlencoded({extended: false}));
 //we defined a fileFilter function above
 app.use(multer({storage: fileStorage, fileFilter: fileFilter}).single("image"));
 
+// sets secure special headers in the response
+app.use(helmet());
+// makes front-end files like css, javascript assets a bit smaller  - can be already provided by hosting providers
+app.use(compression());
+
+// log requests into this file accessLogStream - can be already provided by hosting providers
+app.use(morgan('combined', {stream: accessLogStream}));
 
 
-
-//(3.7)
-//executing the imported csrf as a function
-//object to configure some things
-//for example want to store the secret that is used for hashing your tokens
-//the default settings should work fine, can dive into the official docs of the package to learn more
-//const holds a middleware
-const csrfProtection = csrf();
-
+///////////////////////////////////////////////////////////////////////////////////////
+// flash is used to store some text in response to controller operations
+// and these text messages can be forwarded to the front-end as a value to display error messages
 //(3.9)
 //flash needs to be initialized, after the session
 app.use(flash());
 
-
+///////////////////////////////////////////////////////////////////////////////////////
 //(2.6)
 //session core configurations
 //pass a js object where we configure the session setup
@@ -153,6 +193,15 @@ app.use(session(
     }
 ));
 
+///////////////////////////////////////////////////////////////////////////////////////
+//(3.7)
+//executing the imported csrf as a function
+//object to configure some things
+//for example want to store the secret that is used for hashing your tokens
+//the default settings should work fine, can dive into the official docs of the package to learn more
+//const holds a middleware
+const csrfProtection = csrf();
+
 //(3.7)
 //csrfProtection is enabled but need to add something to our views to use it
 //for any non get requests (post etc.)
@@ -164,16 +213,27 @@ app.use(csrfProtection);
 
 
 
+///////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////
 
 
+///////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////
+// Basic Middlewares
+
+// allow the use of these folder by users/frontend etc
 app.use(express.static(path.join(__dirname, "public")));
 app.use("/images", express.static(path.join(__dirname, "images"))); //(20.0.5)
 
 
-
+// define the templating engine's type
+// and the folder containing the frontend code using it
 app.set("view engine", "ejs");
 app.set("views", "views");
 
+// define the application's route files
 const adminJsRoutes = require("./routes/admin.js");
 const shopJsRoutes = require("./routes/shop.js");
 const authRoutes = require("./routes/auth.js");
@@ -203,7 +263,7 @@ app.use((req, res, next) => {
 
     //write a clever code what will succeed
     //by avoiding to find session.user if there is no session
-    //to allow the middleware below to only run if there is a session.user
+    //to allow the middleware below to only run if there is a session.user**
     if (!req.session.user) {
         return next();
     }
@@ -271,7 +331,9 @@ app.use((req, res, next) => {
 
 
 
-
+///////////////////////////////////////////////////////////////////////////////////////
+// after we pass authentication, we can use/visit the routes for shop, authentication, admin
+// that forwards to controllers that displays front-end to the user and handles data
 
 //app.use(adminJsRoutes.routes); //replaced code
 //app.use(adminJsRoutes); //replaced code
@@ -283,7 +345,10 @@ app.use("/admin", adminJsRoutes);
 app.use(authRoutes);
 
 
-
+///////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////
+// Error handling Middlewares
 
 //used the __dirname directly here because we are in a root file
 /*
@@ -334,6 +399,10 @@ app.use((error, req, res, next) => {
 })
 
 
+
+///////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////
 //connect to the node server once connected to the database
 /*
 mongoConnect(() => {
@@ -367,7 +436,7 @@ mongoose.connect(MongoDbUri)
         
         });
         */
-        app.listen(3000);
+        app.listen(process.env.PORT || 3000);
     })  
     .catch(err => {
         console.log("mongoose connect" + err)

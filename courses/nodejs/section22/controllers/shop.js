@@ -21,7 +21,7 @@ const ITEMS_PER_PAGE = 2;
 
 //(23.0.2) //remove*
 //import stripe with the secret key on the site's developer tab
-const stripe = require("stripe")("secretkey");
+const stripe = require("stripe")(process.env.STRIPE_KEY);
 
 
 exports.getProducts = (req, res, next) => {
@@ -563,8 +563,8 @@ exports.postCartDeleteProduct = (req, res, next) => {
     .then (result => {
         res.redirect("/cart");
     })
-    // .catch(err => console.log(err));
-    return next(new Error(err).httpStatusCode=500); //(19.0.3)
+    .catch(err => console.log(err));
+    // return next(new Error(err).httpStatusCode=500); //(19.0.3)
 
 
     //mongoDB
