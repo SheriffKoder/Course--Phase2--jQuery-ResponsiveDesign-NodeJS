@@ -4,13 +4,12 @@
   "description": "",
   "main": "s4_app.js",
   "engines": {
-    "node": "20.9.0"
+    "node": "14.x"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start-s4-nodemon": "nodemon s4_app.js",
     "start-myServer4": "node s4_app.js",
-    "build": "",
     "start": "node index.js"
   },
   "author": "Sheriff Koder",

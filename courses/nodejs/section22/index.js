@@ -17,8 +17,8 @@
 //# npm install --save helmet compression  //libraries in the deploying section29
 //# npm install --save  morgan //makes logging request data simple
 
-// git push heroku HEAD:master
-
+// deployed with render.com
+// https://phase2-nodejs.onrender.com/products
 ///////////////////////////////////////////////////////////////////////////////////////
 // Application imports 1
 
