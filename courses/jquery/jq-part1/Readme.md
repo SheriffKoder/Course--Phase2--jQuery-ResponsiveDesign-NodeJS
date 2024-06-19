@@ -5,4 +5,4 @@
 - [Final result](https://htmlpreview.github.io/?https://github.com/SheriffKoder//Course--Phase2--jQuery-ResponsiveDesign-NodeJS/blob/main/courses/jquery/jq-part1/index.html)
 - [Course site](https://www.udemy.com/course/jquery-tutorial/)
 #####
- ![screenshot](../.../../screenshot1.png)
+ ![screenshot](../../../screenshot1.png)
