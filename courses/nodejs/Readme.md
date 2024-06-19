@@ -19,7 +19,7 @@
 - Payments, Uploading, Pagination, using Templatating Engines
 
 >**Outcomes**
-- Full-stack "Shop App" using Node.js & Templating engines with user sign-up/sign-in to Add/Edit/Delete products
+- Full-stack "Shop App" using Node.js & ejs Templating engine with user sign-up/sign-in to Add/Edit/Delete products
 [[ Folder ]](https://github.com/SheriffKoder/Course--Phase2--jQuery-ResponsiveDesign-NodeJS/tree/main/courses/nodejs/section22) [[ Live Site ]](https://phase2-nodejs.onrender.com/)
 - Another version of the "Shop App" using a GraphQL REST API
 [[ Folder ]](https://github.com/SheriffKoder/Course--Phase2--jQuery-ResponsiveDesign-NodeJS/tree/main/courses/nodejs/section28)
