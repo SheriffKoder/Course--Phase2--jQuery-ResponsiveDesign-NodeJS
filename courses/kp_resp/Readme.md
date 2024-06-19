@@ -1,4 +1,4 @@
-****Conquering Responsive Layouts by Kevin Powell**
+**Conquering Responsive Layouts by Kevin Powell**
 
 >**Purpose**
 - Learn how to correctly approach and make websites responsive.
@@ -7,6 +7,6 @@
 - [Course site](https://courses.kevinpowell.co/conquering-responsive-layouts)
 
 #####
- ![screenshot](../.../../screenshot1.png)
+ ![screenshot](../../../screenshot1.png)
 #####
- ![screenshot](../.../../screenshot4.png)
+ ![screenshot](../../../screenshot4.png)
