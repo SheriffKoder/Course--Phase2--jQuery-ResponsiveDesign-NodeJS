@@ -33,4 +33,4 @@ STRIPE_KEY=XXXX
 #####
 >**Screenshot - Shop App**
 
- ![screenshot](../../screenshot3.png)
+ ![screenshot](../../../screenshot3.png)
