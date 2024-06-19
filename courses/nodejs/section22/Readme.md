@@ -11,7 +11,7 @@ with user sign-up/sign-in to Add/Edit/Delete products
 - Helper libraries like (multer: to store images locally, csrf protections, flash: to send messages to the front end as a response from the controller functions, express-session) are used.
 
 >**Features**
-- Create an account or use this account [ email: test@email.com / pass: 121212 ]
+- Create an account
 - Add a product by filling in the details from the nav bar.
 - The ability to edit with the old information present from the "Admin Products" page.
 - Delete a product from the "Admin Products" page.
