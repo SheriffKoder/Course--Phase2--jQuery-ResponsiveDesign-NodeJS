@@ -19,10 +19,10 @@ with user sign-up/sign-in to Add/Edit/Delete products
 - Make an order from the cart and clear the cart items.
 - View your orders.
 
->**How to use the code**
+>**How to use the code on your computer**
 - Clone or download the folder
 - Open the folder in your IDE and run "npm install" in the terminal
-- Create a mongoDB database [from here] and a stripe account [from here]
+- Create a mongoDB database [from here](https://www.mongodb.com/products/platform/cloud) and a stripe account [from here](https://dashboard.stripe.com/login) to acquire your API keys
 - Create a ".env" file in the root directory and fill these variables with values given from your mongoDB and stripe accounts
 MONGO_DEFAULT_DATABASE=XXXX
 MONGO_PASSWORD=XXXX
