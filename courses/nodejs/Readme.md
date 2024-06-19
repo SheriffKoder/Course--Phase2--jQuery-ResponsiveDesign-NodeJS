@@ -19,12 +19,12 @@
 - Payments, Uploading, Pagination, using Templatating Engines
 
 >**Outcomes**
-- Full-stack "Shop App" using Node.js & Templating engines
+- Full-stack "Shop App" using Node.js & Templating engines with user sign-up/sign-in to Add/Edit/Delete products
 [[ Folder ]](https://github.com/SheriffKoder/Course--Phase2--jQuery-ResponsiveDesign-NodeJS/tree/main/courses/nodejs/section22) [[ Live Site ]](https://phase2-nodejs.onrender.com/)
 - Another version of the "Shop App" using a GraphQL REST API
 [[ Folder ]](https://github.com/SheriffKoder/Course--Phase2--jQuery-ResponsiveDesign-NodeJS/tree/main/courses/nodejs/section28)
-- A simplified version of the "Shop App" using mySQL / sequelize
-[[ Folder ]](https://github.com/SheriffKoder/Course--Phase2--jQuery-ResponsiveDesign-NodeJS/tree/main/courses/nodejs/section10)
+- A lite version of the "Shop App" using mySQL / sequelize without user sign-up/sign-in
+[[ Folder ]](https://github.com/SheriffKoder/Course--Phase2--jQuery-ResponsiveDesign-NodeJS/tree/main/courses/nodejs/section10) [[ Live Site ]](https://phase-3-1ty9.onrender.com/)
 #####
 >**Screenshot - Shop App**
 
