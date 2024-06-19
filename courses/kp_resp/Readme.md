@@ -7,6 +7,6 @@
 - [Course site](https://courses.kevinpowell.co/conquering-responsive-layouts)
 
 #####
- ![screenshot](../../../screenshot1.png)
+ ![screenshot](../../screenshot1.png)
 #####
- ![screenshot](../../../screenshot4.png)
+ ![screenshot](../../screenshot4.png)
